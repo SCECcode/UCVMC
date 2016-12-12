@@ -1,0 +1,7 @@
+*ucvm.e
+*ucvm_yong_wald.e
+*ucvm_utah/ucvm.e
+*test-grid-lib-1d.ref
+*test-grid-ucvm_query-1d.ref
+*.pyc
+*.o
