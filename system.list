@@ -1,23 +1,7 @@
 {
 	"h2ologin": {
-		"1": {
-			"command": "/bin/bash -login -c 'module list'",
-			"listenOn": "stderr",
-			"condition": "'iobuf' in",
-			"not": "UCVM achieves better performance with the iobuf library loaded on Blue Waters.\nPlease type 'module load iobuf' (without quotes) in the command line."
-		},
-		"2": {
-			"command": "/bin/bash -login -c 'module list'",
-			"listenOn": "stderr",
-			"condition": "'PrgEnv-gnu' in",
-			"not": "UCVM requires the GNU compilers to be loaded on Blue Waters.\nTo load the GNU compilers, please type the following in the command line:\n\nmodule swap PrgEnv-cray PrgEnv-gnu"
-		},
 		"vars": {
-			"use_iobuf": "True",
-			"dynamic_flag": {
-				"value": "False",
-				"not": "\nBlue Waters does not support dynamic linking. Auto switching to static linking."
-			}
+			"use_iobuf": "False"
 		}	
 	}, 
 
@@ -35,11 +19,7 @@
 			"not": "UCVM requires the GNU compilers to be loaded on Titan.\nTo load the GNU compilers, please type the following in the command line:\n\nmodule swap PrgEnv-pgi PrgEnv-gnu"
 		},
 		"vars": {
-			"use_iobuf": "True",
-			"dynamic_flag": {
-				"value": "False",
-				"not": "\nTitan does not support dynamic linking. Auto switching to static linking."
-			}
+			"use_iobuf": "False"
 		}	
 	}, 
 	
