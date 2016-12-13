@@ -19,8 +19,8 @@ import shlex
 VERSION = "15.10.0"
 
 # The two configuration files for UCVM.
-SETUP_FILE = "http://hypocenter.usc.edu/research/ucvm/%s/setup.list" % VERSION
-SYSTEM_FILE = "http://hypocenter.usc.edu/research/ucvm/%s/system.list" % VERSION
+#SETUP_FILE = "http://hypocenter.usc.edu/research/ucvmc/%s/setup.list" % VERSION
+#SYSTEM_FILE = "http://hypocenter.usc.edu/research/ucvmc/%s/system.list" % VERSION
 
 # User defined variables.
 reinstall_flag = False
@@ -132,7 +132,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
     
-    if config_data["Path"] == "cvms5" or config_data["Path"] == "cca":
+    if config_data["Path"] == "cvms5":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
@@ -215,16 +215,14 @@ def downloadWithProgress(url, folderTo, description):
 
 # Read in the possible arguments
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "radh", ["reconfigure", "all", "dynamic", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "adh", ["all", "dynamic", "help"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
     exit(1)
 
 for o, a in opts:
-    if o in ('-r', '--reconfigure'):
-        reinstall_flag = True
-    elif o in ('-a', '--all'):
+    if o in ('-a', '--all'):
         all_flag = True
     elif o in ('-s', '--static'):
         dynamic_flag = False
@@ -242,10 +240,11 @@ print ""
 print "UCVM %s Installation" % VERSION
 print "Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0])
 
-try:
-    downloadWithProgress(SYSTEM_FILE, "./", "Downloading system list...")
-except StandardError, e:
-    eG(e, "Downloading system list from SCEC server.")
+#try:
+#    downloadWithProgress(SYSTEM_FILE, "./", "Downloading system list...")
+#except StandardError, e:
+#    eG(e, "Downloading system list from SCEC server.")
+print "Using local setup.list and system.list rather than download...."
     
 try:
     f = open("./system.list", "r")
@@ -262,8 +261,9 @@ try:
             print "\n" + v["message"]
             exec(v["code"])
 
-    # Now check system specific conditions.
+    print "Now check system specific conditions."
     for k in system_data:
+        print "k: ", k
         if k != "all" and k in socket.gethostname():
             for k2 in sorted(system_data[k].iterkeys()):
                 var_array = system_data[k][k2]
@@ -293,10 +293,11 @@ if error_out == True:
     print "\nError(s) encountered. Please resolve the above errors and re-run this script."
     exit(1)
     
-try:
-    downloadWithProgress(SETUP_FILE, "./", "Downloading list of available models...")
-except StandardError, e:
-    eG(e, "Downloading available model list.")
+#try:
+#    downloadWithProgress(SETUP_FILE, "./", "Downloading list of available models...")
+#except StandardError, e:
+#    eG(e, "Downloading available model list.")
+print "Using local setup.list file"
     
 try:
     # We now have our list. Parse it.
@@ -392,7 +393,7 @@ except StandardError, e:
     eG(e, "Could not create ./work directory.")
 
 print "\nNow setting up UCVM libraries..."
-  
+
 for library in config_data["libraries"]:
     the_library = config_data["libraries"][library]
     if library in librariesToInstall:
@@ -415,11 +416,22 @@ for library in config_data["libraries"]:
 print "\nNow setting up CVM models..."
 
 for model in config_data["models"]:
+    print "download and install model_name: ", model
     the_model = config_data["models"][model]
     if model in modelsToInstall:
         try:
-            downloadWithProgress(the_model["URL"], "./work/model", "Downloading " + model + "..." )
+	    #
+            # Currently, this test for existing tar file will always fail because of the
+            # recursive directory removal done above
+            # TODO: Change this to check for largefiles/file and copy over if it has been downloaded already
+            #
             tarname = the_model["URL"].split("/")[-1]
+            tarname = "./work/model/" + tarname
+            print "tarname: ",tarname
+	    if not os.path.isfile(tarname):
+            	downloadWithProgress(the_model["URL"], "./work/model", "Downloading " + model + "..." )
+            else:
+		print "Model tar file already on server",tarname
             installConfigMakeInstall(tarname, ucvmpath, "model", the_model)
         except StandardError, e:
             eG(e, "Error installing model " + model + ".")
