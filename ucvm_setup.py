@@ -16,7 +16,7 @@ import shlex
 # Variables
 
 # Set the version number for the installation script.
-VERSION = "15.10.0"
+VERSION = "17.1.0"
 
 # The two configuration files for UCVM.
 #SETUP_FILE = "http://hypocenter.usc.edu/research/ucvmc/%s/setup.list" % VERSION
@@ -91,9 +91,14 @@ def printPretty(list):
     print buffer
 
 # Install with the configure, make, make install paradigm.
+#
+# This makes three assumptions
+# (1) All required tar files are in the current_working_directory/work directory, and are gzipped
+# (2) All installs of type "model" go to ucvmpath/model
+# (3) All installs of type "libaray" go to ucvmpath/lib
+#
 def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "\nInstalling " + type + " " + tarname
-    
     pathname = "lib"
     if type == "model":
         pathname = "model"
@@ -101,7 +106,11 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     workpath = "./work/" + pathname
     
     strip_level = "2"
-    if config_data["Path"] == "fftw" or config_data["Path"] == "euclid3" or config_data["Path"] == "netcdf" or config_data["Path"] == "hdf5" or config_data["Path"] == "curl":
+    if config_data["Path"] == "fftw" or \
+            config_data["Path"] == "euclid3" or \
+            config_data["Path"] == "netcdf" or \
+            config_data["Path"] == "hdf5" or \
+            config_data["Path"] == "curl":
         strip_level = "1"
     
     # We need to un-tar the file.
@@ -114,7 +123,10 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
     callAndRecord(["cd", workpath + "/" + config_data["Path"]], True)
-    
+
+    #
+    # proj-4 library is an exception. It does not require use of aclocal, only ./configure
+    #
     if not config_data["Path"] == "proj-4":
         print "\nRunning aclocal"
         aclocal_array = ["aclocal"]
@@ -174,17 +186,13 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 # Download a file with the progress indicator.
 def downloadWithProgress(url, folderTo, description):
     u = urllib2.urlopen(url)
-    
     meta = u.info()
     download_size = int(meta.getheaders("Content-Length")[0])
-
     print "\n" + description
     sys.stdout.write("[                    ]\r")
     sys.stdout.flush()
-    
     call(["mkdir", "-p", folderTo])
     f = open(folderTo + "/" + url.split('/')[-1], 'wb')
-
     file_size_dl = 0
     block_sz = 8192
     while True:
@@ -193,13 +201,10 @@ def downloadWithProgress(url, folderTo, description):
             break
         file_size_dl += len(buffer)
         f.write(buffer)
-        
         p = float(file_size_dl) / download_size
-        
         numEquals = int(p / 0.05)
         if p / 0.05 >= 19.5:
             numEquals = 20
-        
         sys.stdout.write("[")
         for i in range(0, numEquals):
             sys.stdout.write("=")
@@ -207,13 +212,13 @@ def downloadWithProgress(url, folderTo, description):
             sys.stdout.write(" ")
         sys.stdout.write("]  %d%%\r" % (p * 100))
         sys.stdout.flush()
-    
     f.close()
-    
     sys.stdout.write("\n")
     sys.stdout.flush()
-
+#
+# Start of main method.
 # Read in the possible arguments
+#
 try:
     opts, args = getopt.getopt(sys.argv[1:], "adh", ["all", "dynamic", "help"])
 except getopt.GetoptError, err:
@@ -263,7 +268,7 @@ try:
 
     print "Now check system specific conditions."
     for k in system_data:
-        print "k: ", k
+        print "System_data - k: ", k
         if k != "all" and k in socket.gethostname():
             for k2 in sorted(system_data[k].iterkeys()):
                 var_array = system_data[k][k2]
@@ -337,7 +342,8 @@ while enteredpath is not "":
     # Check to see that that path exists and is writable.
     if not os.access(os.path.dirname(enteredpath.rstrip("/")), os.W_OK | os.X_OK):
         print "\n" + enteredpath + " does not exist or is not writable."
-        enteredpath = raw_input("Please enter a different path or blank to use the default path: ")
+        enteredpath = raw_input("Exiting:Please enter a different path or blank to use the default path: ")
+        sys.exit(0)
     else:
         break
     
@@ -383,32 +389,36 @@ printPretty(librariesToInstall)
 
 # Check if we can make the work directory.
 try:
-    if os.path.exists("./work"):
-        call(["rm", "-R", "./work"])
-    call(["mkdir", "-p", "./work"])
+    if not os.path.exists("./work"):
+#       call(["rm", "-R", "./work"])
+#       call(["mkdir", "-p", "./work"])
+        print "Work directory does not exist. Error, exitting..."
+        sys.exit(1)
     if not os.path.exists("./work") or not os.access("./work", os.W_OK | os.X_OK):
         print "Could not create ./work directory."
-        exit(1)
+        sys.exit(1)
 except StandardError, e:
     eG(e, "Could not create ./work directory.")
 
-print "\nNow setting up UCVM libraries..."
+print "\nNow setting up the required UCVM libraries..."
 
 for library in config_data["libraries"]:
     the_library = config_data["libraries"][library]
     if library in librariesToInstall:
         if the_library.get("Needs", "") != "":
             try:
-                downloadWithProgress(config_data["libraries"][the_library["Needs"]]["URL"], "./work/lib", \
-                                     "Downloading" + the_library["Needs"])
+                #downloadWithProgress(config_data["libraries"][the_library["Needs"]]["URL"], "./work/lib", \
+                #                     "Downloading" + the_library["Needs"])
                 tarname = config_data["libraries"][the_library["Needs"]]["URL"].split("/")[-1]
+                print "Calling Needs Install with tarname,ucvmpath,library:",tarname,ucvmpath
                 installConfigMakeInstall(tarname, ucvmpath, "library", config_data["libraries"][the_library["Needs"]])
             except StandardError, e:
                 eG(e, "Error installing library " + the_library["Needs"] + " (needed by " + library + ").")
     
         try:
-            downloadWithProgress(the_library["URL"], "./work/lib", "Downloading " + library + "..." )
+            #downloadWithProgress(the_library["URL"], "./work/lib", "Downloading " + library + "..." )
             tarname = the_library["URL"].split("/")[-1]
+            print "Calling URL Install with tarname,ucvmpath,library:",tarname,ucvmpath
             installConfigMakeInstall(tarname, ucvmpath, "library", the_library)
         except StandardError, e:
             eG(e, "Error installing library " + library + ".")
@@ -416,7 +426,7 @@ for library in config_data["libraries"]:
 print "\nNow setting up CVM models..."
 
 for model in config_data["models"]:
-    print "download and install model_name: ", model
+    print "Install model_name: ", model
     the_model = config_data["models"][model]
     if model in modelsToInstall:
         try:
@@ -426,12 +436,14 @@ for model in config_data["models"]:
             # TODO: Change this to check for largefiles/file and copy over if it has been downloaded already
             #
             tarname = the_model["URL"].split("/")[-1]
-            tarname = "./work/model/" + tarname
-            print "tarname: ",tarname
-	    if not os.path.isfile(tarname):
-            	downloadWithProgress(the_model["URL"], "./work/model", "Downloading " + model + "..." )
+            ltarname = "./work/model/" + tarname
+            print "Preparing to install model with tarname: ",tarname
+	    if not os.path.isfile(ltarname):
+                print "Model file not found in work directory:",tarname
+                print "Exiting..."
+                sys.exit(1)
             else:
-		print "Model tar file already on server",tarname
+		print "Model tar file found in work directory:",ltarname
             installConfigMakeInstall(tarname, ucvmpath, "model", the_model)
         except StandardError, e:
             eG(e, "Error installing model " + model + ".")

@@ -39,7 +39,7 @@
 			"URL": "http://hypocenter.usc.edu/research/ucvm/15.10.0/models/cencal080.tar.gz",
 			"Flags": "--enable-model-cencal --with-cencal-lib-path=lib --with-cencal-include-path=include/cencalvm/query/ --with-cencal-model-path=model/USGSBayAreaVM-08.3.0.etree --with-cencal-extmodel-path=model/USGSBayAreaVMExt-08.3.0.etree",
 			"Ask": "yes",
-			"Order": "6"
+			"Order": "5"
 		}
 	},
 	"libraries": {

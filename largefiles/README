@@ -1,0 +1,14 @@
+Overview of current installation process:
+
+The Git repository does not contain largefiles needed by the UCVM system.
+The .gitignore excludes most files in the largefiles directory
+
+Currently, we stage the largefiles externally, giving the user options on how they
+assemble the list of needed files.
+
+Then, before we move the largefiles directory into the ucvm source tree, and
+run ./ucvm_setup.py, user will run the
+./stage_ucvm_large_files.py path_to_source_files.
+
+
+
