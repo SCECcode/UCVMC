@@ -33,10 +33,7 @@ and packages:
   Lin-Thurber Statewide, Tape SoCal
 - NetCDF: http://www.unidata.ucar.edu/downloads/netcdf/index.jsp
 
-
 # 2.0 Installation
-================
-
 The basic install of UCVMC is:
 % git clone https://github.com/SCECcode/UCVMC.git
 $ cd UCVMC/largefiles
@@ -54,8 +51,6 @@ The default is to link statically. If you would like to enable dynamic linking, 
 use the argument -s. E.g. ./ucvm_setup.py -s
 
 # 3.0 Technical Notes
-===================
-
 ## 3.1 MPI Compilers
 
 If a GNU-based MPI compiler is detected, the MPI version of ucvm2etree are
@@ -78,12 +73,9 @@ $ ./configure --prefix=${UCVM_INSTALL_DIR} --enable-iobuf
 Note the use of the '--enable-iobuf' option.
 
 ## 3.3 Static Builds
-
 A static build can be forced with the '--enable-static' configure option.
 
 # 4.0 Configuration
-=================
-
 The main application configuration file is ${UCVM_INSTALL_DIR}/conf/ucvm.conf. 
 This is where the paths to all configured models and maps are specified, as 
 well as any model flags are defined. The UCVM installer sets up this file 
@@ -93,8 +85,7 @@ modify it, such as to add a new model.
 Please see the User Guide for more details on how to edit the UCVM config.
 
 # 5.0 Standard Models and Maps
-
-The standard models are referenced with the following labels:
+The CVM models available through UCVMC are referenced with the following labels:
 
 cvmh	     	    SCEC CVM-H
 cvms	     	    SCEC CVM-S4
@@ -109,14 +100,10 @@ One standard map is distribued with UCVMC
 
 ucvm	     USGS NED DEM and Wills-Wald Vs30 (default)
 
-# 7.0 Documentation
-=================
-
-Online documentation is available at:
+# 6.0 Documentation
+Online UCVMC documentation is available at:
 
 http://scec.usc.edu/scecpedia/UCVMC
 
 # 7.0 License
-===========
-
 UCVMC is released under the Apached 2.0 license. Please see LICENSE for the distribution license and disclaimers.
