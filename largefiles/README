@@ -6,9 +6,17 @@ The .gitignore excludes most files in the largefiles directory
 Currently, we stage the largefiles externally, giving the user options on how they
 assemble the list of needed files.
 
-Then, before we move the largefiles directory into the ucvm source tree, and
-run ./ucvm_setup.py, user will run the
-./stage_ucvm_large_files.py path_to_source_files.
+First, the user runs 
+%./get_large_files.py
 
+This copies the files from USC inot the local directory.
 
+Second, the user runs:
+%./stage_large_files.py
 
+This copies the files from the largefiles directory into the ucvm directory tree
+
+Third, the user moves out of the UCVMC/largefiles directory, and runs:
+%./ucvm_setup.py
+
+This will run the configure,make, install commands to build the libraries and models.

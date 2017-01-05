@@ -7,10 +7,13 @@ import os
 import sys
 from shutil import copyfile
 
+curpath = "/home/scec-00/maechlin/icvm/test1/UCVMC"
+
 if len(sys.argv) < 2:
-  print "Add path to UCVMC install directory"
+  print "Using default as UCVMC install directory"
+  print "Override default using the command line"
   print "%stage_large_files.py /home/scec-00/maechlin/icvm/b1/UCVMC"
-  sys.exit(1)
+  src_dir = curpath
 else:
   src_dir = str(sys.argv[1])
 
