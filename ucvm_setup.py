@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-
-# Installs UCVM and models, if the user does not already have them installed.
-
-# Imports
+#
+# This is the install script for the UCVMC software framework.
+# This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
+# the required large files before this ucvm_setup script is run.
+#
+#
 import os
 import sys
 import getopt
@@ -95,7 +97,7 @@ def printPretty(list):
 # This makes three assumptions
 # (1) All required tar files are in the current_working_directory/work directory, and are gzipped
 # (2) All installs of type "model" go to ucvmpath/model
-# (3) All installs of type "libaray" go to ucvmpath/lib
+# (3) All installs of type "library" go to ucvmpath/lib
 #
 def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "\nInstalling " + type + " " + tarname
@@ -114,7 +116,12 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
             config_data["Path"] == "curl":
         strip_level = "1"
     
+    # 
     # We need to un-tar the file.
+    # The strip level determines how much of the path found in the tar file are removed.
+    # strip=1 will remove the proj-4.8.0/configure and output only configure.in 
+    # This enables us to untar into drictories with static names like proj-4
+    #
     print "Decompressing " + type
     callAndRecord(["gunzip", workpath + "/" + tarname])
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
@@ -315,11 +322,8 @@ except StandardError, e:
     eG(e, "Parsing available model list.")
 
 print "\nPlease answer the following questions to install UCVM.\n"
-print "Note that this install may take up to an hour depending on your"
-print "internet connection. Also, please note that this installation"
-print "can download up to 10GB of data, depending on the models"
-print "selected. We strongly advise that you start this installation"
-print "only if you have a very good internet connection.\n"
+print "Note that this install and build process may take up to an hour depending on your"
+print "computer speed."
 print "Where would you like UCVM to be installed?"
 
 try:
