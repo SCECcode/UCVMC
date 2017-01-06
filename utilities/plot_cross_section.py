@@ -74,9 +74,15 @@ def get_user_opts(options):
     else:
         return "bad"
 
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "e,depth":"depth", \
-                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color"})
+ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
+			"u,upperright":"lat2,lon2", \
+                         "s,starting":"starting_depth", \
+			  "e,ending":"ending_depth", \
+                         "d,datatype":"data_type", \
+			"c,cvm":"cvm_selected", \
+			"h,horizonatal":"horizontal_spacing", \
+			"v,vertical":"vertical_spacing", \
+			"a,scale": "color"})
 
 # Create a new UCVM object.
 u = UCVM()
