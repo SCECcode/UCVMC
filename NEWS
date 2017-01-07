@@ -1,3 +1,12 @@
+2017-01-15 Philip Maecling <maechlin@usc.edu>
+* moved codebase to github
+* changed name from UCVM to UCVMC to distinguish from python development version
+* reduced supported models to increase robustness
+* modified install procedure so re-install could be done without downloads
+
+2015-10-01 David Gill <davidgil@usc.edu>
+* Sept 2015 release
+
 2014-07-28 David Gill <davidgil@usc.edu>
 
 * Support for CVM-S5

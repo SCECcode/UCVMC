@@ -190,39 +190,6 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
-
-# Download a file with the progress indicator.
-def downloadWithProgress(url, folderTo, description):
-    u = urllib2.urlopen(url)
-    meta = u.info()
-    download_size = int(meta.getheaders("Content-Length")[0])
-    print "\n" + description
-    sys.stdout.write("[                    ]\r")
-    sys.stdout.flush()
-    call(["mkdir", "-p", folderTo])
-    f = open(folderTo + "/" + url.split('/')[-1], 'wb')
-    file_size_dl = 0
-    block_sz = 8192
-    while True:
-        buffer = u.read(block_sz)
-        if not buffer:
-            break
-        file_size_dl += len(buffer)
-        f.write(buffer)
-        p = float(file_size_dl) / download_size
-        numEquals = int(p / 0.05)
-        if p / 0.05 >= 19.5:
-            numEquals = 20
-        sys.stdout.write("[")
-        for i in range(0, numEquals):
-            sys.stdout.write("=")
-        for i in range(0, 20 - numEquals):
-            sys.stdout.write(" ")
-        sys.stdout.write("]  %d%%\r" % (p * 100))
-        sys.stdout.flush()
-    f.close()
-    sys.stdout.write("\n")
-    sys.stdout.flush()
 #
 # Start of main method.
 # Read in the possible arguments
@@ -253,11 +220,7 @@ print ""
 print "UCVM %s Installation" % VERSION
 print "Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0])
 
-#try:
-#    downloadWithProgress(SYSTEM_FILE, "./", "Downloading system list...")
-#except StandardError, e:
-#    eG(e, "Downloading system list from SCEC server.")
-print "Using local setup.list and system.list rather than download...."
+print "Using local setup.list and system.list ...."
     
 try:
     f = open("./system.list", "r")
@@ -306,10 +269,6 @@ if error_out == True:
     print "\nError(s) encountered. Please resolve the above errors and re-run this script."
     exit(1)
     
-#try:
-#    downloadWithProgress(SETUP_FILE, "./", "Downloading list of available models...")
-#except StandardError, e:
-#    eG(e, "Downloading available model list.")
 print "Using local setup.list file"
     
 try:

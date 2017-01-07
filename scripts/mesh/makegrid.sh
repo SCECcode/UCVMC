@@ -1,5 +1,9 @@
 #!/bin/sh
-
+#
+# Creates and ASCII grid file with 
+# 3272481 mesh points and writes it to
+# file grd.out
+#
 HOR_SPACING=0.1
 VERT_SPACING=250
 MIN_DEPTH=0
