@@ -11,7 +11,9 @@ import os
 import sys
 from shutil import copyfile
 
-curpath = "/home/scec-00/maechlin/icvm/test2/UCVMC"
+#largefilepath = "." Use if the large files are in the current directory. Otherwise give a path to their location
+largefilepath = "/home/scec-00/maechlin/icvm/largefiles"
+curpath = "/home/scec-00/maechlin/icvm/test3/UCVMC"
 
 if len(sys.argv) < 2:
   print "Using default as UCVMC install directory"
@@ -62,7 +64,7 @@ if not os.path.exists(lib_dir):
 # Now move files one by one to destinations
 #
 for l in large_lib_list:
-  local_file = "./" + l 
+  local_file = largefilepath + "/" + l 
   target_file = lib_dir + "/" + l
   if not os.path.exists(target_file):
     print "Moving lib:",local_file
@@ -79,7 +81,7 @@ for l in large_lib_list:
     print "Target lib file already exists",target_file
 
 for m in large_model_list:
-  local_file = "./" + m
+  local_file = largefilepath + "/" + m
   target_file = model_dir + "/" + m
   if not os.path.exists(target_file):
     print "Moving model:",local_file
@@ -96,7 +98,7 @@ for m in large_model_list:
     print "Target model file already exists",target_file
 
 for e in large_etree_list:
-  local_file = "./" + e
+  local_file = largefilepath + "/" + e
   target_file = model_dir + "/" + e
   if not os.path.exists(target_file):
     print "Moving etree:",local_file

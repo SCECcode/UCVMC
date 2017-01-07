@@ -547,8 +547,8 @@ elif dynamic_flag == True:
 print "\nTo try out ucvm, type the following commands into your shell:"
 print "cd " + ucvmpath + "/bin"
 print "./ucvm_query -f ../conf/ucvm.conf -m [model] < list_of_points.txt"
-print "(where model is one of the models you installed: cvms, cvmsi, cvmh, or cencal)"
-print "\nPlease try this example:\ncd " + ucvmpath + "/bin\n./ucvm_query -f ../conf/ucvm.conf -m cvms < ../tests/cvms_input.txt"
+print "(where model is one of the models you installed: cvms, cvmsi, cvmh, or cencal)\n"
+print "\nPlease try this example:\ncd " + ucvmpath + "/bin\n./ucvm_query -f ../conf/ucvm.conf -m cvms < ../tests/test_latlons.txt"
 print "You will then see the following output:\nUsing Geo Depth coordinates as default mode."
 print " -118.0000    34.0000      0.000    280.896    390.000       cvms 696.491    213.000   1974.976       none      0.000      0.000 0.000      crust    696.491    213.000   1974.976"
 

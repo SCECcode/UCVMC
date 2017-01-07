@@ -74,7 +74,7 @@ accepttest: accepttest.o test_defs.o accepttest_suite_grid.o
 
 install:
 	mkdir -p ${prefix}/tests
-	cp ./cvms_input.txt ${prefix}/tests
+	cp ./test_latlons.txt ${prefix}/tests
 
 check: unittest accepttest
 	./unittest
