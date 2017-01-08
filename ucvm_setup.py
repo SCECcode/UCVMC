@@ -195,7 +195,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "adh", ["all", "dynamic", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "ash", ["all", "static", "help"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
@@ -204,8 +204,10 @@ except getopt.GetoptError, err:
 for o, a in opts:
     if o in ('-a', '--all'):
         all_flag = True
+	print "All Flag: True"
     elif o in ('-s', '--static'):
         dynamic_flag = False
+        print "static Flag: True"
     elif o in ('-h', '--help'):
         usage()
         exit(0)
