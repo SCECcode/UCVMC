@@ -21,7 +21,7 @@
 			"Version": "4.26",
 			"Path": "cvms426",
 			"URL": "http://hypocenter.usc.edu/research/ucvm/15.10.0/models/cvms426.tar.gz",
-			"Flags": "--enable-model-cvmsi --with-cvmsi-lib-path=lib --with-cvmsi-include-path=include --with-cvmsi-model-path=model",
+			"Flags": "--enable-model-cvmsi --with-cvmsi-lib-path=lib --with-cvmsi-include-path=include --with-cvmsi-model-path=model/i26",
 			"Ask": "yes",
 			"Order": "3"		
 		},
