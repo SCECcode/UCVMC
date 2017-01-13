@@ -80,7 +80,7 @@ check: unittest accepttest
 	cd ${prefix}/tests
 	./unittest
 	./accepttest
-	./accept_test.py ${prefix}
+	./accept_test.py ${prefix}/tests
 
 clean:
 	rm -rf *~ *.o unittest accepttest

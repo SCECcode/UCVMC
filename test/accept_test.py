@@ -7,16 +7,17 @@ import array
 import sys
 from subprocess import call, Popen, PIPE, STDOUT
 
+#
+# Call this script with the install directory
+# tests directory on the command line
+#
 def test_vs30_query(dir):
     # Basic vs30 test.
-    curdir = os.getcwd()
     os.chdir(dir)
     
     proc = Popen(["../bin/vs30_query", "-f", "../conf/ucvm.conf", "-m", "bbp1d", \
                   "-i", "0.1"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
     output = proc.communicate(input="-118 34\n-117 35")[0]
-    
-    os.chdir(curdir)
     
     expected_output =  " -118.0000    34.0000    843.189\n -117.0000    35.0000    843.189\n"
     
@@ -29,7 +30,9 @@ def test_vs30_query(dir):
 
 def test_ssh_generate(dir):
     # Basic small-scale heterogeneities validation.
-    proc = Popen([dir + "/bin/ssh_generate", "-u", "0.1", "-d", "20", "-l", "50", \
+    # writes result to install/tests directory
+    os.chdir(dir)
+    proc = Popen(["../bin/ssh_generate", "-u", "0.1", "-d", "20", "-l", "50", \
                   "-s", "5", "-a", "100", "-b", "100", "-c", "100", "-m", "ssh.out"], \
                   stdout=PIPE, stdin=PIPE, stderr=STDOUT)    
     output = proc.communicate()

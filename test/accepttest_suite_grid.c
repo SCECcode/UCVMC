@@ -25,7 +25,7 @@ int test_grid_tool_1d()
   sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-ucvm_query-1d.ref");
   
   if (test_assert_int(run_ucvm_query(".", 
-				     "../conf/test/ucvm.conf", 
+				     "../conf/ucvm.conf", 
 				     UCVM_MODEL_1D, "ucvm", 
 				     infile, outfile), 
 		      0) != 0) {
