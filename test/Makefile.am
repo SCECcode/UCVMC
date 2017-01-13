@@ -74,14 +74,13 @@ accepttest: accepttest.o test_defs.o accepttest_suite_grid.o
 
 install:
 	mkdir -p ${prefix}/tests
-	cp ./test_latlons.txt ${prefix}/tests
+	cp -R ./* ${prefix}/tests/.
 
 check: unittest accepttest
+	cd ${prefix}/tests
 	./unittest
 	./accepttest
 	./accept_test.py ${prefix}
 
 clean:
 	rm -rf *~ *.o unittest accepttest
-
-

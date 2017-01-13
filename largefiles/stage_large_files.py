@@ -37,11 +37,12 @@ large_lib_list = ["proj-4.8.0.tar.gz",
 
 large_etree_list = ["ucvm.e"]
 
-model_dir = src_dir + "/work/model"
-print model_dir
+work_model_dir = src_dir + "/work/model"
+print "Work model dir",work_model_dir
 lib_dir = src_dir + "/work/lib"
-print lib_dir
-
+print "Lib dir",lib_dir
+model_dir = src_dir + "/model"
+print "Model dir", model_dir
 #
 # Make sure target directories exists, if not create them
 #
@@ -52,9 +53,9 @@ if not os.path.exists(work_dir):
   print "Creating work_dir: ",work_dir
   os.makedirs(work_dir)
 
-if not os.path.exists(model_dir):
-  print "Creating model_dir: ", model_dir
-  os.makedirs(model_dir)
+if not os.path.exists(work_model_dir):
+  print "Creating work model_dir: ", work_model_dir
+  os.makedirs(work_model_dir)
 
 if not os.path.exists(lib_dir):
   print "Creating lib_dir: ", lib_dir
@@ -82,7 +83,7 @@ for l in large_lib_list:
 
 for m in large_model_list:
   local_file = largefilepath + "/" + m
-  target_file = model_dir + "/" + m
+  target_file = work_model_dir + "/" + m
   if not os.path.exists(target_file):
     print "Moving model:",local_file
     copyfile(local_file,target_file)
@@ -90,16 +91,21 @@ for m in large_model_list:
     # remove existing tar file so gzip doesn't ask for permisson
     #
     tarfile = os.path.splitext(os.path.basename(m))[0]
-    tarfilepath = model_dir + "/" + tarfile
+    tarfilepath = work_model_dir + "/" + tarfile
     if os.path.exists(tarfilepath):
       print "Removing existing model tar file",tarfilepath
       os.remove(tarfilepath)
   else:
     print "Target model file already exists",target_file
 
+#
+# UCVM.e file is staged in the model/ucvm directory
+# not the work/ucvm directory. This current script
+# works only for ucvm.e due to hardcoded directory name
+#
 for e in large_etree_list:
   local_file = largefilepath + "/" + e
-  target_file = model_dir + "/" + e
+  target_file = model_dir + "/ucvm/" + e
   if not os.path.exists(target_file):
     print "Moving etree:",local_file
     copyfile(local_file,target_file)

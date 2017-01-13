@@ -105,7 +105,7 @@ int test_grid_lib_1d()
   }
 
   /* Setup UCVM */
-  if (ucvm_init("../conf/test/ucvm.conf") != UCVM_CODE_SUCCESS) {
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
     fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
     free(pnts);
     free(data);

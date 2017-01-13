@@ -521,5 +521,3 @@ except StandardError, e:
     eG(e, "Saving setup_log.sh.")
     
 print "\nA copy of all the commands to setup UCVM has been saved at ./setup_log.sh\n"
-
-print "You can view man pages for each command by typing man -M ./man [command name].\n"

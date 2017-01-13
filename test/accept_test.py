@@ -12,7 +12,7 @@ def test_vs30_query(dir):
     curdir = os.getcwd()
     os.chdir(dir)
     
-    proc = Popen(["./bin/vs30_query", "-f", "./conf/ucvm.conf", "-m", "bbp1d", \
+    proc = Popen(["../bin/vs30_query", "-f", "../conf/ucvm.conf", "-m", "bbp1d", \
                   "-i", "0.1"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
     output = proc.communicate(input="-118 34\n-117 35")[0]
     

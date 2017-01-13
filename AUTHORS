@@ -1,6 +1,6 @@
-Philip Maechling 	<maechlin@usc.edu> Move to github, remove experimental feature, document feature (2017)
-David Gill 		<davidgil@usc.edu> Extend, install script, add models through v15.10 (2013-2016)
 Patrick Small 		<patrices@usc.edu> Design, code, implementation (2010 - 2013)
+David Gill 		<davidgil@usc.edu> Extend, install script, add models through v15.10 (2013-2016)
+Philip Maechling 	<maechlin@usc.edu> Move to github, remove experimental feature, document feature (2017)
 
-All correspondance regarding UCVM should be directed to software@scec.org,
+All correspondance regarding UCVM should be directed to software@scec.org
 including suggestions, feature requests, and bug reports.
