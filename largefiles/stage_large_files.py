@@ -17,7 +17,7 @@ curpath = "/home/scec-00/maechlin/icvm/test3/UCVMC"
 
 if len(sys.argv) < 2:
   print "Using default as UCVMC install directory"
-  print "Override default using the command line"
+  print "User can Override the default largefiles directory using the command line like this:"
   print "%stage_large_files.py /home/scec-00/maechlin/icvm/b1/UCVMC"
   src_dir = curpath
 else:
@@ -37,12 +37,16 @@ large_lib_list = ["proj-4.8.0.tar.gz",
 
 large_etree_list = ["ucvm.e"]
 
+large_ref_list = ["test-grid-lib-1d.ref"]
+
 work_model_dir = src_dir + "/work/model"
 print "Work model dir",work_model_dir
 lib_dir = src_dir + "/work/lib"
 print "Lib dir",lib_dir
 model_dir = src_dir + "/model"
 print "Model dir", model_dir
+test_ref_dir = src_dir + "/test/ref"
+print "Test ref dir:",test_ref_dir
 #
 # Make sure target directories exists, if not create them
 #
@@ -95,6 +99,15 @@ for m in large_model_list:
     if os.path.exists(tarfilepath):
       print "Removing existing model tar file",tarfilepath
       os.remove(tarfilepath)
+  else:
+    print "Target model file already exists",target_file
+
+for r in large_ref_list:
+  local_file = largefilepath + "/" + r
+  target_file = test_ref_dir + "/" + r 
+  if not os.path.exists(target_file):
+    print "Moving ref file:",local_file
+    copyfile(local_file,target_file)
   else:
     print "Target model file already exists",target_file
 
