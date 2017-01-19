@@ -52,6 +52,14 @@ def eG(err, step):
     print "specifications about your computer.\n"
     exit(1)
 
+# Find out if we have certain executables installed.
+def which(file):
+    for path in os.environ["PATH"].split(":"):
+        if os.path.exists(path + "/" + file):
+            return path + "/" + file
+    return None
+
+
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script

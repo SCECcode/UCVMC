@@ -13,7 +13,7 @@ from shutil import copyfile
 
 #largefilepath = "." Use if the large files are in the current directory. Otherwise give a path to their location
 largefilepath = "/home/scec-00/maechlin/icvm/largefiles"
-curpath = "/home/scec-00/maechlin/icvm/test3/UCVMC"
+curpath = "/home/scec-00/maechlin/icvm/test5/UCVMC"
 
 if len(sys.argv) < 2:
   print "Using default as UCVMC install directory"
