@@ -20,12 +20,7 @@ import shlex
 # Set the version number for the installation script.
 VERSION = "17.1.0"
 
-# The two configuration files for UCVM.
-#SETUP_FILE = "http://hypocenter.usc.edu/research/ucvmc/%s/setup.list" % VERSION
-#SYSTEM_FILE = "http://hypocenter.usc.edu/research/ucvmc/%s/system.list" % VERSION
-
 # User defined variables.
-reinstall_flag = False
 all_flag = False
 dynamic_flag = True
 use_iobuf = False
@@ -38,8 +33,6 @@ librariesToInstall = []
 modelPaths = {}
 unsupported_features = []
 shell_script = ""
-
-# Functions
 
 # Print usage.
 def usage():
@@ -58,13 +51,6 @@ def eG(err, step):
     print "please let us know the operating system on which you are running and some"
     print "specifications about your computer.\n"
     exit(1)
-
-# Find out if we have certain executables installed.
-def which(file):
-    for path in os.environ["PATH"].split(":"):
-        if os.path.exists(path + "/" + file):
-            return path + "/" + file
-    return None
 
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
