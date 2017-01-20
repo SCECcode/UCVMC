@@ -26,31 +26,6 @@ if UCVM_AM_ENABLE_CVMSI
 CHANGE_LIST += cvmsi_model
 endif
 
-# CVM-NCI config
-if UCVM_AM_ENABLE_CVMNCI
-CHANGE_LIST += cvmnci_model
-endif
-
-# WFCVM config
-if UCVM_AM_ENABLE_WFCVM
-CHANGE_LIST += wfcvm_model
-endif
-
-# CVMLT config
-if UCVM_AM_ENABLE_CVMLT
-CHANGE_LIST += cvmlt_model
-endif
-
-# CMRG config
-if UCVM_AM_ENABLE_CMRG
-CHANGE_LIST += cmrg_model
-endif
-
-# Tape config
-if UCVM_AM_ENABLE_TAPE
-CHANGE_LIST += tape_model
-endif
-
 # SED Command
 if USER_MAC
 SED = sed -i ''
@@ -89,27 +64,6 @@ cvms_model: ucvm.conf
 cvmsi_model: ucvm.conf
 	${SED} "s,#cvmsi_modelpath,cvmsi_modelpath,g" $^
 	${SED} "s,CVMSI_MODEL,${CVMSI_MODEL},g" $^
-
-cvmnci_model: ucvm.conf
-	${SED} "s,#cvmnci_modelpath,cvmnci_modelpath,g" $^
-	${SED} "s,CVMNCI_MODEL,${CVMNCI_MODEL},g" $^
-
-wfcvm_model: ucvm.conf
-	${SED} "s,#wfcvm_modelpath,wfcvm_modelpath,g" $^
-	${SED} "s,WFCVM_MODEL,${WFCVM_MODEL},g" $^
-
-cvmlt_model: ucvm.conf
-	${SED} "s,#cvmlt_modelpath,cvmlt_modelpath,g" $^
-	${SED} "s,CVMLT_MODEL,${CVMLT_MODEL},g" $^
-
-cmrg_model: ucvm.conf
-	${SED} "s,#cmrg_modelpath,cmrg_modelpath,g" $^
-	${SED} "s,CMRG_MODEL,${CMRG_MODEL},g" $^
-
-tape_model: ucvm.conf
-	${SED} "s,#tape_modelpath,tape_modelpath,g" $^
-	${SED} "s,TAPE_MODEL,${TAPE_MODEL},g" $^
-
 
 install:
 	mkdir -p ${prefix}/conf
