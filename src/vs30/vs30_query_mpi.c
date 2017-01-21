@@ -27,7 +27,7 @@ extern int optind, opterr, optopt;
 
 /* Display usage information */
 void usage() {
-	printf("Usage: vs30_query_mpi [-h] [-b outfile] [-m models<:ifunc>] [-f config] [-i inter] ");
+	printf("Usage: vs30_query_mpi [-h] [-b outfile] [-m models] [-f config] [-i inter] ");
 	printf("[-l lon,lat] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
 	printf("where:\n");
 	printf("\t-b Binary output to file.\n");
@@ -45,35 +45,33 @@ void usage() {
 }
 
 int vs30_query(int points, ucvm_point_t *pnts, float *outvs30) {
+  int p = 0;
+  int i = 0;
+  ucvm_point_t query_pt;
+  ucvm_data_t query_data;
 
-	int p = 0;
-	int i = 0;
-	ucvm_point_t query_pt;
-	ucvm_data_t query_data;
+  double vs_sum = 0.0;
+  double vs = 0.0;
+        
+  for (p = 0; p < points; p++) {
+     vs_sum = 0.0;
+     vs = 0.0;
 
-	double vs_sum = 0.0;
-	double vs = 0.0;
+     query_pt.coord[0] = pnts[p].coord[0];
+     query_pt.coord[1] = pnts[p].coord[1];
 
-	for (p = 0; p < points; p++) {
-		query_pt.coord[0] = pnts[p].coord[0];
-		query_pt.coord[1] = pnts[p].coord[1];
-
-		for (i = 0; i < 30; i++) {
-			query_pt.coord[2] = i;
-			if (ucvm_query(1, &query_pt, &query_data) != UCVM_CODE_SUCCESS) {
-				fprintf(stderr, "UCVM query failed.\n");
-				exit(-3);
-			}
-			vs_sum += 1.0/query_data.cmb.vs;
-		}
-
-		vs = 30/vs_sum;
-
-		outvs30[p] = vs;
-	}
-
-	return UCVM_CODE_SUCCESS;
-
+     for (i = 0; i < 30; i++) {
+       query_pt.coord[2] = i;
+       if (ucvm_query(1, &query_pt, &query_data) != UCVM_CODE_SUCCESS) {
+         fprintf(stderr, "UCVM query failed.\n");
+         exit(-3);
+       }                
+     vs_sum += 1.0/query_data.cmb.vs;
+     }                          
+     vs = 30/vs_sum;
+     printf(OUTPUT_FMT, pnts[p].coord[0], pnts[p].coord[1], vs);
+  }
+  return UCVM_CODE_SUCCESS;
 }
 
 int main(int argc, char **argv) {
@@ -90,7 +88,7 @@ int main(int argc, char **argv) {
 	int have_model = 0;
 	int have_map = 0;
 
-	int numread = 0;
+	/* int numread = 0; */
 	char map_label[UCVM_MAX_LABEL_LEN];
 	char *binary_outfile = malloc(512 * sizeof(char));
 
