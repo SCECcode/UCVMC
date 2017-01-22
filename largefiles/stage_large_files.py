@@ -11,9 +11,14 @@ import os
 import sys
 from shutil import copyfile
 
-#largefilepath = "." Use if the large files are in the current directory. Otherwise give a path to their location
-largefilepath = "/home/scec-00/maechlin/icvm/largefiles"
-curpath = "/home/scec-00/maechlin/icvm/test5/UCVMC"
+# These two paths specify the location of the largefiles, and the src directory for ucvmc.
+# For standard installation, the default values can be used. The user only needs to edit
+# these paths if they are doing custom installation methods
+#
+#largefilepath = "/home/scec-00/maechlin/icvm/largefiles"
+#curpath = "/home/scec-00/maechlin/icvm/test5/UCVMC"
+largefilepath = "."
+curpath = ".."
 
 if len(sys.argv) < 2:
   print "Using default as UCVMC install directory"
