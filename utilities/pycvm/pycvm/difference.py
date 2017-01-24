@@ -8,6 +8,8 @@
 #  and can either save or plot the difference.
 
 #  Imports
+from mpl_toolkits import basemap
+from mpl_toolkits.basemap import cm
 from common import MaterialProperties, Plot, cm, np, basemap, plt
 
 ##
@@ -85,7 +87,7 @@ class Difference:
             # Call the plot object.
             p = Plot(title, "", "", None, 10, 10)
             
-            colormap = cm.RdBu
+            colormap = basemap.cm.GMT_seis
         
             m = basemap.Basemap(projection='cyl', llcrnrlat=self.plot_specs.bottomrightpoint.latitude, \
                                 urcrnrlat=self.plot_specs.upperleftpoint.latitude, \
@@ -137,7 +139,7 @@ class Difference:
             # Call the plot object.
             p = Plot(None, None, None, None, 10, 10)
 
-            colormap = cm.RdBu
+            colormap = basemap.cm.GMT_seis
 
             plt.axes([0.1,0.7,0.8,0.25])
 

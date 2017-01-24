@@ -8,6 +8,8 @@
 #  arguments, or through Python code in the class HorizontalSlice.
 
 #  Imports
+from mpl_toolkits import basemap
+from mpl_toolkits.basemap import cm
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
@@ -138,14 +140,14 @@ class HorizontalSlice:
             TICKS = [tick * 1.7 for tick in TICKS]
             
         if color_scale == "s":
-            colormap = cm.RdBu
+            colormap = basemap.cm.GMT_seis
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
-            colormap = cm.RdBu
+            colormap = basemap.cm.GMT_seis
             norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
             TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
         else:
-            colormap = pycvm_cmapDiscretize(cm.RdBu, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \

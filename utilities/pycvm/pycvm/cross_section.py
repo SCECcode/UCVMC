@@ -7,6 +7,8 @@
 #  Allows for generation of a cross section between two points.
 
 #  Imports
+from mpl_toolkits import basemap
+from mpl_toolkits.basemap import cm
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
@@ -136,14 +138,14 @@ class CrossSection:
             TICKS = [tick * 1.7 for tick in TICKS]
 
         # Set default colormap and range
-        colormap = cm.RdBu
+        colormap = basemap.cm.GMT_seis
         norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         try:
             if color_scale == "s":
-                colormap = cm.RdBu
+                colormap = basemap.cm.GMT_seis
                 norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
         except:
-            colormap = pycvm_cmapDiscretize(cm.RdBu, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
     
         plt.axes([0.1,0.7,0.8,0.25])
