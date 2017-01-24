@@ -134,7 +134,10 @@ class CrossSection:
         if property == "vp":
             BOUNDS = [bound * 1.7 for bound in BOUNDS]
             TICKS = [tick * 1.7 for tick in TICKS]
-    
+
+        # Set default colormap and range
+        colormap = cm.RdBu
+        norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         try:
             if color_scale == "s":
                 colormap = cm.RdBu
@@ -215,5 +218,7 @@ class CrossSection:
         else:
             cbar.set_label("Vp/Vs")
             
-        plt.show()
-        
+        #plt.show()
+        outname = "%s.png"%(filename)
+        print "Saving:",outname
+        plt.savefig(outname)
