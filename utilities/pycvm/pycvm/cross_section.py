@@ -219,8 +219,8 @@ class CrossSection:
             cbar.set_label(property.title() + " (km/s)")
         else:
             cbar.set_label("Vp/Vs")
-            
-        #plt.show()
-        outname = "%s.png"%(filename)
-        print "Saving:",outname
-        plt.savefig(outname)
+       
+        if filename:
+            plt.savefig(filename)
+        else:
+            plt.show() 
