@@ -499,11 +499,13 @@ elif dynamic_flag == True:
     print "We recommend adding the above lines to the end of your ~/.bashrc file so that"
     print "they are preserved for the next time you login."
     
-print "\nTo try out ucvm, type the following commands into your shell:"
-print "cd " + ucvmpath + "/bin"
-print "./ucvm_query -f ../conf/ucvm.conf -m [model] < list_of_points.txt"
-print "(where model is one of the models you installed: cvms, cvmsi, cvmh, or cencal)\n"
-print "\nPlease try this example:\ncd " + ucvmpath + "/bin\n./ucvm_query -f ../conf/ucvm.conf -m cvms < ../tests/test_latlons.txt"
+
+print "\nOnce you have set these environment variables, return to the UCVMC source directory and type"
+print "make check"
+print "This will run the UCVMC unite and acceptance tests. If all tests pass. UCVMC is correctly installed"
+print "and ready to use on your computer."
+print "\nTo try out ucvm, once the tests pass, move to the UCVMC installation directory, and run an example query."
+print "\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/test_latlons.txt"
 print "You will then see the following output:\nUsing Geo Depth coordinates as default mode."
 print " -118.0000    34.0000      0.000    280.896    390.000       cvms 696.491    213.000   1974.976       none      0.000      0.000 0.000      crust    696.491    213.000   1974.976"
 

@@ -30,14 +30,14 @@ The following velocity models and packages are included as part of a standard UC
 
 
 # 2.0 Installation
-The basic install of UCVMC is:
-% git clone https://github.com/SCECcode/UCVMC.git
-$ cd UCVMC/largefiles
-$ ./get_large_files.py
-$ ./check_largefiles_md5.py
-$ ./stage_large_files.py
-$ cd ..
-$ ./ucvm_setup.py
+Once the target computer has the required software tools installed, the basic install of UCVMC is:
+*  % git clone https://github.com/SCECcode/UCVMC.git
+*  $ cd UCVMC/largefiles
+*  $ ./get_large_files.py
+*  $ ./check_largefiles_md5.py
+*  $ ./stage_large_files.py
+*  $ cd ..
+*  $ ./ucvm_setup.py
 
 The, ucvm_setup.py script runs in a terminal window and print text questions to the user.  The user types answers to the questions presented by script in the terminal window. This install script asks the users which models you would like to install (CVM-H v15.1,CVM-S4, CVM-S4.26, CVM-S4.26.M01, and USGS CenCal). We recommend that the user installs all available models.
 
