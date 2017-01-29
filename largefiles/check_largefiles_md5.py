@@ -69,5 +69,5 @@ total_ok, total_errs = check_md5file("test-grid-lib-1d.ref.md5",total_ok, total_
 #
 # All largefiles checked
 #
-print "Checked:%d UCVM large files with: %d OK, and: %d errors"%((total_ok+total_errs),total_ok,total_errs)
+print "Checked %d UCVM large files with: %d OK, and: %d errors"%((total_ok+total_errs),total_ok,total_errs)
 sys.exit(0)

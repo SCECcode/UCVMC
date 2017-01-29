@@ -94,9 +94,9 @@ for m in large_model_list:
       print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
       break
     print "Finished downloading: ",m
-else:
-  print "Required largefile already exists in UCVMC/largefile directory",outfilename
-  print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+  else:
+    print "Required largefile already exists in UCVMC/largefile directory",outfilename
+    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
 
 #
 # Next download the topography and vs30 etree files
@@ -117,9 +117,9 @@ for m in large_etree_list:
       print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
       break
     print "Finished downloading: ",m
-else:
-  print "Required largefile already exists in UCVMC/largefile directory",outfilename
-  print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+  else:
+    print "Required largefile already exists in UCVMC/largefile directory",outfilename
+    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
 
 #
 # Download the large reference result file
@@ -139,9 +139,9 @@ for m in large_ref_list:
       print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
       break
     print "Finished downloading: ",m
-else:
-  print "Required largefile already exists in UCVMC/largefile directory",outfilename
-  print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+  else:
+    print "Required largefile already exists in UCVMC/largefile directory",outfilename
+    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
 
 print "Completed all required downloads. This computer is now ready to build and install the UCVMC programs and scripts."
 sys.exit(0)
