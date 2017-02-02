@@ -43,8 +43,7 @@ The ucvm_setup.py script runs in a terminal window and prints text questions to 
 
 The script will then automatically compile, build, and install the selected models.
 
-# 3.0 Technical Notes
-## 3.1 MPI Compilers
+# 3.0 MPI Compilers and UCVM Programs
 
 If a GNU-based MPI compiler is detected, the MPI version of several utilities are created, including ucvm2mesh_mpi, ucvm2etree_mpi, and basin_query_mpi are built. Otherwise, only the serial versions for these programs are built.
 
@@ -58,22 +57,22 @@ In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf. However,
 # 5.0 Standard Models and Maps
 The CVM models available through UCVMC are assigned abbreviations, and these abbreviatioins are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
 
-Model Name | UCVM Abbreviation
------------|------------------
-CVM-H      | cvmh
-CVM-S4     | cvms
-CVM-S4.26  | cvms5
-CVM-S4.26.M01 | cvmsi
-USGS Bay Area | cencal
-Modified Hadley Kanamori 1D  | 1d
-Northridge Region 1D | bbp1d
+Model Name | Description | UCVM Abbreviation
+-----------|-------------|------------------
+CVM-H      | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh
+CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
+CVM-S4.26  | Tomography improved version of CVM-S4 with no geotechnical layer | cvms5
+CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
+USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
+Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
+Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
 
 A state-wide California standard topography map is distribued with UCVMC. This is a statewide
 topography map, that also includes statewide Vs30 values, combined into an etree structure.
 
-Toopgrahy and Vs30 Map Name | UCVM Abbreviation
-----------------------------|------------------
-USGS NED DEM and Wills-Wald Vs30 | ucvm
+Toopgrahy and Vs30 Map Name | Description | UCVM Abbreviation
+----------------------------|-------------|------------------
+USGS NED DEM and Wills-Wald Vs30 | California elevation and Vs30 data in etree format | ucvm
 
 # 6.0 Documentation
 Online UCVMC documentation is available at:
