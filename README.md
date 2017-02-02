@@ -7,37 +7,37 @@ The UCVMC source code repository contains the reference implementation of the or
 
 # 1.0 System and Software Requirements
 
-The system requirements are as follows: 
+The reference software version used to develop and test this version includes the following vesion. Other versions of the required software packages may work, but this is the reference collection of software:
 
-- UNIX operating system (Linux and Mac OS X) 
-- GNU gcc/gfortran compilers (MPI wrappers such as mpicc are OK) 
-- Python 2.5+
-- tar for opening the compressed files 
-- Euclid Etree library: http://www.cs.cmu.edu/~euclid/
-- Proj.4 projection library: http://trac.osgeo.org/proj/
+*  Linux operating system (e.g. CentOS 7 Linux) x86_64-linux 
+*  GNU gcc/gfortran compilers version 4.8.5
+*  Python 2.7.11 (Anaconda 4.0.0 (64-bit)
+*  Autotools build software for Linux
+*  Euclid Etree library: http://www.cs.cmu.edu/~euclid/ (provided during installation)
+*  Proj.4 projection library: http://trac.osgeo.org/proj/ (provided during installation)
 
-Target Software Stack includes:
-* OS: x86_64-redhat-linux
-* Autotools build software stack for linux
-* gcc version 4.8.5 20150623 (Red Hat 4.8.5-4) (GCC)
-* Python 2.7.11 |Anaconda 4.0.0 (64-bit)| (default, Dec  6 2015, 18:08:32) 
-* [GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux2
+Optional Software for building MPI binaries:
+*  mpich 1.2.6
+*  openmpi 1.8.8
 
-The following velocity models and packages are included as part of a standard UCVMC installation.
-
-- Standard community velocity models: SCEC CVM-H v15.1, SCEC CVM-S4, SCEC CVM-S4.26, 
-  SCEC CVM-S4.26.M01, USGS BayArea Velocity Model 0.8.3
-
+The following California velocity models packages are included as part of a standard UCVMC installation.
+*  SCEC CVM-H v15.1
+*  SCEC CVM-S4
+*  SCEC CVM-S4.26
+*  SCEC CVM-S4.26.M01
+*  USGS BayArea Velocity Model 0.8.3
+*  Southern California 1D Velocity Model
+*  Northridge Region 1D Velocity Model
 
 # 2.0 Installation
 Once the target computer has the required software tools installed, the basic install of UCVMC is:
-*  % git clone https://github.com/SCECcode/UCVMC.git
-*  $ cd UCVMC/largefiles
-*  $ ./get_large_files.py
-*  $ ./check_largefiles_md5.py
-*  $ ./stage_large_files.py
-*  $ cd ..
-*  $ ./ucvm_setup.py
+*  git clone https://github.com/SCECcode/UCVMC.git
+*  cd UCVMC/largefiles
+*  ./get_large_files.py
+*  ./check_largefiles_md5.py
+*  ./stage_large_files.py
+*  cd ..
+*  ./ucvm_setup.py
 
 The, ucvm_setup.py script runs in a terminal window and print text questions to the user.  The user types answers to the questions presented by script in the terminal window. This install script asks the users which models you would like to install (CVM-H v15.1,CVM-S4, CVM-S4.26, CVM-S4.26.M01, and USGS CenCal). We recommend that the user installs all available models.
 
@@ -50,30 +50,32 @@ If a GNU-based MPI compiler is detected, the MPI version of several utilities ar
 
 # 4.0 Configuration
 The main application configuration file is ${UCVM_INSTALL_DIR}/conf/ucvm.conf. 
-This is where the paths to all configured models and maps are specified, as  well as any model flags are defined. The UCVM installer sets up this ucvm.conf file  automatically.
+This is where the paths to all configured models and maps are specified, as  well as any model flags are defined. The UCVM installer sets up this ucvm.conf file automatically.
 
 In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf In some circumstatnces, such as if you move the UCVMC installation directory, or if you want to configure the behavior of the CVM-H model, you might want to edit the ucvm.conf file. Please see the User Guide for more details on how to edit the UCVM config.
 
 # 5.0 Standard Models and Maps
 The CVM models available through UCVMC are referenced with the following labels:
 
-cvmh	     	    SCEC CVM-H
-cvms	     	    SCEC CVM-S4
-cmvs5           SCEC CVM-S4.26
-cvmsi           SCEC CVM-S4.26.M01
-cencal	     	  USGS Bay Area CenCalVM
-1d		          Hadley-Kanamori 1D (pre-linked)
-bbp1d           Los Angeles Basin Model
+*  cvmh	     	   SCEC CVM-H
+*  cvms	     	   SCEC CVM-S4
+*  cmvs5           SCEC CVM-S4.26
+*  cvmsi           SCEC CVM-S4.26.M01
+*  cencal	   USGS Bay Area CenCalVM
+*  1d		   Modified Hadley-Kanamori 1D Velocity Model
+*  bbp1d           Northridge Region 1D Velocity Model
 
 A state-wide California standard topography map is distribued with UCVMC. This is a statewide
 topography map, that also includes statewide Vs30 values, combined into an etree structure.
 
-ucvm	     USGS NED DEM and Wills-Wald Vs30 (default)
+*  ucvm	     USGS NED DEM and Wills-Wald Vs30 (default)
 
 # 6.0 Documentation
 Online UCVMC documentation is available at:
+*  https://github.com/SCECcode/UCVMC/wiki
 
-http://scec.usc.edu/scecpedia/UCVMC
+Additional documentation on previous version of UCVM are posted at:
+*  http://scec.usc.edu/scecpedia/UCVMC
 
 # 7.0 License
 UCVMC is released under the Apache 2.0 license. Please see LICENSE for the distribution license and disclaimers.

@@ -1,12 +1,9 @@
 License
 =======
 
-Copyright (c)2014 Southern California Earthquake Center (SCEC) and the
+Copyright (c)2014-2017 Southern California Earthquake Center (SCEC) and the
 University of Southern California (USC). This copyright applies to the UCVM 
-codebase as a whole, or any individual distributed applications. The 
-individual contributions of government employees, which may be identified 
-on a per-file basis using Subversion (SVN) (see developer site), are in the 
-public domain. 
+codebase as a whole, or any individual distributed applications.
 
 The software and content provided on this website are made available under the 
 terms of the Apache License, Version 2.0. A copy of the License is provided by 
@@ -269,7 +266,7 @@ Apache 2.0 License
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2014 Southern California Earthquake Center and the
+   Copyright 2014-2017 Southern California Earthquake Center and the
    University of Southern California
 
    Licensed under the Apache License, Version 2.0 (the "License");
