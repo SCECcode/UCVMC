@@ -151,12 +151,12 @@ else:
 
     data_type = ""
 
-    while data_type != "vs" and data_type != "vp" and data_type != "rho" and data_type != "poisson":
-        data_type = raw_input("What would you like to plot (either vp, vs, rho, or poisson): ")
+    while data_type != "vs" and data_type != "vp" and data_type != "density":
+        data_type = raw_input("What would you like to plot (either vp, vs, or density): ")
         data_type = data_type.lower().strip()
     
-        if data_type != "vs" and data_type != "vp" and data_type != "rho" and data_type != "poisson":
-            print "Error: you must select either 'vp', 'vs', 'rho', 'poisson' (without quotation marks)."
+        if data_type != "vs" and data_type != "vp" and data_type != "density":
+            print "Error: you must select either 'vp', 'vs', 'density' (without quotation marks)."
 
     # Ask which CVMs to use.
     print "\nFrom which CVM would you like this data to come:"
