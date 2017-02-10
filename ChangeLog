@@ -1,4 +1,5 @@
 2017-01-30 Philip Maechling <maechlin@usc.edu>
+
 * Moved distrbituion to github repository
 * Renamed codebase to UCVMC as C-language version of UCVM
 * Removed unsupported models and features
@@ -8,7 +9,7 @@
 * Modified make check to run from source directory
 * Changed default UCVMC/conf/ucvm.conf to remove unused models
 * Changed default CVM-H setting to no background model, and no GTL
-* Changed default CVM-S5 to no GTL
+* Changed default CVM-S5 to no GTL, and no background model
 
 2014-07-28 David Gill <davidgil@usc.edu>
 
