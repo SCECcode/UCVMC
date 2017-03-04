@@ -114,9 +114,7 @@ test/unittest
 utilities/Makefile
 utilities/Makefile.in
 work/
-install_inputs.txt
 install_results.log
-install_static_log.txt
 src/basin/basin_query_mpi
 src/ucvm2etree/ucvm2etree-extract-MPI
 src/ucvm2etree/ucvm2etree-merge-MPI

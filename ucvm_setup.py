@@ -507,7 +507,12 @@ print "and ready to use on your computer."
 print "\nTo try out ucvm, once the tests pass, move to the UCVMC installation directory, and run an example query."
 print "\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/test_latlons.txt"
 print "You will then see the following output:\nUsing Geo Depth coordinates as default mode."
-print " -118.0000    34.0000      0.000    280.896    390.000       cvms 696.491    213.000   1974.976       none      0.000      0.000 0.000      crust    696.491    213.000   1974.976"
+print " -118.0000    34.0000      0.000    280.896    390.000       cvms    696.491    213.000   1974.976       none      0.000      0.000      0.000      crust    696.491    213.000   1974.976"
+print " -118.0000    34.0000     50.000    280.896    390.000       cvms   1669.540    548.000   2128.620       none      0.000      0.000      0.000      crust   1669.540    548.000   2128.620"
+print " -118.0000    34.0000    100.000    280.896    390.000       cvms   1683.174    603.470   2130.773       none      0.000      0.000      0.000      crust   1683.174    603.470   2130.773"
+print "-118.0000    34.0000    500.000    280.896    390.000       cvms   3097.562   1656.495   2354.105       none      0.000      0.000      0.000      crust   3097.562   1656.495   2354.105"
+print " -118.0000    34.0000   1000.000    280.896    390.000       cvms   3660.809   2056.628   2443.042       none      0.000      0.000      0.000      crust   3660.809   2056.628   2443.042"
+
 
 try:
     f = open('./setup_log.sh', 'w')
