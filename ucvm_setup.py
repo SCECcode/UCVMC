@@ -521,4 +521,4 @@ try:
 except StandardError, e:
     eG(e, "Saving setup_log.sh.")
     
-print "\nA copy of all the commands to setup UCVM has been saved at ./setup_log.sh\n"
+print "\nInstallation complete. Installation log file saved at ./setup_log.sh\n"
