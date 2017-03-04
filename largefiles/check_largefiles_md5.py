@@ -69,5 +69,14 @@ total_ok, total_errs = check_md5file("test-grid-lib-1d.ref.md5",total_ok, total_
 #
 # All largefiles checked
 #
-print "Checked %d UCVM large files with: %d OK, and: %d errors"%((total_ok+total_errs),total_ok,total_errs)
+print "Checked %d UCVM large files with: %d OK, and: %d errors\n"%((total_ok+total_errs),total_ok,total_errs)
+print "Next, run ./stage_large_files.py to move the largefiles in the source code subdirectories."
+print "Next, cd .. to move into the parent directory, the UCVM source home directory."
+print "Next, run ./ucvm_setup.py which will start the configure, make, install process."
+print "This script will ask the user several questions:"
+print "First, it will ask the user to enter a path to the UCVM installation directory."
+print "The user should specify a path to a directory that has at least 20GB of free disk space."
+print "Next, it will ask the user which models to install. The user will enter: yes (y), or no (n) to each model."
+print "We recommend saying yes (y) to all models, so all tests and examples in the distribution will work."
+print "You may want to exlude some models to save disk space or installation time."
 sys.exit(0)
