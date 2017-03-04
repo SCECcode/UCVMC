@@ -143,5 +143,14 @@ for m in large_ref_list:
     print "Required largefile already exists in UCVMC/largefile directory",outfilename
     print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
 
-print "Completed all required downloads. This computer is now ready to build and install the UCVMC programs and scripts."
+print "Completed all required downloads to build the UCVMC programs"
+print "Next, run ./check_largefiles_md5.py to verify you have the correct largefiles."
+print "Next, run ./stage_largefiles.py to move the largefiles in the source code subdirectories."
+print "Next, cd .. to move into the parent directory, the UCVM source home directory."
+print "Next, run ./ucvm_setup.py which will start the configure, make, install process."
+print "This script will ask the user several questions:"
+print "First, it will as the user to enter a path to the UCVM installationd directory. This requires 20GB of free disk space."
+print "Next, it will ask the user which models to install. The user enter yes (y) or no (n) to each model."
+print "We recommend accepting (saying yes) to all models. Then all tests and examples in the distribution will work."
+print "Some users may want to exlude some models to save disk space or installation time."
 sys.exit(0)
