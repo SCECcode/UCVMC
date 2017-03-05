@@ -1,0 +1,50 @@
+gzip: ./work/lib/euclid3-1.3.tar.gz: No such file or directory
+
+UCVM 17.1.0 Installation
+Copyright (C) 2017 SCEC. All rights reserved.
+Using local setup.list and system.list ....
+Now check system specific conditions.
+System_data - k:  h2ologin
+System_data - k:  all
+Using local setup.list file
+
+Please answer the following questions to install UCVM.
+
+Note that this install and build process may take up to an hour depending on your
+computer speed.
+Where would you like UCVM to be installed?
+(Default: /home/rcf-01/maechlin/ucvm-17.1.0)
+Enter path or blank to use the default path: 
+Would you like to download and install CVM-S4?
+Enter yes or no: 
+Would you like to download and install CVM-S4.26?
+Enter yes or no: 
+Would you like to download and install CVM-S4.26.M01?
+Enter yes or no: 
+Would you like to download and install CVM-H?
+Enter yes or no: 
+Would you like to download and install CenCalVM?
+Enter yes or no: 
+You have indicated that you would like to download and install
+CVM-S4, CVM-S4.26, CVM-S4.26.M01, CVM-H, and CenCalVM
+
+You have indicated that you would like to download and install
+Euclid3, Proj4, and FFTW
+
+Now setting up the required UCVM libraries...
+Calling URL Install with tarname,ucvmpath,library: euclid3-1.3.tar.gz /home/scec-00/maechlin/t1
+
+Installing library euclid3-1.3.tar.gz
+Decompressing library
+
+ERROR:
+An error occurred while trying to setup UCVM. Specifically, the error was:
+
+Error executing command.
+
+At step: ['gunzip', u'./work/lib/euclid3-1.3.tar.gz']
+
+Please contact software@scec.org for assistance setting up UCVM. In your message,
+please let us know the operating system on which you are running and some
+specifications about your computer.
+

@@ -44,12 +44,12 @@ except StandardError, e:
 ## Known CVMs that can be installed with UCVM.
 UCVM_CVMS = {"1d":"1D", \
              "1dgtl":"1D w/ Vs30 GTL", \
-             "bbp1d":"Broadband Whittier Narrows 1D Model", \
+             "bbp1d":"Broadband Northridge Region 1D Model", \
              "cvms":"CVM-S4", \
-             "cvmh":"CVM-H 11.9.1", \
-             "cencal":"USGS Bay Area Model", \
-             "cvmsi":"CVM-S4.26",
-             "cvms5":"CVM-S5"}
+             "cvms5":"CVM-S4.26", \
+             "cvmsi":"CVM-S4.26.M01", \
+             "cvmh":"CVM-H 15.1.0", \
+             "cencal":"USGS Bay Area Model"}
 
 ## Constant for all material properties.
 ALL_PROPERTIES = ["vp", "vs", "density"]
@@ -61,7 +61,7 @@ VP = ["vp"]
 DENSITY = ["density"]
 
 ## Version string.
-VERSION = "14.7.0"
+VERSION = "17.1.0"
 
 #  Class Definitions
 
