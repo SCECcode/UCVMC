@@ -63,6 +63,8 @@ def which(file):
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script
+#MEI
+    print '  ==> command used.. '+'_'.join(command)
     if nocall == False:
         retVal = call(command)
         if not retVal == 0:
@@ -86,14 +88,24 @@ def printPretty(list):
             buffer += " and "
     print buffer
 
+# create matching install directory from the build directory
+# base on configure's prefix
+# MEI
+def createInstallTargetPath( targetpath ):
+  print 'ADDING '+targetpath
+  if not os.path.exists(targetpath):
+    call(["mkdir", "-p", targetpath])
+
 # Install with the configure, make, make install paradigm.
 #
 # This makes three assumptions
 # (1) All required tar files are in the current_working_directory/work directory, and are gzipped
 # (2) All installs of type "model" go to ucvmpath/model
 # (3) All installs of type "library" go to ucvmpath/lib
+
 #
 def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
+
     print "\nInstalling " + type + " " + tarname
     pathname = "lib"
     if type == "model":
@@ -121,6 +133,8 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
     callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
+# MEI.. zip it backup
+    callAndRecord(["gunzip", (workpath  + "/" + tarname).replace(".gz", "")])
 
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
@@ -145,6 +159,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "\nRunning ./configure"
     
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
+    createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
     if config_data["Path"] == "cvms5":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
@@ -309,6 +324,12 @@ while enteredpath is not "":
     
 # Copy final selected path back to the UCVM path variable.
 ucvmpath = enteredpath
+
+###MEI... create necessary directories
+if not os.path.exists(ucvmpath):
+  call(["mkdir", "-p", ucvmpath])
+  call(["mkdir", "-p", ucvmpath+'/work'])
+  call(["mkdir", "-p", ucvmpath+'/lib'])
     
 for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
     if config_data["models"][model]["Ask"] != "no" or all_flag == True:

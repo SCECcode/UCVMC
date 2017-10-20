@@ -67,7 +67,9 @@ cvmsi_model: ucvm.conf
 
 install:
 	mkdir -p ${prefix}/conf
-	cp ucvm.conf ${prefix}/conf
+	if ! test . -ef ${prefix}/conf; then \
+                cp ucvm.conf ${prefix}/conf; \
+        fi
 
 clean:
 	rm -rf ucvm.conf
