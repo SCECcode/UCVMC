@@ -129,12 +129,14 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     # This enables us to untar into drictories with static names like proj-4
     #
     print "Decompressing " + type
-    callAndRecord(["gunzip", workpath + "/" + tarname])
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
-    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
+    callAndRecord(["tar", "zxvf", workpath  + "/" + tarname, "-C", workpath + "/" + config_data["Path"], \
+#    callAndRecord(["gunzip", workpath + "/" + tarname])
+#    callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
+#    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
 # MEI.. zip it backup
-    callAndRecord(["gzip", (workpath  + "/" + tarname).replace(".gz", "")])
+#    callAndRecord(["gzip", (workpath  + "/" + tarname).replace(".gz", "")])
 
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
