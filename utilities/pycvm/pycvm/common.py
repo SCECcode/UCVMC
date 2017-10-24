@@ -20,7 +20,7 @@ import getopt
 try:
     import numpy as np
 except StandardError, e:
-    print "ERROR: NumPy and Matplotlib must be installed on your system in order to generate these plots."
+    print "ERROR: NumPy must be installed on your system in order to generate these plots."
     exit(1)
     
 #  Matplotlib is required.
@@ -29,14 +29,14 @@ try:
     import matplotlib.colors as mcolors
     import matplotlib.cm as cm
 except StandardError, e:
-    print "ERROR: NumPy and Matplotlib must be installed on your system in order to generate these plots."
+    print "ERROR: Matplotlib must be installed on your system in order to generate these plots."
     exit(1)    
 
 #  Basemap is required.
 try:
     from mpl_toolkits import basemap
 except StandardError, e:
-    print "ERROR: Matplotlib Toolkit must be installed on your system in order to generate these plots."
+    print "ERROR: Basemap Toolkit must be installed on your system in order to generate these plots."
     exit(1)
 
 #  Constants
