@@ -9,7 +9,7 @@
 #  Plots a cross section given a set of command-line parameters.
 
 from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
 
 ## Prints usage statement.
 def usage():
@@ -201,4 +201,8 @@ print "Retrieving data. Please wait..."
 # Generate the horizontal slice.
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
-d.plot(data_type)
+if 'DISPLAY' in os.environ : 
+  d.plot(data_type)
+else:
+  d.plot(data_type,'cross_section.png')
+
