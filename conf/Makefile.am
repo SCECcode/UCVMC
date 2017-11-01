@@ -26,6 +26,11 @@ if UCVM_AM_ENABLE_CVMSI
 CHANGE_LIST += cvmsi_model
 endif
 
+# CVMS5 config
+if UCVM_AM_ENABLE_CVMS5
+CHANGE_LIST += cvms5_model
+endif
+
 # SED Command
 if USER_MAC
 SED = sed -i ''
@@ -36,7 +41,7 @@ SED = sed -i''
 endif
 
 .PHONY=cencal_model cencal_extmodel cvmh_model \
-	cvms_model cvmsi_model cvmnci_model \
+	cvms_model cvmsi_model cvms5_model cvmnci_model \
 	wfcvm_model cvmlt_model cmrg_model
 
 all: ${CHANGE_LIST}
@@ -64,6 +69,11 @@ cvms_model: ucvm.conf
 cvmsi_model: ucvm.conf
 	${SED} "s,#cvmsi_modelpath,cvmsi_modelpath,g" $^
 	${SED} "s,CVMSI_MODEL,${CVMSI_MODEL},g" $^
+
+cvms5_model: ucvm.conf
+	${SED} "s,#cvms5_modelpath,cvms5_modelpath,g" $^
+	${SED} "s,CVMS5_MODEL,${CVMS5_MODEL},g" $^
+
 
 install:
 	mkdir -p ${prefix}/conf
