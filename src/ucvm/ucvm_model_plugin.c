@@ -15,6 +15,13 @@
 	extern int cvms5_finalize;
 	extern int cvms5_version;
 #endif
+#ifdef _UCVM_ENABLE_CCA
+	extern int cca_init;
+	extern int cca_query;
+	extern int cca_finalize;
+	extern int cca_version;
+#endif
+
 #endif
 
 // Variables
@@ -106,6 +113,18 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
                 model_query = &cvms5_query;
                 model_finalize = &cvms5_finalize;
                 model_version = &cvms5_version;
+                if ((*model_init)(conf->config, conf->label) != 0) {
+                        fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
+                        return UCVM_CODE_ERROR;
+                }
+        }
+#endif
+#ifdef _UCVM_ENABLE_CCA
+        if (strcmp(conf->label, "cca") == 0) {
+                model_init = &cca_init;
+                model_query = &cca_query;
+                model_finalize = &cca_finalize;
+                model_version = &cca_version;
                 if ((*model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;

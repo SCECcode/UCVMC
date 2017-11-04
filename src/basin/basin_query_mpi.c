@@ -74,6 +74,8 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 		return (1);
 	}
 
+//printf("XXX query model with %d points",numz);
+
 	for (j = 0; j < numz; j++) {
 		if (qprops[j].cmb.vs >= vs_thresh) {
 			depths[0] = (double) j * z_inter;
@@ -262,6 +264,7 @@ int main(int argc, char **argv) {
 	currentline = rank;
 
 	while (currentline < ny) {
+printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
 		double tempDepths[2];
 		float *retDepths = malloc(nx * sizeof(float));
@@ -275,11 +278,14 @@ int main(int argc, char **argv) {
 			extract_basin_mpi(pnts, tempDepths, max_depth, z_inter, vs_thresh);
 
 			retDepths[i] = (float)tempDepths[0];
+// MEI, ORIGINAL
 
 			//printf("%f %f %f %d\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], rank);
 			//if (rank == 0) {
 				//printf("On index: %d\n", i);
 			//}
+printf("XXX index(%d) currentline(%d): %f %f %f, rank is=%d\n", i, currentline, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], rank);
+//if (rank == 0) { printf("On index: %d\n", i); }
 
 		}
 

@@ -50,6 +50,8 @@ total_ok, total_errs = check_md5file("cvms426.tar.gz.md5",total_ok,total_errs)
 total_ok, total_errs = check_md5file("cvms4.tar.gz.md5",total_ok,total_errs)
 
 total_ok, total_errs = check_md5file("cvms5.tar.gz.md5",total_ok,total_errs)
+
+total_ok, total_errs = check_md5file("CCA.tar.gz.md5",total_ok,total_errs)
 #
 # Check Library Files
 #

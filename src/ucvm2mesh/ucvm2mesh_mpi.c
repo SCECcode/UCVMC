@@ -512,6 +512,8 @@ int main(int argc, char **argv)
     }
   }
 
+  printf("[%d] XXX returning from here\n", myid);
+  fflush(stdout);
   /* Final sync */
   mpi_barrier();
   mpi_final("MPI Done");
