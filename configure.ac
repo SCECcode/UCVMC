@@ -497,6 +497,17 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, false)   
 fi
 
+   echo "Checking for SCEC CCA"
+   AC_CHECK_LIB(cca, cca_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, true)], [AC_MSG_ERROR(["SCEC CCA library not found; use --with-cca-lib-path"])],[-lproj -letree -lgfortran -lm])
+   AC_CHECK_HEADER(cca.h,[],[AC_MSG_ERROR(["SCEC CCA header not found; use --with-cca-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)   
+fi
+
+
 # Check optional SCEC CVM-NCI installation
 if test "x$enable_model_cvmnci" = xyes; then
    # Setup compiler/linker flags
