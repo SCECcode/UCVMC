@@ -80,6 +80,12 @@ AC_ARG_ENABLE([model-cvms5],
         [enable_model_cvms5=yes],
         [enable_model_cvms5=no])
 
+AC_ARG_ENABLE([model-cca],
+        [AS_HELP_STRING([--enable-model-cca],
+        [enable model SCEC CCA])],
+        [enable_model_cca=yes],
+        [enable_model_cca=no])
+
 AC_ARG_ENABLE([model-cencal],
         [AS_HELP_STRING([--enable-model-cencal],
         [enable model USGS CenCalVM])],

@@ -168,6 +168,11 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
         configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+    elif config_data["Path"] == "cca":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
     elif config_data["Path"] == "cencal":
         configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/euclid3/lib -L" + ucvmpath + "/lib/proj-4/lib")
         configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/euclid3/include -I" + ucvmpath + "/lib/proj-4/include")
