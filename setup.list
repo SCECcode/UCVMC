@@ -44,7 +44,7 @@
 		"CCA": {
 			"Version": "1.0",
 			"Path": "cca",
-			"URL": "http://hypocenter.usc.edu/research/ucvm/15.10.0/models/CCA.tar.gz",
+			"URL": "http://hypocenter.usc.edu/research/ucvm/17.10.0/models/cca.tar.gz",
 			"Flags": "--enable-model-cca --with-cca-lib-path=lib --with-cca-include-path=include",
 			"Libraries": ["euclid3", "proj-4"],
 			"Ask": "yes",
