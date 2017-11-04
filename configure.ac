@@ -266,6 +266,20 @@ AC_ARG_WITH([cvms5-lib-path],
   [CVMS5_LIB="-lcvms5 -lgfortran -lproj -letree"])
 fi
 
+# Get SCEC CCA library and include locations
+if test "x$enable_model_cca" = xyes; then
+AC_ARG_WITH([cca-include-path],
+  [AS_HELP_STRING([--with-cca-include-path],
+    [location of the SCEC CCA headers])],
+  [CCA_INCL="-I$withval"],
+  [CCA_INCL="/usr/include/cca"])
+AC_ARG_WITH([cca-lib-path],
+  [AS_HELP_STRING([--with-cca-lib-path], [location of the SCEC CCA libraries])],
+  [CCA_LIB="-L$withval -lcca -lgfortran -lproj -letree"],
+  [CCA_LIB="-lcca -lgfortran -lproj -letree"])
+fi
+
+
 # Get SCEC CVM-NCI library and include locations
 if test "x$enable_model_cvmnci" = xyes; then
 AC_ARG_WITH([cvmnci-include-path],
