@@ -20,10 +20,19 @@
 #define DEFAULT_MAX_DEPTH 15000.0
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
+
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf\n"
 
 #define WORKERREADY 99
 #define DIEOFF -1
+
+#define DEFAULT_MAX_FILE_LEN 512
+#define DEFAULT_MAX_FILELIST_LEN 1024
+#define DEFAULT_FILES_DELIM ","
+#define DEFAULT_MAX_FILES 2
+
+// to hold 4 floats and couple of comma and CRLF
+#define DEFAULT_MAX_ENTRY_LEN  64
 
 /* Get opt args */
 extern char *optarg;
@@ -74,8 +83,6 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 		return (1);
 	}
 
-//printf("XXX query model with %d points",numz);
-
 	for (j = 0; j < numz; j++) {
 		if (qprops[j].cmb.vs >= vs_thresh) {
 			depths[0] = (double) j * z_inter;
@@ -92,6 +99,59 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 
 	return (0);
 }
+
+/* parse filename list */
+/*   first.file
+     first.file,
+     ,last.file
+     first.file,last.file
+*/
+int parse_file_list(const char *list, char **files) {
+  char filesstr[DEFAULT_MAX_FILELIST_LEN];
+  char *token;
+  int i;
+  int num_files = 0;
+
+  /* initialize the files. */
+  for( i=0 ; i < DEFAULT_MAX_FILES ; i++) {
+    files[i]=malloc(DEFAULT_MAX_FILE_LEN * sizeof(char));
+    strcpy(files[i], "");
+  }
+  if(strlen(list) == 0) {
+      fprintf(stderr, "Did not specify result files\n");
+      return(UCVM_CODE_ERROR);
+  }
+
+  strcpy(filesstr, list);
+
+  /* special case, when first file is empty */
+  if(filesstr[0]==',') {
+    num_files++;
+  }
+
+  token = strtok(filesstr, DEFAULT_FILES_DELIM);
+  while (token != NULL) {
+    if (num_files == DEFAULT_MAX_FILES) {
+      fprintf(stderr, "Max number of output file reached\n");
+      return(UCVM_CODE_ERROR);
+    }
+
+    if(strlen(token) != 0) {
+      strcpy(files[num_files], token);
+    }
+
+    num_files++;
+    token = strtok(NULL, DEFAULT_FILES_DELIM);
+  }
+
+  printf("number of files.. %d\n", num_files);
+  printf("first file (%s)\n", files[0]);
+  if(num_files>1)
+    printf("second file (%s)\n", files[1]);
+
+  return (0);
+}
+
 
 int main(int argc, char **argv) {
 	int opt;
@@ -116,7 +176,9 @@ int main(int argc, char **argv) {
 	ucvm_data_t *qprops;
 	int numread = 0;
 	char map_label[UCVM_MAX_LABEL_LEN];
-	char *binary_outfile = malloc(512 * sizeof(char));
+
+        char *binary_outfiles[DEFAULT_MAX_FILES];
+        char *ascii_outfile;
 
 	double *depths;
 
@@ -135,14 +197,17 @@ int main(int argc, char **argv) {
 	vs_thresh = DEFAULT_VS_THRESH;
 
 	/* Parse options */
-	while ((opt = getopt(argc, argv, "hb:m:f:d:i:v:l:s:x:y:")) != -1) {
+	while ((opt = getopt(argc, argv, "hb:o:m:f:d:i:v:l:s:x:y:")) != -1) {
 		switch (opt) {
 		case 'h':
 			usage();
 			exit(0);
 			break;
 		case 'b':
-			binary_outfile = optarg;
+                        parse_file_list(optarg,binary_outfiles);
+			break;
+		case 'o':
+                        ascii_outfile=optarg;
 			break;
 		case 'm':
 			if (strlen(optarg) >= UCVM_MAX_MODELLIST_LEN - 1) {
@@ -257,8 +322,20 @@ int main(int argc, char **argv) {
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	MPI_File fh;
-	MPI_File_open(MPI_COMM_SELF, binary_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+        MPI_FILE bfh[DEFAULT_MAX_FILES];
+        MPI_FILE afh; 
+
+        /* setup result file handler */
+        for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
+          if(strlen(binary_outfiles[i]) > 0) { 
+	    MPI_File_open(MPI_COMM_SELF, binary_outfiles[i], MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &bfh[i]);
+            } else {
+              bfh[i]=NULL;
+          }
+        }
+        if(strlen(ascii_outfile) > 0) { 
+	  MPI_File_open(MPI_COMM_SELF, ascii_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &afh);
+        }
 
 	// We divide the job up in terms of lines (i.e. ny).
 	currentline = rank;
@@ -268,33 +345,50 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
 		double tempDepths[2];
 		float *retDepths = malloc(nx * sizeof(float));
+		float *retLastDepths = malloc(nx * sizeof(float));
+                char *retLiteral= malloc(DEFAULT_MAX_ENTRY_LEN * sizeof(char));
 
 		printf("Current line: %d. Progress: %.2f\%\n", currentline, (float)currentline / (float)ny * 100.0f);
 
 		for (i = 0; i < nx; i++) {
+                        // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
 			pnts[0].coord[1] = (currentline * spacing) + latlon[0];
 			pnts[0].coord[0] = (i * spacing) + latlon[1];
 
 			extract_basin_mpi(pnts, tempDepths, max_depth, z_inter, vs_thresh);
 
 			retDepths[i] = (float)tempDepths[0];
+			retLastDepths[i] = (float)tempDepths[1];
+// XXX write out ascii 
+#define DEFAULT_MAX_ENTRY_LEN  64
+			if(afh != null) {
+				snprintf(retLiteral, DEFAULT_MAX_ENTRY_LEN, "%f %f %f %f\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepts[i]));
+				MPI_File_write(afh, retLiteral, strlen(retLiteral), MPI_CHAR, MPI_STATUS_IGNORE);
+                       }
+
 // MEI, ORIGINAL
 
 			//printf("%f %f %f %d\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], rank);
 			//if (rank == 0) {
 				//printf("On index: %d\n", i);
 			//}
-printf("XXX index(%d) currentline(%d): %f %f %f, rank is=%d\n", i, currentline, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], rank);
-//if (rank == 0) { printf("On index: %d\n", i); }
 
 		}
 
-		MPI_File_set_view(fh, currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
-		MPI_File_write(fh, /*currentline * nx * sizeof(float),*/ retDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                if(bfh[0] != null) {
+		  MPI_File_set_view(bfh[0], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+		  MPI_File_write(bfh[0], /*currentline * nx * sizeof(float),*/ retDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                }
+                if(bfh[1] != null) {
+		  MPI_File_set_view(bfh[1], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                }
 
 		//free(pnts);
 		//free(tempDepths);
 		free(retDepths);
+		free(retLastDepths);
+                free(retLiteral);
 
 		currentline += numprocs;
 

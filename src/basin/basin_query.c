@@ -107,6 +107,66 @@ int extract_basins(int n, ucvm_point_t *pnts, \
 }
 
 
+#define DEFAULT_MAX_FILE_LEN 512
+#define DEFAULT_MAX_FILELIST_LEN 1024 
+#define DEFAULT_FILES_DELIM ","
+#define DEFAULT_MAX_FILES 2
+
+char *outfiles[DEFAULT_MAX_FILES];
+
+/* parse filename list */
+/*   first.file
+     first.file,
+     ,last.file
+     first.file,last.file
+*/
+int parse_file_list(const char *list, char **files) {
+  char filesstr[DEFAULT_MAX_FILELIST_LEN];
+  char *token;
+  int i;
+  int num_files = 0;
+
+  /* initialize the files. */
+  for( i=0 ; i < DEFAULT_MAX_FILES ; i++) {
+    files[i]=malloc(512 * sizeof(char));
+    strcpy(files[i], "");
+  }
+  if(strlen(list) == 0) {
+      fprintf(stderr, "Did not specify result files\n");
+      return(UCVM_CODE_ERROR);
+  }
+
+  strcpy(filesstr, list);
+
+  /* special case, when first file is empty */
+  if(filesstr[0]==',') {
+    num_files++;
+  }
+
+  token = strtok(filesstr, DEFAULT_FILES_DELIM);
+  while (token != NULL) {
+    if (num_files == DEFAULT_MAX_FILES) {
+      fprintf(stderr, "Max number of output file reached\n");
+      return(UCVM_CODE_ERROR);
+    }
+
+    if(strlen(token) != 0) {
+      strcpy(files[num_files], token);
+    }
+
+    num_files++;
+    token = strtok(NULL, DEFAULT_FILES_DELIM);
+  }
+
+  printf("number of files.. %d\n", num_files);
+  printf("first file (%s)\n", files[0]);
+  if(num_files>1)
+    printf("second file (%s)\n", files[1]);
+
+  return 0;
+}
+
+
 int main(int argc, char **argv)
 {
   int opt;
@@ -139,8 +199,12 @@ int main(int argc, char **argv)
   vs_thresh = DEFAULT_VS_THRESH;
 
   /* Parse options */
-  while ((opt = getopt(argc, argv, "d:i:v:f:hm:p:z:")) != -1) {
+  while ((opt = getopt(argc, argv, "b:d:i:v:f:hm:p:z:")) != -1) {
     switch (opt) {
+    case 'b':
+      parse_file_list(optarg,outfiles);
+      exit(0);
+      break;
     case 'd':
       max_depth = (double)atof(optarg);
       if (max_depth <= 0.0) {
