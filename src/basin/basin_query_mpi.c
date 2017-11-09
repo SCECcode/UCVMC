@@ -41,7 +41,7 @@ extern int optind, opterr, optopt;
 /* Display usage information */
 void usage() {
 	printf("Usage: basin_query_mpi [-h] [-b outfile] [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
-	printf("[-v vs_thresh] [-l lon,lat] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
+	printf("[-v vs_thresh] [-l lat,lon] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
 	printf("where:\n");
 	printf("\t-b Binary output to file.\n");
 	printf("\t-h This help message\n");
