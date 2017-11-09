@@ -18,6 +18,8 @@
 #define DEFAULT_ZRANGE_MIN 0.0
 #define DEFAULT_ZRANGE_MAX 350.0
 #define DEFAULT_MAX_DEPTH 15000.0
+#define DEFAULT_NULL_DEPTH -1.0 
+#define DEFAULT_ZERO_DEPTH 0.0 
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
 
@@ -62,9 +64,8 @@ void usage() {
 /* Extract basin values for the specified point */
 int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, double z_inter, double vs_thresh) {
 
-	int i, j, p, dnum, numz;
+	int i, j, p, numz;
 	double vs_prev;
-	int mallocPts = 0;
 
 	numz = (int) (max_depth / z_inter);
 
@@ -83,21 +84,29 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 		return (1);
 	}
 
+//  initialize to something
+        depths[0]= DEFAULT_NULL_DEPTH;
+        depths[1]= DEFAULT_NULL_DEPTH;
+	double vs_prev = DEFAULT_ZERO_DEPTH;
 	for (j = 0; j < numz; j++) {
-		if (qprops[j].cmb.vs >= vs_thresh) {
-			depths[0] = (double) j * z_inter;
-			free(qprops);
-			free(qpnts);
-			return 0;
+                // must be a valid depth
+		if (qprops[i].cmb.vs > DEFAULT_ZERO_DEPTH) {
+			if(vs_prev < vs_thresh &&
+					(qprops[i].cmb.vs >= vs_thresh)) {
+				// found a crossing point
+				if(depths[0]==DEFAULT_NULL_PATH) {
+					depths[0] = (double) j * z_inter;
+					} else {
+						depths[1] = (double) j * z_inter;
+				}
+			}
+			vs_prev = qprops[i].cmb.vs;
 		}
 	}
 
 	free(qprops);
 	free(qpnts);
-
-	depths[0] = max_depth;
-
-	return (0);
+	return(0);
 }
 
 /* parse filename list */
