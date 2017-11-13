@@ -64,7 +64,7 @@ void usage() {
 /* Extract basin values for the specified point */
 int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, double z_inter, double vs_thresh) {
 
-	int i, j, p, numz;
+	int j, numz;
 	double vs_prev;
 
 	numz = (int) (max_depth / z_inter);
@@ -87,20 +87,20 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 //  initialize to something
         depths[0]= DEFAULT_NULL_DEPTH;
         depths[1]= DEFAULT_NULL_DEPTH;
-	double vs_prev = DEFAULT_ZERO_DEPTH;
+	vs_prev = DEFAULT_ZERO_DEPTH;
 	for (j = 0; j < numz; j++) {
                 // must be a valid depth
-		if (qprops[i].cmb.vs > DEFAULT_ZERO_DEPTH) {
+		if (qprops[j].cmb.vs > DEFAULT_ZERO_DEPTH) {
 			if(vs_prev < vs_thresh &&
-					(qprops[i].cmb.vs >= vs_thresh)) {
+					(qprops[j].cmb.vs >= vs_thresh)) {
 				// found a crossing point
-				if(depths[0]==DEFAULT_NULL_PATH) {
+				if(depths[0]==DEFAULT_NULL_DEPTH) {
 					depths[0] = (double) j * z_inter;
 					} else {
 						depths[1] = (double) j * z_inter;
 				}
 			}
-			vs_prev = qprops[i].cmb.vs;
+			vs_prev = qprops[j].cmb.vs;
 		}
 	}
 
@@ -177,19 +177,12 @@ int main(int argc, char **argv) {
 
 	ucvm_ctype_t cmode;
 	int have_model = 0;
-	int have_zrange = 0;
 	int have_map = 0;
 
-	ucvm_point_t *pnt;
-	ucvm_point_t *qpnts;
-	ucvm_data_t *qprops;
-	int numread = 0;
 	char map_label[UCVM_MAX_LABEL_LEN];
 
         char *binary_outfiles[DEFAULT_MAX_FILES];
         char *ascii_outfile;
-
-	double *depths;
 
 	int numprocs, rank, i;
 
@@ -204,6 +197,11 @@ int main(int argc, char **argv) {
 	max_depth = DEFAULT_MAX_DEPTH;
 	z_inter = DEFAULT_Z_INTERVAL;
 	vs_thresh = DEFAULT_VS_THRESH;
+        // initialize the result file names to null strings
+	for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
+          binary_outfiles[i] = "";
+        }
+        ascii_outfile = "";
 
 	/* Parse options */
 	while ((opt = getopt(argc, argv, "hb:o:m:f:d:i:v:l:s:x:y:")) != -1) {
@@ -331,8 +329,8 @@ int main(int argc, char **argv) {
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-        MPI_FILE bfh[DEFAULT_MAX_FILES];
-        MPI_FILE afh; 
+        MPI_File bfh[DEFAULT_MAX_FILES];
+        MPI_File afh; 
 
         /* setup result file handler */
 	for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
@@ -373,7 +371,7 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 // XXX write out ascii 
 #define DEFAULT_MAX_ENTRY_LEN  64
 			if(afh != NULL) {
-				snprintf(retLiteral, DEFAULT_MAX_ENTRY_LEN, "%f %f %f %f\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepts[i]));
+				snprintf(retLiteral, DEFAULT_MAX_ENTRY_LEN, "%f %f %f %f\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
 				MPI_File_write(afh, retLiteral, strlen(retLiteral), MPI_CHAR, MPI_STATUS_IGNORE);
                        }
 
