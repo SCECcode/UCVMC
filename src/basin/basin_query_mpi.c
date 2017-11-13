@@ -96,6 +96,7 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 				// found a crossing point
 				if(depths[0]==DEFAULT_NULL_DEPTH) {
 					depths[0] = (double) j * z_inter;
+					depths[1] = depths[0]; // preset last equals to first
 					} else {
 						depths[1] = (double) j * z_inter;
 				}
