@@ -335,16 +335,18 @@ int main(int argc, char **argv) {
         MPI_FILE afh; 
 
         /* setup result file handler */
-        for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
-          if(strlen(binary_outfiles[i]) > 0) { 
-	    MPI_File_open(MPI_COMM_SELF, binary_outfiles[i], MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &bfh[i]);
-            } else {
-              bfh[i]=NULL;
-          }
-        }
+	for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
+		if(strlen(binary_outfiles[i]) > 0) { 
+			MPI_File_open(MPI_COMM_SELF, binary_outfiles[i], MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &bfh[i]);
+			} else {
+				bfh[i]=NULL;
+		}
+	}
         if(strlen(ascii_outfile) > 0) { 
-	  MPI_File_open(MPI_COMM_SELF, ascii_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &afh);
-        }
+		MPI_File_open(MPI_COMM_SELF, ascii_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &afh);
+		} else {
+			afh=NULL;
+	}
 
 	// We divide the job up in terms of lines (i.e. ny).
 	currentline = rank;
@@ -370,7 +372,7 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 			retLastDepths[i] = (float)tempDepths[1];
 // XXX write out ascii 
 #define DEFAULT_MAX_ENTRY_LEN  64
-			if(afh != null) {
+			if(afh != NULL) {
 				snprintf(retLiteral, DEFAULT_MAX_ENTRY_LEN, "%f %f %f %f\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepts[i]));
 				MPI_File_write(afh, retLiteral, strlen(retLiteral), MPI_CHAR, MPI_STATUS_IGNORE);
                        }
@@ -384,11 +386,11 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 
 		}
 
-                if(bfh[0] != null) {
+                if(bfh[0] != NULL) {
 		  MPI_File_set_view(bfh[0], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 		  MPI_File_write(bfh[0], /*currentline * nx * sizeof(float),*/ retDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
-                if(bfh[1] != null) {
+                if(bfh[1] != NULL) {
 		  MPI_File_set_view(bfh[1], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
@@ -407,7 +409,15 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	MPI_File_close(&fh);
+	if(bfh[0] != NULL) {
+		MPI_File_close(&fbh[0]);
+	}
+	if(bfh[1] != NULL) {
+		MPI_File_close(&fbh[0]);
+	}
+        if(afh != NULL) {
+		MPI_File_close(&abh);
+	}
 
 	MPI_Finalize();
 
