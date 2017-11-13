@@ -410,13 +410,13 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(bfh[0] != NULL) {
-		MPI_File_close(&fbh[0]);
+		MPI_File_close(&bfh[0]);
 	}
 	if(bfh[1] != NULL) {
-		MPI_File_close(&fbh[0]);
+		MPI_File_close(&bfh[0]);
 	}
         if(afh != NULL) {
-		MPI_File_close(&abh);
+		MPI_File_close(&afh);
 	}
 
 	MPI_Finalize();
