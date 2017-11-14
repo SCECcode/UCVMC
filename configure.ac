@@ -148,8 +148,8 @@ AC_ARG_WITH([proj4-include-path],
   [PROJ4_INCL=""])
 AC_ARG_WITH([proj4-lib-path],
   [AS_HELP_STRING([--with-proj4-lib-path], [location of the Proj.4 libraries])],
-  [PROJ4_LIB="-L$withval -lproj -pthread"],
-  [PROJ4_LIB="-lproj -pthread"])
+  [PROJ4_LIB="-L$withval -lproj -lpthread"],
+  [PROJ4_LIB="-lproj -lpthread"])
 
 # Get optional netCDF library and include locations
 if test "x$enable_netcdf" = xyes; then
@@ -403,7 +403,7 @@ AC_CHECK_LIB(fftw3, fftw_execute, [AC_CHECK_HEADER([fftw3.h], [], [AC_MSG_ERROR(
 CFLAGS="$PROJ4_INCL $CHECK_CFLAGS"
 LDFLAGS="$CHECK_LDFLAGS $PROJ4_LIB"
 AC_CHECK_LIB(proj, pj_init_plus, [AC_CHECK_HEADER([proj_api.h], [], [AC_MSG_ERROR(["Proj4 header not found in $PROJ4_INCL; use --with-proj4-include-path"])
-  ], [AC_INCLUDES_DEFAULT])],[AC_MSG_ERROR(["Proj4 library not found; use --with-proj4-lib-path"])], [-pthread -lm])
+  ], [AC_INCLUDES_DEFAULT])],[AC_MSG_ERROR(["Proj4 library not found; use --with-proj4-lib-path"])], [-lpthread -lm])
 
 # Check optional NetCDF library
 if test "x$enable_netcdf" = xyes; then
@@ -439,7 +439,7 @@ if test "x$enable_model_cencal" = xyes; then
    LDFLAGS="$CENCAL_LIB $LDFLAGS"
 
    echo "Checking for USGS CenCalVM"
-   AC_CHECK_LIB(cencalvm, cencalvm_createQuery, [AM_CONDITIONAL(UCVM_AM_ENABLE_CENCAL, true)], [AC_MSG_ERROR(["USGS CenCalVM library not found; use --with-cencal-lib-path"])], [-lstdc++ -pthread -letree -lproj -lm])
+   AC_CHECK_LIB(cencalvm, cencalvm_createQuery, [AM_CONDITIONAL(UCVM_AM_ENABLE_CENCAL, true)], [AC_MSG_ERROR(["USGS CenCalVM library not found; use --with-cencal-lib-path"])], [-lstdc++ -lpthread -letree -lproj -lm])
    AC_CHECK_HEADER(cvmquery.h, [], [AC_MSG_ERROR(["USGS CenCalVM header not found; use --with-cencal-include-path"])], [AC_INCLUDES_DEFAULT])
 
    AC_CHECK_FILE([$CENCAL_MODEL], [], [AC_MSG_ERROR(["USGS CenCalVM model etree not found; use --with-cencal-model-path"])])
@@ -596,7 +596,7 @@ if test "x$enable_model_tape" = xyes; then
    LDFLAGS="$TAPE_LIB $LDFLAGS"
 
    echo "Checking for TAPE"
-   AC_CHECK_LIB(tape, tape_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_TAPE, true)], [AC_MSG_ERROR(["TAPE library not found; use --with-tape-lib-path"])], [-pthread -lproj -lm])
+   AC_CHECK_LIB(tape, tape_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_TAPE, true)], [AC_MSG_ERROR(["TAPE library not found; use --with-tape-lib-path"])], [-lpthread -lproj -lm])
    AC_CHECK_HEADER(tape.h,[],[AC_MSG_ERROR(["TAPE header not found; use --with-tape-include-path"])],[AC_INCLUDES_DEFAULT])
 
    AC_CHECK_FILE([$TAPE_MODEL], [], [AC_MSG_ERROR(["TAPE model dir not found; use --with-tape-model-path"])])
