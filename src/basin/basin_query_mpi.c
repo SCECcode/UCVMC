@@ -24,6 +24,7 @@
 #define DEFAULT_VS_THRESH 1000.0
 
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf\n"
+#define DEFAULT_MAX_ENTRY_LEN 64
 
 #define WORKERREADY 99
 #define DIEOFF -1
@@ -34,7 +35,6 @@
 #define DEFAULT_MAX_FILES 2
 
 // to hold 4 floats and couple of comma and CRLF
-#define DEFAULT_MAX_ENTRY_LEN  64
 
 /* Get opt args */
 extern char *optarg;
@@ -96,6 +96,7 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 				// found a crossing point
 				if(depths[0]==DEFAULT_NULL_DEPTH) {
 					depths[0] = (double) j * z_inter;
+                                        depths[1] = depths [0]; // preset last equals to first
 					} else {
 						depths[1] = (double) j * z_inter;
 				}
@@ -152,11 +153,6 @@ int parse_file_list(const char *list, char **files) {
     num_files++;
     token = strtok(NULL, DEFAULT_FILES_DELIM);
   }
-
-  printf("number of files.. %d\n", num_files);
-  printf("first file (%s)\n", files[0]);
-  if(num_files>1)
-    printf("second file (%s)\n", files[1]);
 
   return (0);
 }
@@ -350,7 +346,6 @@ int main(int argc, char **argv) {
 	currentline = rank;
 
 	while (currentline < ny) {
-printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
 		double tempDepths[2];
 		float *retDepths = malloc(nx * sizeof(float));
@@ -359,6 +354,9 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 
 		printf("Current line: %d. Progress: %.2f\%\n", currentline, (float)currentline / (float)ny * 100.0f);
 
+		if(afh != NULL) {
+			MPI_File_set_view(afh, currentline * nx * 64, MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
+		}
 		for (i = 0; i < nx; i++) {
                         // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
 			pnts[0].coord[1] = (currentline * spacing) + latlon[0];
@@ -369,9 +367,8 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 			retDepths[i] = (float)tempDepths[0];
 			retLastDepths[i] = (float)tempDepths[1];
 // XXX write out ascii 
-#define DEFAULT_MAX_ENTRY_LEN  64
 			if(afh != NULL) {
-				snprintf(retLiteral, DEFAULT_MAX_ENTRY_LEN, "%f %f %f %f\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
+				sprintf(retLiteral, OUTPUT_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
 				MPI_File_write(afh, retLiteral, strlen(retLiteral), MPI_CHAR, MPI_STATUS_IGNORE);
                        }
 
@@ -392,6 +389,10 @@ printf(" YYY mpi(%d)  == line(%d)\n",rank, currentline);
 		  MPI_File_set_view(bfh[1], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
+		if(afh != NULL) {
+                  // collect all the strings up and send to the master
+
+		}
 
 		//free(pnts);
 		//free(tempDepths);
