@@ -380,7 +380,8 @@ AC_SUBST(TAPE_MODEL)
 # Setup compiler/linker flags
 if test "x$enable_static" = xyes; then
    LDFLAGS="-static $LDFLAGS"
-else
+fi
+if test "x$enable_dynamic" = xyes; then
    LDFLAGS="-dynamic $LDFLAGS"
 fi
 if test "x$enable_iobuf" = xyes; then

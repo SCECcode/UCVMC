@@ -24,6 +24,8 @@ VERSION = "17.1.0"
 all_flag = False
 dynamic_flag = True
 use_iobuf = False
+## control adding of explicit dynamic linker flag
+user_dynamic_flag = False
 
 # Should we abort after testing system conditions?
 error_out = False
@@ -38,6 +40,7 @@ shell_script = ""
 def usage():
     print "Automatically sets up UCVM and alerts the user to potential complications.\n"
     print "\t-s  --static       Use static linking."
+    print "\t-d  --dynamic      Use dynamic linking."
     print ""
     print "UCVM %s\n" % VERSION
     
@@ -211,7 +214,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ash", ["all", "static", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
@@ -224,6 +227,9 @@ for o, a in opts:
     elif o in ('-s', '--static'):
         dynamic_flag = False
         print "static Flag: True"
+    elif o in ('-d', '--dynamic'):
+        user_dynamic_flag = True 
+        print "dynamic Flag: True"
     elif o in ('-h', '--help'):
         usage()
         exit(0)
@@ -478,6 +484,8 @@ ucvm_conf_command.append("--prefix=" + ucvmpath)
 
 if dynamic_flag == False:
     ucvm_conf_command.append("--enable-static")
+if user_dynamic_flag == True:
+    ucvm_conf_command.append("--enable-dynamic")
 if use_iobuf == True:
     ucvm_conf_command.append("--enable-iobuf")
  
