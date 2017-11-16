@@ -358,9 +358,6 @@ int main(int argc, char **argv) {
 		float *retDepths = malloc(nx * sizeof(float));
 		float *retLastDepths = malloc(nx * sizeof(float));
                 char **retLiteral= malloc(nx * sizeof(char *));
-                if(afh != NULL) {
-			retLiteral[i]= malloc(DEFAULT_OUTPUT_LEN * sizeof(char));
-                }
 
 		printf("Current line: %d. Progress: %.2f%%\n", currentline, 
 (float) currentline / (float)ny  * 100.0f);
@@ -375,23 +372,9 @@ int main(int argc, char **argv) {
 			retDepths[i] = (float)tempDepths[0];
 			retLastDepths[i] = (float)tempDepths[1];
 			if(afh != NULL) {
+				retLiteral[i]= malloc(DEFAULT_OUTPUT_LEN * sizeof(char));
 				sprintf(retLiteral[i], OUTPUT_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
 			}
-// XXX write out ascii 
-if(afh != NULL) {
-MPI_File_set_view(afh, (currentline * nx * charsperblob)+(i *charsperblob), MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
-MPI_File_write(afh, &retLiteral, 1, blob_as_string, MPI_STATUS_IGNORE);
-
-printf("--> adding at %d\n", (currentline * nx * charsperblob)+(i *charsperblob));
-}
-
-// MEI, ORIGINAL
-
-			//printf("%f %f %f %d\n", pnts[0].coord[0], pnts[0].coord[1], retDepths[i], rank);
-			//if (rank == 0) {
-				//printf("On index: %d\n", i);
-			//}
-
 		}
 
                 if(bfh[0] != NULL) {
@@ -403,22 +386,20 @@ printf("--> adding at %d\n", (currentline * nx * charsperblob)+(i *charsperblob)
 		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
 // XXX write out ascii 
-if(afh != NULL) {
-MPI_File_set_view(afh, (currentline * nx * charsperblob), MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
-MPI_File_write(afh, retLiteral, nx, blob_as_string, MPI_STATUS_IGNORE);
-
-printf("--> adding at %d\n", (currentline * nx * charsperblob)+(i *charsperblob));
-}
+		if(afh != NULL) {
+			MPI_File_set_view(afh, (currentline * nx * charsperblob), MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
+			MPI_File_write(afh, retLiteral, nx, blob_as_string, MPI_STATUS_IGNORE);
+		}
 
 		//free(pnts);
 		//free(tempDepths);
 		free(retDepths);
 		free(retLastDepths);
-if(afh != NULL) {
-for(i=0;i < nx; i++) {
-free(retLiteral[i]);
-}
-}
+		if(afh != NULL) {
+			for(i=0;i < nx; i++) {
+				free(retLiteral[i]);
+			}
+		}
                 free(retLiteral);
 
 		currentline += numprocs;
