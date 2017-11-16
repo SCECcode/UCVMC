@@ -23,8 +23,8 @@
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
 
-#define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf\n"
-#define DEFAULT_MAX_ENTRY_LEN 64
+#define OUTPUT_FMT "%10.4f %10.4f %10.3f %10.3f\n"
+#define DEFAULT_OUTPUT_LEN 44
 
 #define WORKERREADY 99
 #define DIEOFF -1
@@ -180,11 +180,18 @@ int main(int argc, char **argv) {
         char *binary_outfiles[DEFAULT_MAX_FILES];
         char *ascii_outfile;
 
-	int numprocs, rank, i;
+        int i;
+        // mpi related variables
+	int numprocs, rank;
+        MPI_Datatype blob_as_string;
+        const int charsperblob=DEFAULT_OUTPUT_LEN; // 44
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+        MPI_Type_contiguous(charsperblob, MPI_CHAR, &blob_as_string);
+        MPI_Type_commit(&blob_as_string);
 
 	cmode = UCVM_COORD_GEO_DEPTH;
 	snprintf(configfile, UCVM_MAX_PATH_LEN, "%s", "./ucvm.conf");
@@ -350,13 +357,14 @@ int main(int argc, char **argv) {
 		double tempDepths[2];
 		float *retDepths = malloc(nx * sizeof(float));
 		float *retLastDepths = malloc(nx * sizeof(float));
-                char *retLiteral= malloc(DEFAULT_MAX_ENTRY_LEN * sizeof(char));
+                char **retLiteral= malloc(nx * sizeof(char *));
+                if(afh != NULL) {
+			retLiteral[i]= malloc(DEFAULT_OUTPUT_LEN * sizeof(char));
+                }
 
-		printf("Current line: %d. Progress: %.2f\%\n", currentline, (float)currentline / (float)ny * 100.0f);
+		printf("Current line: %d. Progress: %.2f%%\n", currentline, 
+(float) currentline / (float)ny  * 100.0f);
 
-		if(afh != NULL) {
-			MPI_File_set_view(afh, currentline * nx * 64, MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
-		}
 		for (i = 0; i < nx; i++) {
                         // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
 			pnts[0].coord[1] = (currentline * spacing) + latlon[0];
@@ -366,11 +374,16 @@ int main(int argc, char **argv) {
 
 			retDepths[i] = (float)tempDepths[0];
 			retLastDepths[i] = (float)tempDepths[1];
-// XXX write out ascii 
 			if(afh != NULL) {
-				sprintf(retLiteral, OUTPUT_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
-				MPI_File_write(afh, retLiteral, strlen(retLiteral), MPI_CHAR, MPI_STATUS_IGNORE);
-                       }
+				sprintf(retLiteral[i], OUTPUT_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
+			}
+// XXX write out ascii 
+if(afh != NULL) {
+MPI_File_set_view(afh, (currentline * nx * charsperblob)+(i *charsperblob), MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
+MPI_File_write(afh, &retLiteral, 1, blob_as_string, MPI_STATUS_IGNORE);
+
+printf("--> adding at %d\n", (currentline * nx * charsperblob)+(i *charsperblob));
+}
 
 // MEI, ORIGINAL
 
@@ -389,15 +402,23 @@ int main(int argc, char **argv) {
 		  MPI_File_set_view(bfh[1], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
-		if(afh != NULL) {
-                  // collect all the strings up and send to the master
+// XXX write out ascii 
+if(afh != NULL) {
+MPI_File_set_view(afh, (currentline * nx * charsperblob), MPI_CHAR, MPI_CHAR, "native", MPI_INFO_NULL);
+MPI_File_write(afh, retLiteral, nx, blob_as_string, MPI_STATUS_IGNORE);
 
-		}
+printf("--> adding at %d\n", (currentline * nx * charsperblob)+(i *charsperblob));
+}
 
 		//free(pnts);
 		//free(tempDepths);
 		free(retDepths);
 		free(retLastDepths);
+if(afh != NULL) {
+for(i=0;i < nx; i++) {
+free(retLiteral[i]);
+}
+}
                 free(retLiteral);
 
 		currentline += numprocs;
