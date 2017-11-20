@@ -23,6 +23,8 @@
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
 
+//#define BLOB_FMT "%5d %5d %10.4f %10.4f %10.3f %10.3f\n"
+//#define DEFAULT_BLOB_LEN 56
 #define BLOB_FMT "%10.4f %10.4f %10.3f %10.3f\n"
 #define DEFAULT_BLOB_LEN 44
 #define DEFAULT_NUM_LEN 11
@@ -184,15 +186,13 @@ int main(int argc, char **argv) {
         int i;
         // mpi related variables
 	int numprocs, rank;
-        MPI_Datatype blob_as_string;
-        MPI_Datatype localarray;
         const int charsperblob=DEFAULT_BLOB_LEN; // 44
-        const int charspernum=DEFAULT_NUM_LEN; // 11 
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+        MPI_Datatype blob_as_string;
         MPI_Type_contiguous(charsperblob, MPI_CHAR, &blob_as_string);
         MPI_Type_commit(&blob_as_string);
 
@@ -376,8 +376,8 @@ int main(int argc, char **argv) {
 			retLastDepths[i] = (float)tempDepths[1];
 			if(afh != NULL) {
                                 int idx=i*charsperblob;
-//sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], (float) rank, retLastDepths[i]);
-				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
+				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], (float) rank, retLastDepths[i]);
+//				sprintf(&retLiteral[idx], BLOB_FMT, currentline,i,pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
 			}
 		}
 //printf("%d: %s\n", rank, retLiteral);
@@ -393,6 +393,7 @@ int main(int argc, char **argv) {
 // XXX write out ascii 
 		if(afh != NULL) {
 			//create ftype for our segment
+                        MPI_Datatype localarray;
 			int startrow=currentline*nx;
 			int globalsizes[2] = {nx*ny, 1};
 			int localsizes [2] = {nx, 1};
@@ -406,6 +407,10 @@ int main(int argc, char **argv) {
                            "native", MPI_INFO_NULL);
 
 			MPI_File_write(afh, retLiteral, nx, blob_as_string, MPI_STATUS_IGNORE);
+ 		        int ferror=MPI_Type_free(&localarray);
+			if (ferror != MPI_SUCCESS) {
+      				fprintf(stderr, "Fail to free localarray properly\n");
+			}
 		}
 
 		//free(pnts);
@@ -431,10 +436,8 @@ int main(int argc, char **argv) {
         if(afh != NULL) {
 		MPI_File_close(&afh);
 	}
-
-        MPI_Type_free(&localarray);
-        MPI_Type_free(&blob_as_string);
-
+	MPI_Type_free(&blob_as_string);
+    
 	MPI_Finalize();
 
 	return (0);

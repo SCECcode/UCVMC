@@ -44,7 +44,7 @@ large_lib_list = ["proj-4.8.0.tar.gz",
                   "euclid3-1.3.tar.gz"]
 
 large_model_list = ["cvms5.tar.gz",
-# NOT YET                    "cca.tar.gz",
+                    "cca.tar.gz",
                     "cvms4.tar.gz",
                     "cvms426.tar.gz",
                     "cvmh-15.1.0.tar.gz",
