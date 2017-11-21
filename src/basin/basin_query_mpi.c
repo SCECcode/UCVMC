@@ -376,8 +376,7 @@ int main(int argc, char **argv) {
 			retLastDepths[i] = (float)tempDepths[1];
 			if(afh != NULL) {
                                 int idx=i*charsperblob;
-				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], (float) rank, retLastDepths[i]);
-//				sprintf(&retLiteral[idx], BLOB_FMT, currentline,i,pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
+				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
 			}
 		}
 //printf("%d: %s\n", rank, retLiteral);
