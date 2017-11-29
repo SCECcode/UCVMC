@@ -13,6 +13,7 @@
 from horizontal_slice import HorizontalSlice
 from common import Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
+import pdb
 
 ##
 #  @class BasinSlice
@@ -34,13 +35,13 @@ class BasinSlice(HorizontalSlice):
     
         ## The Vs value to check for.
         self.vs_threshold = vs_threshold
-    
+
         #  Initializes the base class which is a horizontal slice.
         HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm)
         
     ##
     #  Retrieves the values for this basin slice and stores them in the class.
-    def getplotvals(self):
+    def getplotvals(self, datafile = None):
         
         #  How many y and x values will we need?
         
@@ -57,7 +58,7 @@ class BasinSlice(HorizontalSlice):
         self.max_val = 0
         ## Minimum depth (always 0).
         self.min_val = 0
-        
+
         #  Generate a list of points to pass to UCVM.
         ucvmpoints = []
         
@@ -71,7 +72,17 @@ class BasinSlice(HorizontalSlice):
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
         u = UCVM()
-        data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
+
+### MEI
+        pdb.set_trace()
+
+        if (datafile != None) :
+            print "\nUsing --> "+datafile
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+        else:
+            data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
+
+        pdb.set_trace()
         
         i = 0
         j = 0
@@ -95,7 +106,7 @@ class BasinSlice(HorizontalSlice):
     #  @param title The title of the plot. Optional.
     #  @param horizontal_label The horizontal label of the plot. Optional.
     #  @param filename The file name to which the plot should be saved. Optional.
-    def plot(self, title = None, horizontal_label = "Depth (m)", filename = None):
+    def plot(self, title = None, horizontal_label = "Depth (m)", datafile = None,  filename = None):
  
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -110,7 +121,7 @@ class BasinSlice(HorizontalSlice):
         if title == None:
             title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
         
-        HorizontalSlice.plot(self, "vs", horizontal_label=horizontal_label, title=title, filename=filename, \
+        HorizontalSlice.plot(self, "vs", horizontal_label=horizontal_label, title=title, datafile=datafile, filename=filename, \
                              color_scale="sd")
         
 ##
@@ -135,15 +146,15 @@ class Z10Slice(BasinSlice):
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self):
-        BasinSlice.getplotvals(self)
+    def getplotvals(self, datafile = None):
+        BasinSlice.getplotvals(self, datafile)
     
     ##
     #  Plots the Z1.0 slice.
     #
     #  @param title The title of the plot. Optional.
     #  @param filename The name of the file of the plot. Optional.
-    def plot(self, title = None, filename = None):
+    def plot(self, title = None, datafile = None, filename = None):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -158,7 +169,7 @@ class Z10Slice(BasinSlice):
         if title == None:
             title = "%sZ1.0 Map For %s" % (location_text, cvmdesc)
         
-        BasinSlice.plot(self, title=title, filename=filename)    
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename)    
         
 ##
 #  @class Z25Slice
@@ -182,15 +193,15 @@ class Z25Slice(BasinSlice):
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self):
-        BasinSlice.getplotvals(self)
+    def getplotvals(self, datafile = None):
+        BasinSlice.getplotvals(self, datafile)
     
     ##
     #  Generates the Z2.5 slice plot.
     #
     #  @param title The title for the plot. Optional.
     #  @param filename The file to which the plot should be saved. Optional.
-    def plot(self, title = None, filename = None):
+    def plot(self, title = None, datafile = None, filename = None):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -206,5 +217,5 @@ class Z25Slice(BasinSlice):
         if title == None:
             title = "%sZ2.5 Map For %s" % (location_text, cvmdesc)
         
-        BasinSlice.plot(self, title=title, filename=filename)           
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename)           
         

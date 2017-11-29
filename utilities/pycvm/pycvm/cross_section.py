@@ -67,7 +67,7 @@ class CrossSection:
 
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self):
+    def getplotvals(self, datafile = None):
 
         point_list = []
 
@@ -87,7 +87,13 @@ class CrossSection:
                 point_list.append(Point(lon, lat, j))
                 
         u = UCVM()
-        data = u.query(point_list, self.cvm)
+
+### MEI
+        if (datafile != None) :
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+            print "\nUsing -->"+datafile
+        else:
+            data = u.query(point_list, self.cvm)
         
         ## Private number of x points.
         self.num_x = num_prof + 1
@@ -125,7 +131,7 @@ class CrossSection:
             title = "%s%s Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
-        self.getplotvals()
+        self.getplotvals(datafile = datafile)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)

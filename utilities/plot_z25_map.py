@@ -9,7 +9,8 @@
 #  Plots a Z2.5 slice given a set of command-line parameters.
 
 from pycvm import Z25Slice, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
+import pdb
 
 ## Prints usage of this utility.
 def usage():
@@ -44,6 +45,7 @@ def get_user_opts(options):
     long_opts = []
     opts_left = []
     ret_val = {}
+
     
     for key, value in options.iteritems():
         short_opt_string = short_opt_string + key.split(",")[0] + ":"
@@ -66,16 +68,28 @@ def get_user_opts(options):
                 else:
                     ret_val[value] = a
     
+
+    for l in opts_left :
+# data file is optional
+        if l == "f" :
+            opts_left.remove(l)
+            ret_val["datafile"] = None
+        else :
+            if l == "o" :
+              opts_left.remove(l)
+              ret_val["outfile"] = None
+
     if len(opts_left) == 0 or len(opts_left) == len(options):
         return ret_val
-    else:
+    else: 
         return "bad"
 
 # Create a new UCVM object.
 u = UCVM()
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "c,cvm":"cvm_selected"})
+                        "s,spacing":"spacing", "c,cvm":"cvm_selected", \
+                        "f,datafile":"datafile", "o,outfile":"outfile"})
 
 if ret_val == "bad":
     usage()
@@ -83,12 +97,19 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        if value is None :
+            print key + " = None"
+        else :
+            print key + " = " + value
+
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
     useMPI = "n"
 else:      
     print ""
@@ -145,7 +166,8 @@ else:
             print "Error: the number you selected must be between 1 and %d" % counter
 
     cvm_selected = corresponding_cvm[cvm_selected]
-
+ 
 # Generate the horizontal slice.
 b = Z25Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
-b.plot()
+
+b.plot(datafile=datafile,filename=outfile)

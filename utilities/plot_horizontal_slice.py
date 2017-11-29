@@ -9,7 +9,7 @@
 #  Plots a horizontal slice given a set of command-line parameters.
 
 from pycvm import HorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
@@ -90,7 +90,10 @@ elif len(ret_val) > 0:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
 else:  
     print ""
     print "Plot Horizontal Slice - UCVM %s" % VERSION
@@ -182,4 +185,8 @@ print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
 h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
-h.plot(data_type, color_scale=color)
+
+if 'DISPLAY' in os.environ : 
+  h.plot(data_type, color_scale=color)
+else:
+  h.plot(data_type,filename='horizontal_slice.png', color_scale=color)

@@ -25,9 +25,8 @@
 
 //#define BLOB_FMT "%5d %5d %10.4f %10.4f %10.3f %10.3f\n"
 //#define DEFAULT_BLOB_LEN 56
-#define BLOB_FMT "%10.4f %10.4f %10.3f %10.3f\n"
-#define DEFAULT_BLOB_LEN 44
-#define DEFAULT_NUM_LEN 11
+#define BLOB_FMT "%10.4f %10.4f %10.3f %10.3f %10.3f\n"
+#define DEFAULT_BLOB_LEN 55 
 
 #define WORKERREADY 99
 #define DIEOFF -1
@@ -35,7 +34,7 @@
 #define DEFAULT_MAX_FILE_LEN 512
 #define DEFAULT_MAX_FILELIST_LEN 1024
 #define DEFAULT_FILES_DELIM ","
-#define DEFAULT_MAX_FILES 2
+#define DEFAULT_MAX_FILES 3
 
 // to hold 4 floats and couple of comma and CRLF
 
@@ -45,10 +44,11 @@ extern int optind, opterr, optopt;
 
 /* Display usage information */
 void usage() {
-	printf("Usage: basin_query_mpi [-h] [-b outfile] [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
+	printf("Usage: basin_query_mpi [-h] [-b outfile [,outfile ,outfile] ] [-o ascii outfile]  [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
 	printf("[-v vs_thresh] [-l lat,lon] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
 	printf("where:\n");
 	printf("\t-b Binary output to file.\n");
+	printf("\t-o Ascii output to file.\n");
 	printf("\t-h This help message\n");
 	printf("\t-f Configuration file. Default is ./ucvm.conf.\n");
 	printf("\t-i Interval between query points along z-axis (m, default is 20.0)\n");
@@ -67,7 +67,7 @@ void usage() {
 /* Extract basin values for the specified point */
 int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, double z_inter, double vs_thresh) {
 
-	int j, numz;
+	int j, numz, dnum;
 	double vs_prev;
 
 	numz = (int) (max_depth / z_inter);
@@ -88,8 +88,10 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 	}
 
 //  initialize to something
-        depths[0]= DEFAULT_NULL_DEPTH;
-        depths[1]= DEFAULT_NULL_DEPTH;
+	dnum = 0;
+        depths[0] = DEFAULT_NULL_DEPTH;
+        depths[1] = DEFAULT_NULL_DEPTH;
+        depths[2] = DEFAULT_NULL_DEPTH;
 	vs_prev = DEFAULT_ZERO_DEPTH;
 	for (j = 0; j < numz; j++) {
                 // must be a valid depth
@@ -97,11 +99,19 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 			if(vs_prev < vs_thresh &&
 					(qprops[j].cmb.vs >= vs_thresh)) {
 				// found a crossing point
-				if(depths[0]==DEFAULT_NULL_DEPTH) {
-					depths[0] = (double) j * z_inter;
-					depths[1] = depths[0]; // preset last equals to first
+				depths[dnum] = (double) j * z_inter;
+				if(dnum == 0) {
+                                        depths[2] = depths[1] = depths[0];
+					dnum++;
 					} else {
-						depths[1] = (double) j * z_inter;
+					if(dnum == 1) {
+						depths[2] = depths[1];
+                                                dnum++;
+printf("WooHoo 2nd.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
+						} else {
+                                                // dnum sticks to 2 
+printf("WooHoo last.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
+					}
 				}
 			}
 			vs_prev = qprops[j].cmb.vs;
@@ -112,6 +122,56 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 	free(qpnts);
 	return(0);
 }
+/*   first
+     first,second
+     first,scecond,last
+     ,second,last
+     ,,last
+     first,,last
+*/
+int parse_file_list(char *list, char **files) {
+	char *curr = list;
+	char *next;
+	int length,cnt=0;
+
+	if(strlen(list) == 0) {
+		fprintf(stderr, "Did not specify result files\n");
+		return(UCVM_CODE_ERROR);
+	}
+
+	while ((next = strchr(curr, ',')) != NULL) {
+    		/* process curr to next-1 */
+    		length= next - curr;
+                files[cnt]=NULL;
+		if( length > 0 ) {
+    			files[cnt]=(char *)malloc (sizeof (char) * (length+1));
+    			memcpy(files[cnt], curr, length);
+                        files[cnt][length]='\0';
+		}
+		cnt++;
+    		curr = next + 1;
+	}
+        // if there is a last bit
+	length=strlen(curr);
+	if(length > 0 ) {
+		files[cnt]=(char *)malloc (sizeof (char) * (length+1));
+		memcpy(files[cnt], curr, length);
+                files[cnt][length]='\0';
+		cnt++;
+	}
+/*
+int i;
+for(i=0; i< cnt; i++) {
+   if(files[i]!=NULL) {
+     int len=strlen(files[i]);
+     printf("list %d is (%s)len(%d)\n", i, files[i],len);
+     } else {
+       printf("list %d is (NULL)\n", i);
+   }
+}
+*/
+  return (0);
+}
 
 /* parse filename list */
 /*   first.file
@@ -119,7 +179,7 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
      ,last.file
      first.file,last.file
 */
-int parse_file_list(const char *list, char **files) {
+int parse_file_list2(const char *list, char **files) {
   char filesstr[DEFAULT_MAX_FILELIST_LEN];
   char *token;
   int i;
@@ -338,6 +398,24 @@ int main(int argc, char **argv) {
         MPI_File bfh[DEFAULT_MAX_FILES];
         MPI_File afh; 
 
+        /* display the config data */
+	if(rank == 0) {
+		printf("Metadata:\n"); 
+		float lat1 = latlon[0];
+		float lat2 = (nx * spacing) + lat1;
+                float lon1 = latlon[1];
+                float lon2 = (ny * spacing) + latlon[1];
+                // spacing
+                printf("lat1:%lf\n", lat1);
+                printf("lat2: %lf\n", lat2);
+                printf("lon1: %lf\n", lon1);
+                printf("lon2: %lf\n", lon2);
+                printf("spacing: %lf\n", spacing);
+                printf("cvm_selected: %s\n", modellist);
+                printf("params: -b %lf,%lf -u %lf,%lf -c %s -s %lf\n",
+                                   lon1,lat1,lon2,lat2,modellist,spacing);
+	}
+
         /* setup result file handler */
 	for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
 		if(strlen(binary_outfiles[i]) > 0) { 
@@ -357,8 +435,9 @@ int main(int argc, char **argv) {
 
 	while (currentline < ny) {
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
-		double tempDepths[2];
+		double tempDepths[3];
 		float *retDepths = malloc(nx * sizeof(float));
+		float *retSecondDepths = malloc(nx * sizeof(float));
 		float *retLastDepths = malloc(nx * sizeof(float));
                 char *retLiteral= malloc(DEFAULT_BLOB_LEN * nx * sizeof(char));
 
@@ -373,13 +452,13 @@ int main(int argc, char **argv) {
 			extract_basin_mpi(pnts, tempDepths, max_depth, z_inter, vs_thresh);
 
 			retDepths[i] = (float)tempDepths[0];
-			retLastDepths[i] = (float)tempDepths[1];
+			retSecondDepths[i] = (float)tempDepths[1];
+			retLastDepths[i] = (float)tempDepths[2];
 			if(afh != NULL) {
                                 int idx=i*charsperblob;
-				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i], retLastDepths[i]);
+				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i],retSecondDepths[i], retLastDepths[i]);
 			}
 		}
-//printf("%d: %s\n", rank, retLiteral);
 
                 if(bfh[0] != NULL) {
 		  MPI_File_set_view(bfh[0], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
@@ -387,7 +466,11 @@ int main(int argc, char **argv) {
                 }
                 if(bfh[1] != NULL) {
 		  MPI_File_set_view(bfh[1], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
-		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+		  MPI_File_write(bfh[1], /*currentline * nx * sizeof(float),*/ retSecondDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                }
+                if(bfh[2] != NULL) {
+		  MPI_File_set_view(bfh[2], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+		  MPI_File_write(bfh[2], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
 // XXX write out ascii 
 		if(afh != NULL) {
@@ -416,6 +499,7 @@ int main(int argc, char **argv) {
 		//free(tempDepths);
 		free(retDepths);
 		free(retLastDepths);
+		free(retSecondDepths);
                 free(retLiteral);
 
 		currentline += numprocs;

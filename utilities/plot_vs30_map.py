@@ -9,7 +9,7 @@
 #  Plots a Vs30 slice given a set of command-line parameters.
 
 from pycvm import Vs30Slice, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
@@ -65,7 +65,17 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
-    
+
+# handle optional opts
+    for l in opts_left :
+        if l == "f" :
+            opts_left.remove(l)
+            ret_val["datafile"] = None
+        else :
+            if l == "o" :
+              opts_left.remove(l)
+              ret_val["outfile"] = None
+
     if len(opts_left) == 0 or len(opts_left) == len(options):
         return ret_val
     else:
@@ -76,7 +86,8 @@ u = UCVM()
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", \
-                         "c,cvm":"cvm_selected", "a,scale": "color"})
+                         "c,cvm":"cvm_selected", "a,scale": "color", \
+                        "f,datafile":"datafile", "o,outfile":"outfile"})
 
 if ret_val == "bad":
     usage()
@@ -84,12 +95,18 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        if value is None : 
+            print key + " = None"
+        else :
+            print key + " = " + value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
 else:      
     print ""
     print "Vs30  - UCVM %s" % VERSION
@@ -152,4 +169,6 @@ print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
 v = Vs30Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
-v.plot(color_scale="s")
+
+
+  v.plot(color_scale=color,datafile=datafile,filename=outfile)

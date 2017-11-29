@@ -15,6 +15,7 @@ import multiprocessing
 import math
 import struct
 import getopt
+import pdb
 
 #  Numpy is required.
 try:
@@ -50,6 +51,7 @@ UCVM_CVMS = {"1d":"1D", \
              "cvms":"CVM-S4", \
              "cvms5":"CVM-S4.26", \
              "cvmsi":"CVM-S4.26.M01", \
+             "cca":"CCA 06", \
              "cvmh":"CVM-H 15.1.0", \
              "cencal":"USGS Bay Area Model"}
 
@@ -411,6 +413,21 @@ class UCVM:
         for line in output:
             floats.append(float(line.split()[2]))
         
+        if len(floats) == 1:
+            return floats[0]
+        
+        return floats
+
+#  import raw floats directory from the external file 
+#
+    def import_binary(self, rawfile, num_x, num_y):
+
+##        pdb.set_trace()
+        fh = open(rawfile, 'r') 
+        floats = np.fromfile(fh, dtype=np.float32)
+        fh.close()
+        print "TOTAL number of binary data read:",len(floats),"\n"
+
         if len(floats) == 1:
             return floats[0]
         

@@ -61,7 +61,13 @@ class Vs30Slice(HorizontalSlice):
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
         u = UCVM()
-        data = u.vs30(ucvmpoints, self.cvm)
+
+###MEI
+        if (datafile != None) :
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+            print "\nUsing --> "+datafile
+        else:
+            data = u.vs30(ucvmpoints, self.cvm)
         
         i = 0
         j = 0

@@ -55,7 +55,7 @@ class DepthProfile:
     
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self):
+    def getplotvals(self, datafile = None):
         
         point_list = []
         
@@ -64,7 +64,12 @@ class DepthProfile:
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
             
         u = UCVM()
-        data = u.query(point_list, self.cvm)
+###MEI
+        if (datafile != None) :
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+            print "\nUsing --> "+datafile
+        else:
+            data = u.query(point_list, self.cvm)
         
         for matprop in data:
             self.vplist.append(float(matprop.vp) / 1000)
@@ -85,7 +90,7 @@ class DepthProfile:
             raise TypeError("Plot must be an instance of the class Plot.")
         
         # Get the material properties.
-        self.getplotvals()
+        self.getplotvals(datafile = datafile)
         
         max_x = 0
         yvals = []

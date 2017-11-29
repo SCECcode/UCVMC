@@ -65,7 +65,7 @@ class HorizontalSlice:
     
     ##
     #  Retrieves the values for this horizontal slice and stores them in the class.
-    def getplotvals(self):
+    def getplotvals(self, datafile = None):
         
         #  How many y and x values will we need?
         
@@ -91,8 +91,14 @@ class HorizontalSlice:
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
         u = UCVM()
-        data = u.query(ucvmpoints, self.cvm)
-        
+
+### MEI
+        if (datafile != None) :
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+            print "\nUsing --> "+datafile 
+	else: 
+            data = u.query(ucvmpoints, self.cvm)
+
         i = 0
         j = 0
         
@@ -111,7 +117,7 @@ class HorizontalSlice:
     #  @param title The title of the plot. Optional.
     #  @param horizontal_label The horizontal label of the plot. Optional.
     #  @param color_scale The color scale for the plot (d, discretized; s, smooth). Optional.
-    def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d"):
+    def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d", datafile = None):
         
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -127,7 +133,7 @@ class HorizontalSlice:
         if title == None:
             title = "%s%s Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
 
-        self.getplotvals()
+        self.getplotvals(datafile)
 
         # Call the plot object.
         p = Plot(title, "", "", None, 10, 10)

@@ -10,6 +10,7 @@
 
 from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
+import pdb
 
 ## Prints usage statement.
 def usage():
@@ -98,7 +99,10 @@ elif len(ret_val) > 0:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
 else: 
     print ""
     print "Plot Cross-Section - UCVM %s" % VERSION
@@ -199,10 +203,11 @@ print ""
 print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
+
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
 if 'DISPLAY' in os.environ : 
-  d.plot(data_type)
+  d.plot(data_type, color_scale=color)
 else:
-  d.plot(data_type,'cross_section.png')
+  d.plot(data_type,filename='cross_section.png', color_scale=color)
 
