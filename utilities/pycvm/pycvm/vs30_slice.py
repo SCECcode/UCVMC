@@ -48,15 +48,6 @@ class Vs30Slice(HorizontalSlice):
         ## The number of y points we retrieved. Stored as a property for the plot function to work.
         self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
-        #  Generate a list of points to pass to UCVM.
-        ucvmpoints = []
-        
-        for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):
-                ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
-                                        self.bottomrightpoint.latitude + y * self.spacing, \
-                                        self.upperleftpoint.depth))
-        
         ## The 2D array of retrieved Vs30 values.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
@@ -68,6 +59,13 @@ class Vs30Slice(HorizontalSlice):
             print "expecting x ",self.num_x," y ",self.num_y
             data = u.import_binary(datafile, self.num_x, self.num_y)
         else:
+            #  Generate a list of points to pass to UCVM.
+            ucvmpoints = []
+            for y in xrange(0, self.num_y):
+                for x in xrange(0, self.num_x):
+                    ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
+                                            self.bottomrightpoint.latitude + y * self.spacing, \
+                                            self.upperleftpoint.depth))
             data = u.vs30(ucvmpoints, self.cvm)
         
         i = 0

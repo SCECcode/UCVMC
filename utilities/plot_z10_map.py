@@ -88,7 +88,6 @@ u = UCVM()
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", "c,cvm":"cvm_selected", \
                          "f,datafile":"datafile", "o,outfile":"outfile"}) 
-})
 
 if ret_val == "bad":
     usage()
