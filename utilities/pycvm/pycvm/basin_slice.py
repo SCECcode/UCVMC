@@ -74,16 +74,13 @@ class BasinSlice(HorizontalSlice):
         u = UCVM()
 
 ### MEI
-        pdb.set_trace()
-
         if (datafile != None) :
             print "\nUsing --> "+datafile
+            print "expecting x ",self.num_x," y ",self.num_y
             data = u.import_binary(datafile, self.num_x, self.num_y)
         else:
             data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
 
-        pdb.set_trace()
-        
         i = 0
         j = 0
         

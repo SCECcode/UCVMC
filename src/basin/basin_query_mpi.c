@@ -34,7 +34,13 @@
 #define DEFAULT_MAX_FILE_LEN 512
 #define DEFAULT_MAX_FILELIST_LEN 1024
 #define DEFAULT_FILES_DELIM ","
-#define DEFAULT_MAX_FILES 3
+#define DEFAULT_MAX_FILES 5
+        // holding 1st crossing points
+        // holding 1st or 2nd crossing points 
+        // holding last crossing points
+        // holding just the 2nd-only crossing points (secondOnly)
+        // holding just the 3+ crossing points (thirdMore)
+
 
 // to hold 4 floats and couple of comma and CRLF
 
@@ -92,6 +98,8 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
         depths[0] = DEFAULT_NULL_DEPTH;
         depths[1] = DEFAULT_NULL_DEPTH;
         depths[2] = DEFAULT_NULL_DEPTH;
+        depths[3] = DEFAULT_NULL_DEPTH;
+        depths[4] = DEFAULT_NULL_DEPTH;
 	vs_prev = DEFAULT_ZERO_DEPTH;
 	for (j = 0; j < numz; j++) {
                 // must be a valid depth
@@ -101,15 +109,17 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 				// found a crossing point
 				depths[dnum] = (double) j * z_inter;
 				if(dnum == 0) {
-                                        depths[2] = depths[1] = depths[0];
+                                        depths[2] = depths[1] = depths[dnum];
 					dnum++;
 					} else {
 					if(dnum == 1) {
-						depths[2] = depths[1];
+						depths[2] = depths[dnum];
+						depths[3] = depths[dnum];
                                                 dnum++;
 printf("WooHoo 2nd.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
 						} else {
                                                 // dnum sticks to 2 
+							depths[4] = depths[dnum];
 printf("WooHoo last.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
 					}
 				}
@@ -167,8 +177,6 @@ for(i=0; i< cnt; i++) {
      printf("list %d is (%s)len(%d)\n", i, files[i],len);
      } else {
        printf("list %d is (NULL)\n", i);
-   }
-}
 */
   return (0);
 }
@@ -241,6 +249,7 @@ int main(int argc, char **argv) {
 	char map_label[UCVM_MAX_LABEL_LEN];
 
         char *binary_outfiles[DEFAULT_MAX_FILES];
+        char *track_outfiles[1];
         char *ascii_outfile;
 
         int i;
@@ -268,6 +277,9 @@ int main(int argc, char **argv) {
           binary_outfiles[i] = "";
         }
         ascii_outfile = "";
+        track_outfiles[0] = ""; // result ascii file
+     //   secondMore_outfile = ""; // 2nd and more crossing
+     //   thirdMore_outfile = ""; // 3rd and more crossing
 
 	/* Parse options */
 	while ((opt = getopt(argc, argv, "hb:o:m:f:d:i:v:l:s:x:y:")) != -1) {
@@ -280,7 +292,8 @@ int main(int argc, char **argv) {
                         parse_file_list(optarg,binary_outfiles);
 			break;
 		case 'o':
-                        ascii_outfile=optarg;
+                        parse_file_list(optarg,track_outfiles);
+                        ascii_outfile = track_outfiles[0];
 			break;
 		case 'm':
 			if (strlen(optarg) >= UCVM_MAX_MODELLIST_LEN - 1) {
@@ -406,13 +419,13 @@ int main(int argc, char **argv) {
                 float lon1 = latlon[1];
                 float lon2 = (ny * spacing) + latlon[1];
                 // spacing
-                printf("lat1:%lf\n", lat1);
-                printf("lat2: %lf\n", lat2);
-                printf("lon1: %lf\n", lon1);
-                printf("lon2: %lf\n", lon2);
-                printf("spacing: %lf\n", spacing);
+                printf("lat1:%f\n", lat1);
+                printf("lat2: %f\n", lat2);
+                printf("lon1: %f\n", lon1);
+                printf("lon2: %f\n", lon2);
+                printf("spacing: %f\n", spacing);
                 printf("cvm_selected: %s\n", modellist);
-                printf("params: -b %lf,%lf -u %lf,%lf -c %s -s %lf\n",
+                printf("\nparams: -b %f,%f -u %f,%f -c %s -s %f\n",
                                    lon1,lat1,lon2,lat2,modellist,spacing);
 	}
 
@@ -430,15 +443,18 @@ int main(int argc, char **argv) {
 			afh=NULL;
 	}
 
+
 	// We divide the job up in terms of lines (i.e. ny).
 	currentline = rank;
 
 	while (currentline < ny) {
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
-		double tempDepths[3];
+		double tempDepths[5];
 		float *retDepths = malloc(nx * sizeof(float));
 		float *retSecondDepths = malloc(nx * sizeof(float));
 		float *retLastDepths = malloc(nx * sizeof(float));
+		float *retSecondOnlyDepths = malloc(nx * sizeof(float));
+		float *retThirdLastDepths = malloc(nx * sizeof(float));
                 char *retLiteral= malloc(DEFAULT_BLOB_LEN * nx * sizeof(char));
 
 		printf("Current line: %d. Progress: %.2f%%\n", currentline, 
@@ -454,6 +470,8 @@ int main(int argc, char **argv) {
 			retDepths[i] = (float)tempDepths[0];
 			retSecondDepths[i] = (float)tempDepths[1];
 			retLastDepths[i] = (float)tempDepths[2];
+			retSecondOnlyDepths[i] = (float)tempDepths[3];
+			retThirdLastDepths[i] = (float)tempDepths[4];
 			if(afh != NULL) {
                                 int idx=i*charsperblob;
 				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i],retSecondDepths[i], retLastDepths[i]);
@@ -471,6 +489,14 @@ int main(int argc, char **argv) {
                 if(bfh[2] != NULL) {
 		  MPI_File_set_view(bfh[2], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 		  MPI_File_write(bfh[2], /*currentline * nx * sizeof(float),*/ retLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                }
+                if(bfh[3] != NULL) {
+		  MPI_File_set_view(bfh[3], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+		  MPI_File_write(bfh[3], /*currentline * nx * sizeof(float),*/ retSecondOnlyDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
+                }
+                if(bfh[4] != NULL) {
+		  MPI_File_set_view(bfh[4], currentline * nx * sizeof(float), MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+		  MPI_File_write(bfh[4], /*currentline * nx * sizeof(float),*/ retThirdLastDepths, nx, MPI_FLOAT, MPI_STATUS_IGNORE);
                 }
 // XXX write out ascii 
 		if(afh != NULL) {
@@ -514,7 +540,16 @@ int main(int argc, char **argv) {
 		MPI_File_close(&bfh[0]);
 	}
 	if(bfh[1] != NULL) {
-		MPI_File_close(&bfh[0]);
+		MPI_File_close(&bfh[1]);
+	}
+	if(bfh[2] != NULL) {
+		MPI_File_close(&bfh[2]);
+	}
+	if(bfh[3] != NULL) {
+		MPI_File_close(&bfh[3]);
+	}
+	if(bfh[4] != NULL) {
+		MPI_File_close(&bfh[4]);
 	}
         if(afh != NULL) {
 		MPI_File_close(&afh);

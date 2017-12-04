@@ -90,8 +90,9 @@ class CrossSection:
 
 ### MEI
         if (datafile != None) :
-            data = u.import_binary(datafile, self.num_x, self.num_y)
             print "\nUsing -->"+datafile
+            print "expecting x ",self.num_x," y ",self.num_y
+            data = u.import_binary(datafile, self.num_x, self.num_y)
         else:
             data = u.query(point_list, self.cvm)
         
