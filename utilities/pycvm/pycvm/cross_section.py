@@ -115,7 +115,7 @@ class CrossSection:
     #  @param filename The file name of the image if we're saving it. Optional.
     #  @param title The title for the plot. Optional.
     #  @param color_scale The color scale to use. Optional.
-    def plot(self, property, filename = None, title = None, color_scale = "d"):
+    def plot(self, property, filename = None, title = None, color_scale = "d", datafile = None):
         
         if self.startingpoint.description == None:
             location_text = ""
@@ -228,6 +228,7 @@ class CrossSection:
             cbar.set_label("Vp/Vs")
        
         if filename:
+            print "SAVEING ..." 
             plt.savefig(filename)
         else:
             plt.show() 

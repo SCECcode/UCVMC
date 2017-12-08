@@ -69,6 +69,12 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
+
+# handle optional opts
+    for l in opts_left :
+        if l == "o" :
+          opts_left.remove(l)
+          ret_val["outfile"] = None
     
     if len(opts_left) == 0 or len(opts_left) == len(options):
         return ret_val
@@ -83,7 +89,10 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
 			"c,cvm":"cvm_selected", \
 			"h,horizonatal":"horizontal_spacing", \
 			"v,vertical":"vertical_spacing", \
-			"a,scale": "color"})
+			"a,scale": "color", \
+			"o,outfile":"outfile"})
+
+})
 
 # Create a new UCVM object.
 u = UCVM()
@@ -206,8 +215,6 @@ print "Retrieving data. Please wait..."
 
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
-if 'DISPLAY' in os.environ : 
-  d.plot(data_type, color_scale=color)
-else:
-  d.plot(data_type,filename='cross_section.png', color_scale=color)
+
+d.plot(data_type,filename=outfile, color_scale=color)
 
