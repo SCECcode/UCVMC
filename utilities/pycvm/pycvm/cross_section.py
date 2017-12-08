@@ -228,7 +228,6 @@ class CrossSection:
             cbar.set_label("Vp/Vs")
        
         if filename:
-            print "SAVEING ..." 
             plt.savefig(filename)
         else:
             plt.show() 
