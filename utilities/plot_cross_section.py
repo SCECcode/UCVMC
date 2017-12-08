@@ -92,8 +92,6 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
 			"a,scale": "color", \
 			"o,outfile":"outfile"})
 
-})
-
 # Create a new UCVM object.
 u = UCVM()
 
