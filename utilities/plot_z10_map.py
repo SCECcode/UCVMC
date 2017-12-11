@@ -95,10 +95,7 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        if value is None :
-            print key + " = None"
-        else:
-            print key + " = " + value
+            print key , " = " , value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))

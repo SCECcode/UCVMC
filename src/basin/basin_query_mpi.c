@@ -316,7 +316,7 @@ int main(int argc, char **argv) {
 			break;
 		case 'd':
 			max_depth = (double) atof(optarg);
-			if (max_depth <= 0.0) {
+			if (max_depth <= DEFAULT_ZERO_DEPTH) {
 				fprintf(stderr, "Invalid max depth %s.\n", optarg);
 				usage();
 				exit(1);
@@ -332,7 +332,7 @@ int main(int argc, char **argv) {
 			break;
 		case 'v':
 			vs_thresh = (double) atof(optarg);
-			if (vs_thresh <= 0.0) {
+			if (vs_thresh <= DEFAULT_ZERO_DEPTH) {
 				fprintf(stderr, "Invalid vs threshold %s.\n", optarg);
 				usage();
 				exit(1);

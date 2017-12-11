@@ -145,14 +145,14 @@ class HorizontalSlice:
             TICKS = [tick * 1.7 for tick in TICKS]
             
         if color_scale == "s":
-            colormap = basemap.cm.GMT_seis
+            colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
-            colormap = basemap.cm.GMT_seis
+            colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
             TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
         else:
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \

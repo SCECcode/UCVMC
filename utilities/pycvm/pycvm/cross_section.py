@@ -145,14 +145,14 @@ class CrossSection:
             TICKS = [tick * 1.7 for tick in TICKS]
 
         # Set default colormap and range
-        colormap = basemap.cm.GMT_seis
+        colormap = basemap.cm.GMT_seis_r
         norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         try:
             if color_scale == "s":
-                colormap = basemap.cm.GMT_seis
+                colormap = basemap.cm.GMT_seis_r
                 norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
         except:
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
     
         plt.axes([0.1,0.7,0.8,0.25])
