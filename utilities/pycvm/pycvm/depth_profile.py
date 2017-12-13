@@ -9,6 +9,7 @@
 
 #  Imports
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, plt
+import numpy as np
 
 ##
 #  @class DepthProfile
@@ -25,7 +26,7 @@ class DepthProfile:
     #  @param todepth The ending depth, in meters, where this plot should end.
     #  @param spacing The discretization interval in meters.
     #  @param cvm The CVM from which to retrieve these material properties.
-    def __init__(self, startingpoint, todepth, spacing, cvm):
+    def __init__(self, startingpoint, todepth, spacing, cvm, threshold = None):
         if not isinstance(startingpoint, Point):
             raise TypeError("The starting point must be an instance of Point.")
         else:
@@ -52,6 +53,9 @@ class DepthProfile:
         self.vslist = []
         ## Private holding place for returned density data.
         self.rholist = []
+
+        ## Default threshold in simplified units
+        self.threshold = threshold
     
     ## 
     #  Generates the depth profile in a format that is ready to plot.
@@ -60,7 +64,9 @@ class DepthProfile:
         point_list = []
         
         # Generate the list of points.
-        for i in xrange(self.startingpoint.depth, self.todepth + 1, self.spacing):
+ 
+#        for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):
+        for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
             
         u = UCVM()
@@ -84,7 +90,7 @@ class DepthProfile:
     #  @param properties An array of properties to plot. Can be vs, vp, or density.
     #  @param colors The colors that the properties should be plotted as. Optional.
     #  @param customlabels An associated array of labels to put for the legend. Optional.
-    def addtoplot(self, plot, properties, colors = None, customlabels = None):
+    def addtoplot(self, plot, properties, colors = None, customlabels = None, datafile = None):
         
         # Check that plot is a Plot
         if not isinstance(plot, Plot):
@@ -96,7 +102,7 @@ class DepthProfile:
         max_x = 0
         yvals = []
 
-        for i in xrange(self.startingpoint.depth, self.todepth + 1, self.spacing):  
+        for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):  
             yvals.append(i)       
         
         if customlabels != None and "vp" in properties: 
@@ -135,6 +141,10 @@ class DepthProfile:
         if "vs" in properties:
             max_x = max(max_x, max(self.vslist))
             plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+            ## add a vline if there is a vs threshold
+            if self.threshold != None : 
+                plot.addsubplot().axvline(self.threshold/1000, color='k', linestyle='dashed')
+
         if "density" in properties:
             max_x = max(max_x, max(self.rholist))
             plot.addsubplot().plot(self.rholist, yvals, "-", color=densitycolor, label=densitylabel) 
@@ -166,7 +176,7 @@ class DepthProfile:
             cvmdesc = self.cvm
 
         # Call the plot object.
-        p = Plot("%s%s Depth Profile From %sm To %sm" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth), \
+        p = Plot("%s%s Depth Profile From %sm To %sm for (%.2f,%.2f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
                  "Units (see legend)", "Depth (m)", None, 7, 10)
 
         # Add to plot.

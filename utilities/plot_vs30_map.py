@@ -21,6 +21,8 @@ def usage():
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-c, --cvm: one of the installed community velocity models"
     print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
+    print "\t-f, --datafile: optional binary input data filename"
+    print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
 

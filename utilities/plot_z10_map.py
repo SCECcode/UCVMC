@@ -21,6 +21,8 @@ def usage():
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-z, --interval: Z-interval, in meters, for Z%.1f to be queried (lower value means more precision)"
     print "\t-c, --cvm: one of the installed CVMs"
+    print "\t-f, --datafile: optional binary input data filename"
+    print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
 
