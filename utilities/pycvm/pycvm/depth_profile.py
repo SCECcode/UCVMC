@@ -9,7 +9,11 @@
 
 #  Imports
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, plt
+from scipy.interpolate import spline, splprep, splev
+from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
+import scipy.interpolate as interpolate
 import numpy as np
+import pdb
 
 ##
 #  @class DepthProfile
@@ -141,6 +145,18 @@ class DepthProfile:
         if "vs" in properties:
             max_x = max(max_x, max(self.vslist))
             plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+## attempted to draw a smoothed line, not good
+##            xs=np.array(self.vslist)
+##            ys=np.array(yvals)
+##            # spline parameters
+##            s=3.0 # smoothness parameter
+##            k=2 # spline order
+##            nest=-1 # estimate of number of knots needed (-1 = maximal)
+##            # find the knot points
+##            tckp,u = splprep([xs,ys],s=s,k=k,nest=nest)
+##            # evaluate spline, including interpolated points
+##            newx,newy = splev(np.linspace(0,1,500),tckp)
+##            plot.addsubplot().plot(newx, newy, "b-", label="smoothed"+vslabel)
             ## add a vline if there is a vs threshold
             if self.threshold != None : 
                 plot.addsubplot().axvline(self.threshold/1000, color='k', linestyle='dashed')
@@ -156,6 +172,8 @@ class DepthProfile:
         
         if max_x > plt.xlim()[1]:
             plt.xlim(0, math.ceil(max_x / 0.5) * 0.5)
+
+        plt.axis([0, max_x, int(self.todepth), int(self.startingpoint.depth)])
     
     ##
     #  Plots a new depth profile using all the default plotting options.
@@ -176,7 +194,7 @@ class DepthProfile:
             cvmdesc = self.cvm
 
         # Call the plot object.
-        p = Plot("%s%s Depth Profile From %sm To %sm for (%.2f,%.2f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
+        p = Plot("%s%s Depth Profile From %sm To %sm at (%.2f,%.2f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
                  "Units (see legend)", "Depth (m)", None, 7, 10)
 
         # Add to plot.
