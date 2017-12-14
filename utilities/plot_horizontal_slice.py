@@ -23,6 +23,8 @@ def usage():
     print "\t-d, --datatype: either 'vs', 'vp', 'rho', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed velocity models"
     print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
+    print "\t-f, --datafile: optional binary input data filename"
+    print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
 ## Makes sure the response is a number.
@@ -67,6 +69,16 @@ def get_user_opts(options):
                 else:
                     ret_val[value] = a
     
+    for l in opts_left :
+# data file is optional
+        if l == "f" :
+            opts_left.remove(l)
+            ret_val["datafile"] = None
+        else :
+            if l == "o" :
+              opts_left.remove(l)
+              ret_val["outfile"] = None
+
     if len(opts_left) == 0 or len(opts_left) == len(options):
         return ret_val
     else:
@@ -74,7 +86,9 @@ def get_user_opts(options):
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", "e,depth":"depth", \
-                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color"})
+                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color", \
+                         "f,datafile":"datafile", "o,outfile":"outfile"})
+
 
 # Create a new UCVM object.
 u = UCVM()
@@ -85,7 +99,7 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        print key , " = " , value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -186,7 +200,4 @@ print "Retrieving data. Please wait..."
 # Generate the horizontal slice.
 h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
 
-if 'DISPLAY' in os.environ : 
-  h.plot(data_type, color_scale=color)
-else:
-  h.plot(data_type,filename='horizontal_slice.png', color_scale=color)
+h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color)
