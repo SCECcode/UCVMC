@@ -149,7 +149,7 @@ class Z10Slice(BasinSlice):
     #
     #  @param title The title of the plot. Optional.
     #  @param filename The name of the file of the plot. Optional.
-    def plot(self, title = None, datafile = None, filename = None):
+    def plot(self, title = None, datafile = None, filename = None, note = None):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -163,6 +163,9 @@ class Z10Slice(BasinSlice):
         
         if title == None:
             title = "%sZ1.0 Map For %s" % (location_text, cvmdesc)
+
+        if note != None:
+            title = title + " " + note
         
         BasinSlice.plot(self, title=title, datafile=datafile, filename=filename)    
         
@@ -196,7 +199,7 @@ class Z25Slice(BasinSlice):
     #
     #  @param title The title for the plot. Optional.
     #  @param filename The file to which the plot should be saved. Optional.
-    def plot(self, title = None, datafile = None, filename = None):
+    def plot(self, title = None, datafile = None, filename = None, note = None):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -211,6 +214,9 @@ class Z25Slice(BasinSlice):
         
         if title == None:
             title = "%sZ2.5 Map For %s" % (location_text, cvmdesc)
+
+        if note != None:
+            title = title + " " + note
         
         BasinSlice.plot(self, title=title, datafile=datafile, filename=filename)           
         

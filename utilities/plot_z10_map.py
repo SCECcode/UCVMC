@@ -23,6 +23,7 @@ def usage():
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
+    print "\t-x, --extra: optional extra note to be appended to the plot title"
     print "UCVM %s\n" % VERSION
 
 
@@ -77,6 +78,10 @@ def get_user_opts(options):
             if l == "o" :
               opts_left.remove(l)
               ret_val["outfile"] = None
+            else :
+                if l == "x" :
+                  opts_left.remove(l)
+                  ret_val["extra"] = None
 
     
     if len(opts_left) == 0 or len(opts_left) == len(options):
@@ -89,7 +94,8 @@ u = UCVM()
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", "c,cvm":"cvm_selected", \
-                         "f,datafile":"datafile", "o,outfile":"outfile"}) 
+                         "f,datafile":"datafile", "o,outfile":"outfile", \
+                         "x,extra":"extra"}) 
 
 if ret_val == "bad":
     usage()
@@ -166,4 +172,4 @@ else:
 # Generate the horizontal slice.
 b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
 
-b.plot(datafile=datafile,filename=outfile)
+b.plot(datafile=datafile,filename=outfile, note=extra)
