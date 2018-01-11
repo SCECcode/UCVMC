@@ -47,6 +47,7 @@ def get_user_opts(options):
     short_opt_string = ""
     long_opts = []
     opts_left = []
+    opts_opt = []
     ret_val = {}
 
     
@@ -75,18 +76,18 @@ def get_user_opts(options):
     for l in opts_left :
 # data file is optional
         if l == "f" :
-            opts_left.remove(l)
+            opts_opt.append(l)
             ret_val["datafile"] = None
         else :
             if l == "o" :
-              opts_left.remove(l)
+              opts_opt.append(l)
               ret_val["outfile"] = None
             else :
                 if l == "x" :
-                  opts_left.remove(l)
+                  opts_opt.append(l)
                   ret_val["extra"] = None
     
-    if len(opts_left) == 0 or len(opts_left) == len(options):
+    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else: 
         return "bad"
