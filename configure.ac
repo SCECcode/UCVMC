@@ -86,6 +86,12 @@ AC_ARG_ENABLE([model-cca],
         [enable_model_cca=yes],
         [enable_model_cca=no])
 
+AC_ARG_ENABLE([model-cs173],
+        [AS_HELP_STRING([--enable-model-cs173],
+        [enable model SCEC CS173])],
+        [enable_model_cs173=yes],
+        [enable_model_cs173=no])
+
 AC_ARG_ENABLE([model-cencal],
         [AS_HELP_STRING([--enable-model-cencal],
         [enable model USGS CenCalVM])],
@@ -277,6 +283,19 @@ AC_ARG_WITH([cca-lib-path],
   [AS_HELP_STRING([--with-cca-lib-path], [location of the SCEC CCA libraries])],
   [CCA_LIB="-L$withval -lcca -lgfortran -lproj -letree"],
   [CCA_LIB="-lcca -lgfortran -lproj -letree"])
+fi
+
+# Get SCEC CS173 library and include locations
+if test "x$enable_model_cs173" = xyes; then
+AC_ARG_WITH([cs173-include-path],
+  [AS_HELP_STRING([--with-cs173-include-path],
+    [location of the SCEC CS173 headers])],
+  [CS173_INCL="-I$withval"],
+  [CS173_INCL="/usr/include/cs173"])
+AC_ARG_WITH([cs173-lib-path],
+  [AS_HELP_STRING([--with-cs173-lib-path], [location of the SCEC CS173 libraries])],
+  [CS173_LIB="-L$withval -lcs173 -lgfortran -lproj -letree"],
+  [CS173_LIB="-lcs173 -lgfortran -lproj -letree"])
 fi
 
 
@@ -514,8 +533,8 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, false)   
 fi
 
-# Check optional SCEC CVM-S5 installation
 if test "x$enable_static" = xyes; then
+# Check optional SCEC CCA installation
 if test "x$enable_model_cca" = xyes; then
    # Setup compiler/linker flags
    CFLAGS="$CCA_INCL $CFLAGS"
@@ -529,6 +548,22 @@ else
 fi
 else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)   
+fi
+
+# Check optional SCEC CS173 installation
+if test "x$enable_model_cs173" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$CS173_INCL $CFLAGS"
+   LDFLAGS="$CS173_LIB $LDFLAGS"
+
+   echo "Checking for SCEC CS173"
+   AC_CHECK_LIB(cs173, cs173_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, true)], [AC_MSG_ERROR(["SCEC CS173 library not found; use --with-cs173-lib-path"])],[-lproj -letree -lgfortran -lm])
+   AC_CHECK_HEADER(cs173.h,[],[AC_MSG_ERROR(["SCEC CS173 header not found; use --with-cs173-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)   
 fi
 
 

@@ -13,6 +13,7 @@ from mpl_toolkits.basemap import cm
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
+import pdb
 ##
 #  @class HorizontalSlice
 #  @brief Plots a horizontal slice starting at a given @link common.Point Point @endlink
@@ -33,7 +34,10 @@ class HorizontalSlice:
     #  @param spacing The spacing, in degrees, for this plot.
     #  @param cvm The community velocity model from which this data should come.
     #  
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm):
+    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps = None):
+
+        self.xsteps = xsteps
+        self.ysteps = ysteps
         
         if not isinstance(upperleftpoint, Point):
             raise TypeError("Parameter upperleftpoint must be of type Point.")
@@ -74,9 +78,16 @@ class HorizontalSlice:
         ## The plot height - needs to be stored as a property for the plot function to work.
         self.plot_height = self.upperleftpoint.latitude - self.bottomrightpoint.latitude 
         ## The number of x points we retrieved. Stored as a property for the plot function to work.
-        self.num_x = int(math.ceil(self.plot_width / self.spacing)) + 1
+        if ( self.xsteps ) :
+           self.num_x = int(self.xsteps)
+        else :
+           self.num_x = int(math.ceil(self.plot_width / self.spacing)) + 1
+
         ## The number of y points we retrieved. Stored as a property for the plot function to work.
-        self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
+        if ( self.ysteps ) :
+           self.num_y = int(self.ysteps)
+        else :
+           self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
         ## The 2D array of retrieved material properties.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
@@ -116,7 +127,7 @@ class HorizontalSlice:
     #  @param title The title of the plot. Optional.
     #  @param horizontal_label The horizontal label of the plot. Optional.
     #  @param color_scale The color scale for the plot (d, discretized; s, smooth). Optional.
-    def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d", datafile = None):
+    def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d", datafile = None, meta={}):
         
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -202,5 +213,6 @@ class HorizontalSlice:
             
         if filename:
             plt.savefig(filename)
+## MEI, TODO p.savehtml("show.html")
         else:
             plt.show()

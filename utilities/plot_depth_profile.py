@@ -94,6 +94,8 @@ ret_val = get_user_opts({ "s,startingpoint":"lat1,lon1", \
 # Create a new UCVM object.
 u = UCVM()
 
+meta = {}
+
 starting_depth = 0 
 if ret_val == "bad":
     usage()
@@ -102,6 +104,7 @@ elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
         print key , " = " , value
+        meta[key] = value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -190,5 +193,5 @@ print "Retrieving data. Please wait..."
 d = DepthProfile(Point(lon1, lat1, starting_depth),
          ending_depth, vertical_spacing, cvm_selected, threshold=vs_threshold)
 
-d.plot(data_type, filename=outfile)
+d.plot(data_type, filename=outfile, meta=meta)
 

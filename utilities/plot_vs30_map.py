@@ -87,6 +87,8 @@ def get_user_opts(options):
 # Create a new UCVM object.
 u = UCVM()
 
+meta = {}
+
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", \
                          "c,cvm":"cvm_selected", "a,scale": "color", \
@@ -99,6 +101,7 @@ elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
         print key , " = " , value
+        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -170,4 +173,4 @@ print "Retrieving data. Please wait..."
 # Generate the horizontal slice.
 v = Vs30Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
 
-v.plot(color_scale=color,datafile=datafile,filename=outfile)
+v.plot(color_scale=color,datafile=datafile,filename=outfile, meta=meta)

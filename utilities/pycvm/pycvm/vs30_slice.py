@@ -28,10 +28,13 @@ class Vs30Slice(HorizontalSlice):
     #  @param spacing The spacing, in degrees, for this plot. 
     #  @param cvm The community velocity model from which this data should come.
     #  
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm):
+    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps=None):
     
+        self.xsteps = xsteps
+        self.ysteps = ysteps
+
         #  Initializes the base class which is a horizontal slice.
-        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm)
+        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=xsteps, ysteps=ysteps)
     
     ##
     #  Retrieves the values for this Vs30 slice and stores them in the class.
@@ -44,9 +47,15 @@ class Vs30Slice(HorizontalSlice):
         ## The plot height - needs to be stored as a property for the plot function to work.
         self.plot_height = self.upperleftpoint.latitude - self.bottomrightpoint.latitude 
         ## The number of x points we retrieved. Stored as a property for the plot function to work.
-        self.num_x = int(math.ceil(self.plot_width / self.spacing)) + 1
+        if ( self.xsteps ):
+           self.num_x = int(self.xsteps)
+        else :
+           self.num_x = int(math.ceil(self.plot_width / self.spacing)) + 1
         ## The number of y points we retrieved. Stored as a property for the plot function to work.
-        self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
+        if ( self.ysteps ) :
+           self.num_y = int(self.ysteps)  
+        else :
+           self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
         ## The 2D array of retrieved Vs30 values.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
@@ -85,7 +94,7 @@ class Vs30Slice(HorizontalSlice):
     #  @param filename The location to which the plot should be saved. Optional.
     #  @param title The title of the plot to use. Optional.
     #  @param color_scale The color scale to use for the plot. Optional.
-    def plot(self, title = None, datafile = None, filename = None, color_scale = "d"):
+    def plot(self, title = None, datafile = None, filename = None, color_scale = "d",meta={}):
  
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -101,5 +110,5 @@ class Vs30Slice(HorizontalSlice):
         if title == None:
             title = "%sVs30 Data For %s" % (location_text, cvmdesc)
         
-        HorizontalSlice.plot(self, "vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale)
+        HorizontalSlice.plot(self, "vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)
         

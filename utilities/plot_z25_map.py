@@ -23,8 +23,10 @@ def usage():
     print "\t-z, --interval: Z-interval, in meters, for Z%.1f to be queried (lower value means more precision)"
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-f, --datafile: optional binary input data filename"
+    print "\t-x, --x: optional x steps matching the datafile"
+    print "\t-y, --y: optional y steps matching the datafile"
     print "\t-o, --outfile: optional png output filename"
-    print "\t-x, --extra: optional extra note to be appended to the plot title"
+    print "\t-e, --extra: optional extra note to be appended to the plot title"
     print "UCVM %s\n" % VERSION
 
 
@@ -50,7 +52,6 @@ def get_user_opts(options):
     opts_opt = []
     ret_val = {}
 
-    
     for key, value in options.iteritems():
         short_opt_string = short_opt_string + key.split(",")[0] + ":"
         long_opts.append(key.split(",")[1])
@@ -83,9 +84,17 @@ def get_user_opts(options):
               opts_opt.append(l)
               ret_val["outfile"] = None
             else :
-                if l == "x" :
+                if l == "e" :
                   opts_opt.append(l)
                   ret_val["extra"] = None
+                else :
+                    if l == "x" :
+                      opts_opt.append(l)
+                      ret_val["nx"] = None
+                    else :
+                        if l == "y" :
+                          opts_opt.append(l)
+                          ret_val["ny"] = None
     
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
@@ -95,10 +104,13 @@ def get_user_opts(options):
 # Create a new UCVM object.
 u = UCVM()
 
+meta = {}
+
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
                         "f,datafile":"datafile", "o,outfile":"outfile", \
-                        "x,extra":"extra"})
+                        "x,nx":"nx", "y,ny":"ny", \
+                        "e,extra":"extra"})
 
 if ret_val == "bad":
     usage()
@@ -107,6 +119,7 @@ elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
         print key , " = " , value
+        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -173,6 +186,6 @@ else:
     cvm_selected = corresponding_cvm[cvm_selected]
  
 # Generate the horizontal slice.
-b = Z25Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
+b = Z25Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected,xsteps=nx, ysteps=ny)
 
-b.plot(datafile=datafile,filename=outfile,note=extra)
+b.plot(datafile=datafile,filename=outfile,note=extra,meta=meta)

@@ -94,6 +94,8 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2",
 # Create a new UCVM object.
 u = UCVM()
 
+meta = {}
+
 if ret_val == "bad":
     usage()
     exit(1)
@@ -101,6 +103,7 @@ elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
         print key , " = " , value
+        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -201,4 +204,4 @@ print "Retrieving data. Please wait..."
 # Generate the horizontal slice.
 h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
 
-h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color)
+h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color,meta=meta)

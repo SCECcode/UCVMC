@@ -50,7 +50,7 @@ extern int optind, opterr, optopt;
 
 /* Display usage information */
 void usage() {
-	printf("Usage: basin_query_mpi [-h] [-b outfile [,outfile ,outfile] ] [-o ascii outfile]  [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
+	printf("Usage: basin_query_mpi [-h] [-b outfile [,outfile ,outfile] ] [-o ascii_outfile]  [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
 	printf("[-v vs_thresh] [-l lat,lon] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
 	printf("where:\n");
 	printf("\t-b Binary output to file.\n");
@@ -278,8 +278,6 @@ int main(int argc, char **argv) {
         }
         ascii_outfile = "";
         track_outfiles[0] = ""; // result ascii file
-     //   secondMore_outfile = ""; // 2nd and more crossing
-     //   thirdMore_outfile = ""; // 3rd and more crossing
 
 	/* Parse options */
 	while ((opt = getopt(argc, argv, "hb:o:m:f:d:i:v:l:s:x:y:")) != -1) {
@@ -345,6 +343,8 @@ int main(int argc, char **argv) {
 				usage();
 				exit(1);
 			}
+/* XXX */
+                        printf("\nXXX: %f,%f\n", latlon[0], latlon[1]);
 			break;
 		case 's':
 			spacing = (double) atof(optarg);
@@ -426,7 +426,7 @@ int main(int argc, char **argv) {
                 printf("spacing: %f\n", spacing);
                 printf("cvm_selected: %s\n", modellist);
                 printf("\nparams: -b %f,%f -u %f,%f -c %s -s %f\n",
-                                   lon1,lat1,lon2,lat2,modellist,spacing);
+                                   lat1,lon1,lat2,lon2,modellist,spacing);
 	}
 
         /* setup result file handler */

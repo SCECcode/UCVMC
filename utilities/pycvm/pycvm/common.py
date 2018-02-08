@@ -16,6 +16,7 @@ import math
 import struct
 import getopt
 import pdb
+import json
 
 #  Numpy is required.
 try:
@@ -126,6 +127,13 @@ class Plot:
     #  @param filename The name fo the file to save.
     def savefig(self, filename):
         plt.savefig(filename)
+
+## MEI ToDO
+    def savehtml(self, filename):
+        import mpld3
+#        mpld3.save_html(self.figure,filename)
+#        mpld3.save_json(self.figure, filename)
+        mpld3.fig_to_dict(self.figure)
 
 ##
 #  @class Point
@@ -267,6 +275,25 @@ class MaterialProperties:
             return self.qs
         else:
             raise ValueError("Parameter property must be a valid material property unit.")
+    ##
+    #  Set the corresponding property given the property as a string.
+    # 
+    #  @param property The property name as a string ("vs", "vp", "density", "qp", or "qs").
+    #  @param val The property value.
+    def setProperty(self, property, val):               
+        if property.lower() == "vs":
+            self.vs=val
+        elif property.lower() == "vp":
+            self.vp=val
+        elif property.lower() == "density":
+            self.density=val
+        elif property.lower() == "qp":
+            self.qp=val
+        elif property.lower() == "qs":
+            self.qs=val
+        else:
+            raise ValueError("Parameter property must be a valid material property unit.")
+        
         
     ##
     #  String representation of the material properties.
@@ -420,18 +447,53 @@ class UCVM:
 
 #  import raw floats directory from the external file 
 #
-    def import_binary(self, rawfile, num_x, num_y):
-
-##        pdb.set_trace()
+    def import_binary(self, fname, num_x, num_y):
+        k = fname.rfind(".png")
+        rawfile=fname
+        if( k != -1) : 
+            rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
         floats = np.fromfile(fh, dtype=np.float32)
         fh.close()
-        print "TOTAL number of binary data read:",len(floats),"\n"
+#        print "TOTAL number of binary data read:",len(floats),"\n"
 
         if len(floats) == 1:
             return floats[0]
         
         return floats
+
+#  export raw floats nxy ndarray  to an external file 
+    def export_binary(self, floats, fname):
+        k = fname.rfind(".png")
+        rawfile=fname
+        if( k != -1) : 
+            rawfile = fname[:k] + "_data.bin"
+        fh = open(rawfile, 'w+') 
+        floats.tofile(fh)
+        fh.close()
+
+#  { 'num_x' : xval, 'num_y' : yval, 'total' : total }
+#  import ascii meta jsoin data to an external file 
+    def import_metadata(self, fname):
+        k = fname.rfind(".png")
+        metafile=fname
+        if( k != -1) : 
+            metafile = fname[:k] + "_meta.json"
+        fh = open(metafile, 'r') 
+        meta = json.load(fh)
+        fh.close()
+        return meta
+
+#  export ascii meta data to an external file 
+    def export_metadata(self,meta,fname):
+        k = fname.rfind(".png")
+        metafile=fname
+        if( k != -1) : 
+            metafile = fname[:k] + "_meta.json"
+        fh = open(metafile, 'w+') 
+        json.dump(meta, fh)
+        fh.close()
+
 
 #  Function Definitions
 

@@ -49,6 +49,15 @@
 			"Libraries": ["euclid3", "proj-4"],
 			"Ask": "yes",
 			"Order": "6"		
+		},
+		"CS173": {
+			"Version": "1.0",
+			"Path": "cs173",
+			"URL": "http://hypocenter.usc.edu/research/ucvm/17.10.0/models/cs173.tar.gz",
+			"Flags": "--enable-model-cs173 --with-cs173-lib-path=lib --with-cs173-include-path=include",
+			"Libraries": ["euclid3", "proj-4"],
+			"Ask": "yes",
+			"Order": "7"		
 		}
 	},
 	"libraries": {
