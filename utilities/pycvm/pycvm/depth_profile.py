@@ -180,7 +180,7 @@ class DepthProfile:
     #
     #  @param properties An array of material properties. Can be one or more of vp, vs, and/or density.
     #  @param filename If this is set, the plot will not be shown but rather saved to this location.
-    def plot(self, properties, filename = None):
+    def plot(self, properties, filename = None, meta = {}):
 
         if self.startingpoint.description == None:
             location_text = ""

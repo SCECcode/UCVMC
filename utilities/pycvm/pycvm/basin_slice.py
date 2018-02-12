@@ -53,12 +53,12 @@ class BasinSlice(HorizontalSlice):
         ## The plot height - needs to be stored as a property for the plot function to work.
         self.plot_height = self.upperleftpoint.latitude - self.bottomrightpoint.latitude 
         ## The number of x points we retrieved. Stored as a property for the plot function to work.
-        if( self.xsteps ) :
+        if( self.xsteps is not None ) :
            self.num_x = int(self.xsteps)
         else:
            self.num_x = int(math.ceil(self.plot_width / self.spacing)) + 1
         ## The number of y points we retrieved. Stored as a property for the plot function to work.
-        if( self.ysteps ) :
+        if( self.ysteps is not None ) :
            self.num_y = int(self.ysteps)
         else:
            self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
