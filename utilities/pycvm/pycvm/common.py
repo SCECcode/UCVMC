@@ -53,6 +53,7 @@ UCVM_CVMS = {"1d":"1D", \
              "cvms5":"CVM-S4.26", \
              "cvmsi":"CVM-S4.26.M01", \
              "cca":"CCA 06", \
+             "cs173":"CyperShake 17.3", \
              "cvmh":"CVM-H 15.1.0", \
              "cencal":"USGS Bay Area Model"}
 
