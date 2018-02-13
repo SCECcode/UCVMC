@@ -550,6 +550,7 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)   
 fi
 
+if test "x$enable_static" = xyes; then
 # Check optional SCEC CS173 installation
 if test "x$enable_model_cs173" = xyes; then
    # Setup compiler/linker flags
