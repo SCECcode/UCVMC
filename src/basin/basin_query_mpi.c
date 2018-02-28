@@ -41,7 +41,6 @@
         // holding just the 2nd-only crossing points (secondOnly)
         // holding just the 3+ crossing points (thirdMore)
 
-
 // to hold 4 floats and couple of comma and CRLF
 
 /* Get opt args */
@@ -116,11 +115,11 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 						depths[2] = depths[dnum];
 						depths[3] = depths[dnum];
                                                 dnum++;
-printf("WooHoo 2nd.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
+//fprintf(stderr,"WooHoo 2nd.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
 						} else {
                                                 // dnum sticks to 2 
 							depths[4] = depths[dnum];
-printf("WooHoo last.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
+//fprintf(stderr,"WooHoo last.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
 					}
 				}
 			}
@@ -343,8 +342,6 @@ int main(int argc, char **argv) {
 				usage();
 				exit(1);
 			}
-/* XXX */
-                        printf("\nXXX: %f,%f\n", latlon[0], latlon[1]);
 			break;
 		case 's':
 			spacing = (double) atof(optarg);
@@ -419,14 +416,16 @@ int main(int argc, char **argv) {
                 float lon1 = latlon[1];
                 float lon2 = (ny * spacing) + latlon[1];
                 // spacing
+                printf("x:%d\n", nx);
+                printf("y:%d\n", ny);
                 printf("lat1:%f\n", lat1);
                 printf("lat2: %f\n", lat2);
                 printf("lon1: %f\n", lon1);
                 printf("lon2: %f\n", lon2);
                 printf("spacing: %f\n", spacing);
                 printf("cvm_selected: %s\n", modellist);
-                printf("\nparams: -b %f,%f -u %f,%f -c %s -s %f\n",
-                                   lat1,lon1,lat2,lon2,modellist,spacing);
+                printf("\nparams: -b %f,%f -u %f,%f -c %s -s %f -x %d -y %d\n",
+                         lat1,lon1,lat2,lon2,modellist,spacing,nx,ny);
 	}
 
         /* setup result file handler */

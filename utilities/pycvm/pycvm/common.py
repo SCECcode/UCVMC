@@ -371,8 +371,16 @@ class UCVM:
         output = output.split("\n")[1:-1]
         
         for line in output:
-            properties.append(MaterialProperties.fromUCVMOutput(line))
-        
+# it is material properties.. line
+#            print line
+            try :
+              mp = MaterialProperties.fromUCVMOutput(line)
+              properties.append(mp)
+            except :
+              # skip this line
+              print ""
+
+
         if len(properties) == 1:
             return properties[0]
         
@@ -456,6 +464,7 @@ class UCVM:
         fh = open(rawfile, 'r') 
         floats = np.fromfile(fh, dtype=np.float32)
         fh.close()
+
 #        print "TOTAL number of binary data read:",len(floats),"\n"
 
         if len(floats) == 1:

@@ -20,7 +20,7 @@ def usage():
     print "\t-u, --upperright: upper-right latitude, longitude (e.g. 35,-117)"
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-e, --depth: depth for horizontal slice in meters (e.g. 1000)"
-    print "\t-d, --datatype: either 'vs', 'vp', 'rho', or 'poisson', without quotation marks"
+    print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed velocity models"
     print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
     print "\t-f, --datafile: optional binary input data filename"
@@ -158,7 +158,7 @@ else:
         data_type = raw_input("What would you like to plot (either vp, vs, density, or poisson): ")
         data_type = data_type.lower().strip()
     
-        if data_type != "vs" and data_type != "vp" and data_type != "density" and data_type != "poisson":
+        if data_type != "vs" and data_type != "vp" and data_type != "density"  and data_type != "poisson":
             print "Error: you must select either 'vp', 'vs', 'density', 'poisson' (without quotation marks)."
 
     # Ask which CVMs to use.

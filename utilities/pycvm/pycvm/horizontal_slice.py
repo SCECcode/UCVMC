@@ -118,7 +118,7 @@ class HorizontalSlice:
             if j >= self.num_x:
                 j = 0
                 i = i + 1
-    
+
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -185,19 +185,29 @@ class HorizontalSlice:
     
         # Get the properties.
         datapoints = np.arange(self.num_x * self.num_y,dtype=float).reshape(self.num_y, self.num_x)
-        
+
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
                 if property != "poisson":
                     if color_scale == "sd":
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
+                        if(datapoints[i][j] == -1 ) :
+                            datapoints[i][j]=np.nan
                     else:
-                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000.0
+                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
+                        if (datapoints[i][j] == 0) :
+                            datapoints[i][j]=np.nan
                 else:
                     datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
                     
         t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
         img = m.imshow(t, cmap=colormap, norm=norm)
+
+       
+#        print "MIN is ", np.nanmin(datapoints)
+#        print "MAX is ", np.nanmax(datapoints)
+#        img=m.scatter(xlist, ylist, c=dlist, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
+#        img=m.scatter(xcoords, ycoords, c=datapoints, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
     
         m.drawcoastlines()
     

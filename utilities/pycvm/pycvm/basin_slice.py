@@ -74,11 +74,11 @@ class BasinSlice(HorizontalSlice):
         u = UCVM()
 
 ### MEI
-        print "Hoping for num_x ", self.num_x, " and num_y", self.num_y
+#        print "Hoping for num_x ", self.num_x, " and num_y", self.num_y
         if (datafile != None) :
-            print "\nUsing --> "+datafile
+#            print "\nUsing --> "+datafile
             data = u.import_binary(datafile, self.num_x, self.num_y)
-            print "Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y
+#            print "Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y
         else:
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
@@ -95,15 +95,15 @@ class BasinSlice(HorizontalSlice):
         
         for matprop in data:
             self.materialproperties[i][j].vs = matprop
-            
+
             if matprop > self.max_val:
                 self.max_val = matprop
-            
+
             j = j + 1
             if j >= self.num_x:
                 j = 0
                 i = i + 1
-                
+
     ##
     #  Plots the basin depth data as a horizontal slice. This code is very similar to the
     #  HorizontalSlice routine.
