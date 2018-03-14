@@ -22,11 +22,13 @@
 #define DEFAULT_ZERO_DEPTH 0.0 
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
+#define META_BASE_LEN 2000 
+
 
 //#define BLOB_FMT "%5d %5d %10.4f %10.4f %10.3f %10.3f\n"
 //#define DEFAULT_BLOB_LEN 56
-#define BLOB_FMT "%10.4f %10.4f %10.3f %10.3f %10.3f\n"
-#define DEFAULT_BLOB_LEN 55 
+#define BLOB_FMT "%10.4f %10.4f %3d %10.3f %10.3f %10.3f %10.3f\n"
+#define DEFAULT_BLOB_LEN 70 
 
 #define WORKERREADY 99
 #define DIEOFF -1
@@ -49,7 +51,7 @@ extern int optind, opterr, optopt;
 
 /* Display usage information */
 void usage() {
-	printf("Usage: basin_query_mpi [-h] [-b outfile [,outfile ,outfile] ] [-o ascii_outfile]  [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
+	printf("Usage: basin_query_mpi [-h] [-b outfile [,outfile ,outfile] ] [-o ascii_outfile[, meta_outfile] ]  [-m models<:ifunc>] [-f config] [-d max_depth] [-i inter] ");
 	printf("[-v vs_thresh] [-l lat,lon] [-s spacing] [-x num lon pts] [-y num lat pts]\n\n");
 	printf("where:\n");
 	printf("\t-b Binary output to file.\n");
@@ -72,13 +74,17 @@ void usage() {
 /* Extract basin values for the specified point */
 int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, double z_inter, double vs_thresh) {
 
-	int j, numz, dnum;
+	int j, numz, dnum, crossing_cnt;
 	double vs_prev;
 
 	numz = (int) (max_depth / z_inter);
 
 	ucvm_point_t *qpnts = malloc(numz * sizeof(ucvm_point_t));
 	ucvm_data_t *qprops = malloc(numz * sizeof(ucvm_data_t));
+        if(qpnts == NULL || qprops == NULL) {
+            fprintf(stderr," fail to qpnts or qprops..\n");
+            exit(1);
+        }
 
 	for (j = 0; j < numz; j++) {
 		qpnts[j].coord[0] = pnt[0].coord[0];
@@ -92,13 +98,19 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 		return (1);
 	}
 
-//  initialize to something
+        double firstCrossing= DEFAULT_NULL_DEPTH;
+        double firstOrSecondCrossing= DEFAULT_NULL_DEPTH;
+        double lastCrossing= DEFAULT_NULL_DEPTH;
+        double secondOnlyCrossing= DEFAULT_NULL_DEPTH;
+        double thirdMoreLastCrossing= DEFAULT_NULL_DEPTH;
+
 	dnum = 0;
+        crossing_cnt = 0;
         depths[0] = DEFAULT_NULL_DEPTH;
         depths[1] = DEFAULT_NULL_DEPTH;
         depths[2] = DEFAULT_NULL_DEPTH;
         depths[3] = DEFAULT_NULL_DEPTH;
-        depths[4] = DEFAULT_NULL_DEPTH;
+
 	vs_prev = DEFAULT_ZERO_DEPTH;
 	for (j = 0; j < numz; j++) {
                 // must be a valid depth
@@ -106,30 +118,38 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 			if(vs_prev < vs_thresh &&
 					(qprops[j].cmb.vs >= vs_thresh)) {
 				// found a crossing point
+				crossing_cnt++;
 				depths[dnum] = (double) j * z_inter;
 				if(dnum == 0) {
-                                        depths[2] = depths[1] = depths[dnum];
+					lastCrossing=firstOrSecondCrossing = firstCrossing = depths[dnum];
 					dnum++;
-					} else {
-					if(dnum == 1) {
-						depths[2] = depths[dnum];
-						depths[3] = depths[dnum];
-                                                dnum++;
+				} else if(dnum == 1) {
+					lastCrossing=firstOrSecondCrossing=depths[dnum];
+                                        secondOnlyCrossing = depths[dnum];
+                                        dnum++;
 //fprintf(stderr,"WooHoo 2nd.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
-						} else {
-                                                // dnum sticks to 2 
-							depths[4] = depths[dnum];
+				} else if(dnum == 2) {
+					lastCrossing = thirdMoreLastCrossing = depths[dnum];
+                                        dnum++;
+                                } else {
+
+                                // dnum sticks to 3 
+				lastCrossing = thirdMoreLastCrossing = depths[dnum];
 //fprintf(stderr,"WooHoo last.. %10.3f %10.3f\n", pnt[0].coord[0], pnt[0].coord[1]);
-					}
-				}
+                                }
 			}
 			vs_prev = qprops[j].cmb.vs;
 		}
 	}
+        depths[4] = firstCrossing; 
+        depths[5] = firstOrSecondCrossing;
+        depths[6] = lastCrossing;
+        depths[7] = secondOnlyCrossing;
+        depths[8] = thirdMoreLastCrossing;
 
 	free(qprops);
 	free(qpnts);
-	return(0);
+	return(crossing_cnt);
 }
 /*   first
      first,second
@@ -248,8 +268,9 @@ int main(int argc, char **argv) {
 	char map_label[UCVM_MAX_LABEL_LEN];
 
         char *binary_outfiles[DEFAULT_MAX_FILES];
-        char *track_outfiles[1];
+        char *track_outfiles[2];
         char *ascii_outfile;
+        char *ascii_meta_outfile;
 
         int i;
         // mpi related variables
@@ -276,7 +297,9 @@ int main(int argc, char **argv) {
           binary_outfiles[i] = "";
         }
         ascii_outfile = "";
+        ascii_meta_outfile = "";
         track_outfiles[0] = ""; // result ascii file
+        track_outfiles[1] = ""; // result ascii meta file
 
 	/* Parse options */
 	while ((opt = getopt(argc, argv, "hb:o:m:f:d:i:v:l:s:x:y:")) != -1) {
@@ -291,6 +314,7 @@ int main(int argc, char **argv) {
 		case 'o':
                         parse_file_list(optarg,track_outfiles);
                         ascii_outfile = track_outfiles[0];
+                        ascii_meta_outfile = track_outfiles[1];
 			break;
 		case 'm':
 			if (strlen(optarg) >= UCVM_MAX_MODELLIST_LEN - 1) {
@@ -406,15 +430,16 @@ int main(int argc, char **argv) {
 	MPI_Barrier(MPI_COMM_WORLD);
 
         MPI_File bfh[DEFAULT_MAX_FILES];
-        MPI_File afh; 
+        MPI_File afh = NULL; // ascii result file (raw crossing data file)
+        MPI_File mfh = NULL; // ascii meta file (in json)
 
         /* display the config data */
 	if(rank == 0) {
 		printf("Metadata:\n"); 
 		float lat1 = latlon[0];
-		float lat2 = (nx * spacing) + lat1;
+		float lat2 = (ny * spacing) + lat1;
                 float lon1 = latlon[1];
-                float lon2 = (ny * spacing) + latlon[1];
+                float lon2 = (nx * spacing) + lon1;
                 // spacing
                 printf("x:%d\n", nx);
                 printf("y:%d\n", ny);
@@ -426,6 +451,67 @@ int main(int argc, char **argv) {
                 printf("cvm_selected: %s\n", modellist);
                 printf("\nparams: -b %f,%f -u %f,%f -c %s -s %f -x %d -y %d\n",
                          lat1,lon1,lat2,lon2,modellist,spacing,nx,ny);
+
+                /* produce the meta data in json.. */
+
+                // 10 chars per float, 1 for comma, 1 for decimal point, 1 for sign
+                char *latlist= (char *)malloc(nx * (13)+10);
+                char *lonlist= (char *)malloc(ny * (13)+10);
+                if(latlist == NULL || lonlist == NULL) {
+                    fprintf(stderr," fail to latlist or lonlist..\n");
+                    exit(1);
+                }
+                latlist[0]='\0';
+                lonlist[0]='\0';
+                int ii;
+                // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
+		for (ii = 0; ii < nx; ii++) {
+                   double tlat= (double) (ii * spacing) + latlon[0];
+                   if(ii==0) {
+                       sprintf(latlist,"%10.4f",tlat);
+                       } else {
+                           sprintf(latlist,"%s,%10.4f",latlist,tlat);
+                   }
+                }
+		for (ii = 0; ii < ny; ii++) {
+                   double tlon= (double) (ii * spacing) + latlon[1];
+                   
+                   if(ii==0) {
+                       sprintf(lonlist,"%10.4f",tlon);
+                       } else {
+                           sprintf(lonlist,"%s,%10.4f",lonlist,tlon);
+                   }
+                }
+                
+                if(strlen(ascii_meta_outfile) > 0) { 
+                // a guess of how big the blob is..
+                    int meta_sz=(int) strlen(latlist)+(int)strlen(lonlist)+ META_BASE_LEN;
+		    char *meta_blob=(char *)malloc(meta_sz*sizeof(char));
+                    if (meta_blob == NULL ) {
+                        fprintf(stderr,"failed to reesrve meta blob \n");
+                        exit(1);
+                    }
+		    sprintf(meta_blob,"{\"spacing\":%10.4f,\
+			\"bottom-left lat\":%10.4f,\"bottom-left lon\":%10.4f,\
+			\"upper-right lat\":%10.4f,\"upper-right lon\":%10.4f,\
+			\"cvm_selected\":\"%s\",\"config\": \"%s\",\
+			\"max depth\":%10.4f,\"vs threshold\":%10.4f,\
+			\"nx\":%4d,\"ny\":%4d, \"lat\":[%s],\"lon\":[%s]}\n",
+                    spacing,
+                    lat1,lon1,
+                    lat2,lon2,
+                    modellist,configfile,
+                    max_depth,vs_thresh,
+                    nx,ny,latlist,lonlist);
+
+		    MPI_File_open(MPI_COMM_SELF, ascii_meta_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &mfh);
+		    MPI_File_write(mfh, meta_blob, (int)strlen(meta_blob) * sizeof(char), MPI_CHAR, MPI_STATUS_IGNORE);
+                    free(meta_blob);
+                    free(latlist);
+                    free(lonlist);
+		    } else {
+			mfh=NULL;
+	        }
 	}
 
         /* setup result file handler */
@@ -442,19 +528,26 @@ int main(int argc, char **argv) {
 			afh=NULL;
 	}
 
-
 	// We divide the job up in terms of lines (i.e. ny).
 	currentline = rank;
 
 	while (currentline < ny) {
 		ucvm_point_t *pnts = malloc(sizeof(ucvm_point_t));
-		double tempDepths[5];
+                if(pnts == NULL) {
+                    fprintf(stderr," fail to pnts..\n");
+                    exit(1);
+                }
+		double tempDepths[9];
 		float *retDepths = malloc(nx * sizeof(float));
 		float *retSecondDepths = malloc(nx * sizeof(float));
 		float *retLastDepths = malloc(nx * sizeof(float));
 		float *retSecondOnlyDepths = malloc(nx * sizeof(float));
 		float *retThirdLastDepths = malloc(nx * sizeof(float));
                 char *retLiteral= malloc(DEFAULT_BLOB_LEN * nx * sizeof(char));
+                if(retLiteral == NULL) {
+                    fprintf(stderr," fail to reserve big data for retLiteral..\n");
+                    exit(1);
+                }
 
 		printf("Current line: %d. Progress: %.2f%%\n", currentline, 
 (float) currentline / (float)ny  * 100.0f);
@@ -464,16 +557,17 @@ int main(int argc, char **argv) {
 			pnts[0].coord[1] = (currentline * spacing) + latlon[0];
 			pnts[0].coord[0] = (i * spacing) + latlon[1];
 
-			extract_basin_mpi(pnts, tempDepths, max_depth, z_inter, vs_thresh);
-
-			retDepths[i] = (float)tempDepths[0];
-			retSecondDepths[i] = (float)tempDepths[1];
-			retLastDepths[i] = (float)tempDepths[2];
-			retSecondOnlyDepths[i] = (float)tempDepths[3];
-			retThirdLastDepths[i] = (float)tempDepths[4];
+			int cross_cnt=extract_basin_mpi(pnts, tempDepths, max_depth, z_inter, vs_thresh);
+			retDepths[i] = (float)tempDepths[4];
+			retSecondDepths[i] = (float)tempDepths[5];
+			retLastDepths[i] = (float)tempDepths[6];
+			retSecondOnlyDepths[i] = (float)tempDepths[7];
+			retThirdLastDepths[i] = (float)tempDepths[8];
 			if(afh != NULL) {
                                 int idx=i*charsperblob;
-				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], retDepths[i],retSecondDepths[i], retLastDepths[i]);
+				sprintf(&retLiteral[idx], BLOB_FMT, pnts[0].coord[0], pnts[0].coord[1], 
+                                        cross_cnt, (float)tempDepths[0], (float)tempDepths[1],
+                                        (float)tempDepths[2], (float)tempDepths[3]);
 			}
 		}
 
@@ -520,8 +614,7 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		//free(pnts);
-		//free(tempDepths);
+		free(pnts);
 		free(retDepths);
 		free(retLastDepths);
 		free(retSecondDepths);
@@ -552,6 +645,9 @@ int main(int argc, char **argv) {
 	}
         if(afh != NULL) {
 		MPI_File_close(&afh);
+	}
+        if(mfh != NULL) {
+		MPI_File_close(&mfh);
 	}
 	MPI_Type_free(&blob_as_string);
     

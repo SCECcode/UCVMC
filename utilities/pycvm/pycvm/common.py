@@ -454,7 +454,20 @@ class UCVM:
         
         return floats
 
+#  import meta data as a json blob
+#
+    def import_json(self, fname):
+	fh = open('data.json', 'r') 
+	data = json.load(fh)
+
+	fh.close()
+
+	return data
+
 #  import raw floats directory from the external file 
+#
+#  if filename is image.png, look for a matching
+#  image_data.bin
 #
     def import_binary(self, fname, num_x, num_y):
         k = fname.rfind(".png")
@@ -463,9 +476,14 @@ class UCVM:
             rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
         floats = np.fromfile(fh, dtype=np.float32)
-        fh.close()
 
-#        print "TOTAL number of binary data read:",len(floats),"\n"
+        print "TOTAL number of binary data read:",len(floats),"\n"
+
+        # sanity check,  
+        if len(floats) != (num_x * num_y) :
+            print "import_binary(), wrong size !!!"
+
+        fh.close()
 
         if len(floats) == 1:
             return floats[0]

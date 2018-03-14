@@ -119,6 +119,7 @@ class HorizontalSlice:
                 j = 0
                 i = i + 1
 
+        self.coords=ucvmpoints
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -180,8 +181,10 @@ class HorizontalSlice:
         m.drawstates()
         m.drawcountries()
     
-        lons = np.arange(self.upperleftpoint.longitude, self.bottomrightpoint.longitude, self.spacing)
-        lats = np.arange(self.bottomrightpoint.latitude, self.upperleftpoint.latitude, self.spacing)
+        alons = np.arange(self.upperleftpoint.longitude, self.bottomrightpoint.longitude, self.spacing)
+        alats = np.arange(self.bottomrightpoint.latitude, self.upperleftpoint.latitude, self.spacing)
+        lons = np.linspace(self.upperleftpoint.longitude, self.bottomrightpoint.longitude - self.spacing, self.num_x-1)
+        lats = np.linspace(self.bottomrightpoint.latitude, self.upperleftpoint.latitude - self.spacing, self.num_y-1)
     
         # Get the properties.
         datapoints = np.arange(self.num_x * self.num_y,dtype=float).reshape(self.num_y, self.num_x)

@@ -62,7 +62,7 @@ def get_user_opts(options):
     except getopt.GetoptError as err:
         print str(err)   
         exit(1)
-    
+
     for o, a in opts:
         for key, value in options.iteritems():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
@@ -104,8 +104,6 @@ def get_user_opts(options):
 # Create a new UCVM object.
 u = UCVM()
 
-meta = {}
-
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
                         "f,datafile":"datafile", "o,outfile":"outfile", \
@@ -119,7 +117,6 @@ elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
         print key , " = " , value
-        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -188,4 +185,4 @@ else:
 # Generate the horizontal slice.
 b = Z25Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected,xsteps=nx, ysteps=ny)
 
-b.plot(datafile=datafile,filename=outfile,note=extra,meta=meta)
+b.plot(datafile=datafile,filename=outfile,note=extra)
