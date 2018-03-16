@@ -496,7 +496,7 @@ int main(int argc, char **argv) {
 			\"upper-right lat\":%10.4f,\"upper-right lon\":%10.4f,\
 			\"cvm_selected\":\"%s\",\"config\": \"%s\",\
 			\"max depth\":%10.4f,\"vs threshold\":%10.4f,\
-			\"nx\":%4d,\"ny\":%4d, \"lat\":[%s],\"lon\":[%s]}\n",
+			\"nx\":%4d,\"ny\":%4d, \"lat_list\":[%s],\"lon_list\":[%s]}\n",
                     spacing,
                     lat1,lon1,
                     lat2,lon2,
