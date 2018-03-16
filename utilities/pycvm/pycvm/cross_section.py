@@ -74,6 +74,9 @@ class CrossSection:
     def getplotvals(self, property='vs', datafile = None):
 
         point_list = []
+        lon_list = []
+        lat_list = []
+        depth_list = []
 
         proj = pyproj.Proj(proj='utm', zone=11, ellps='WGS84')
 
@@ -84,17 +87,28 @@ class CrossSection:
                                  (y2-y1)*(y2-y1))/self.hspacing)
         
 #        cnt=0
+        jstart = self.startingpoint.depth
         for j in xrange(int(self.startingpoint.depth), int(self.todepth) + 1, int(self.vspacing)):
+            depth_list.append( round(j,3))
             for i in xrange(0, num_prof + 1):
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
                 point_list.append(Point(lon, lat, j))
+                if ( j == jstart) :
+                  lon_list.append( round(lon,3))
+                  lat_list.append( round(lat,3))
 #                if(cnt < 10) :
 #                   print("point.. lon ",lon, " lat ",lat," j ",j)
 #                   cnt += 1
                 
-        print("total points generated..", len(point_list))
+        self.lon_list=lon_list
+        self.lat_list=lat_list
+        self.depth_list=depth_list
+#        print("total points generated..", len(point_list))
+#        print("total lon..", len(lon_list))
+#        print("total lat..", len(lat_list))
+#        print("total lat..", len(depth_list))
         u = UCVM()
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
@@ -225,8 +239,8 @@ class CrossSection:
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
 
-        self.max_val=datapoints.max()
-        self.min_val=datapoints.min()
+        self.max_val=np.asscalar(datapoints.max())
+        self.min_val=np.asscalar(datapoints.min())
 
         BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
         TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
@@ -236,12 +250,13 @@ class CrossSection:
             TICKS = [tick * 1.7 for tick in TICKS]
 
         # Set default colormap and range
-        colormap = basemap.cm.GMT_seis_r
+        colormap = basemap.cm.GMT_seis
         norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
 
         if color_scale == "s":
-            colormap = basemap.cm.GMT_seis_r
-            norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
+#           norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
 
         if color_scale == "b":
             C = []
@@ -254,7 +269,7 @@ class CrossSection:
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
 
         if color_scale == 'd':
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
     
 
@@ -264,6 +279,11 @@ class CrossSection:
           meta['num_x'] = self.num_x
           meta['num_y'] = self.num_y
           meta['datapoints'] = datapoints.size
+          meta['max'] = self.max_val
+          meta['min'] = self.min_val
+          meta['lon_list'] = self.lon_list
+          meta['lat_list'] = self.lat_list
+          meta['depth_list'] = self.depth_list
           if filename:
               u.export_metadata(meta,filename)
               u.export_binary(datapoints,filename)
@@ -274,8 +294,7 @@ class CrossSection:
               f = "cross_section"+rnd
               u.export_metadata(meta,f)
               u.export_binary(datapoints,f)
-    
-#        print " max is ", datapoints.max()," min is ",datapoints.min()
+
         img = plt.imshow(datapoints, cmap=colormap, norm=norm)
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.2f" % self.startingpoint.longitude, \
                                                  "%.2f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
