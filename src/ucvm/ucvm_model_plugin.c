@@ -41,10 +41,10 @@ int ucvm_plugin_model_id = UCVM_SOURCE_NONE;
 ucvm_modelconf_t ucvm_plugin_model_conf;
 
 /** Stores the points in in WGS84 format. */
-basic_point_t *pointsBuffer;
+basic_point_t *ucvm_plugin_pnts_buffer;
 
 /** The returned data from the plugin model. */
-basic_properties_t *dataBuffer;
+basic_properties_t *ucvm_plugin_data_buffer;
 
 /**
  * Initializes the model within the UCVM framework. This is accomplished
@@ -162,8 +162,8 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 	memcpy(&ucvm_plugin_model_conf, conf, sizeof(ucvm_modelconf_t));
 
 	// Allocate our point and data buffers.
-	pointsBuffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_point_t));
-	dataBuffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_properties_t));
+	ucvm_plugin_pnts_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_point_t));
+	ucvm_plugin_data_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_properties_t));
 
 	// Yes, this model has been initialized successfully.
 	plugin_model_initialized = 1;
@@ -184,8 +184,8 @@ int ucvm_plugin_model_finalize()
   }
 
   // Free our pointers.
-  free(dataBuffer);
-  free(pointsBuffer);
+  free(ucvm_plugin_data_buffer);
+  free(ucvm_plugin_pnts_buffer);
 
   // We're no longer initialized.
   plugin_model_initialized = 0;
@@ -249,6 +249,13 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 	double depth = 0;
 	int datagap = 0;
 
+        /** Stores the mapping between data array and query buffer array */
+	int* index_mapping = malloc(sizeof(int)*MODEL_POINT_BUFFER);
+	if (index_mapping==NULL) {
+		fprintf(stderr, "Memory allocation of index_mapping failed, aborting.\n");
+		exit(1);
+	}
+
 	// Check the model id.
 	if (id != ucvm_plugin_model_id) {
 		fprintf(stderr, "Invalid model id.\n");
@@ -268,22 +275,24 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 	        /* Modify pre-computed depth to account for GTL interp range */
 	        depth = data[i].depth + data[i].shift_cr;
 
-    		pointsBuffer[nn].longitude = pnt[i].coord[0];
-    		pointsBuffer[nn].latitude = pnt[i].coord[1];
-    		pointsBuffer[nn].depth = depth;
+                index_mapping[nn]=i;
+
+    		ucvm_plugin_pnts_buffer[nn].longitude = pnt[i].coord[0];
+    		ucvm_plugin_pnts_buffer[nn].latitude = pnt[i].coord[1];
+    		ucvm_plugin_pnts_buffer[nn].depth = depth;
     		nn++;
 
 	    	if (nn == MODEL_POINT_BUFFER || i == n - 1) {
 	    		// We've reached the maximum buffer. Do the query.
-	    		(*model_query)(pointsBuffer, dataBuffer, nn);
+	    		(*model_query)(ucvm_plugin_pnts_buffer, ucvm_plugin_data_buffer, nn);
 
 	    		// Transfer our findings.
 	    		for (j = 0; j < nn; j++) {
-	    			if (dataBuffer[j].vp >= 0 && dataBuffer[j].vs >= 0 && dataBuffer[j].rho >= 0) {
-	    				data[(numTimesNN * MODEL_POINT_BUFFER) + j].crust.source = ucvm_plugin_model_id;
-	    				data[(numTimesNN * MODEL_POINT_BUFFER) + j].crust.vp = dataBuffer[j].vp;
-	    				data[(numTimesNN * MODEL_POINT_BUFFER) + j].crust.vs = dataBuffer[j].vs;
-	    				data[(numTimesNN * MODEL_POINT_BUFFER) + j].crust.rho = dataBuffer[j].rho;
+	    			if (ucvm_plugin_data_buffer[j].vp >= 0 && ucvm_plugin_data_buffer[j].vs >= 0 && ucvm_plugin_data_buffer[j].rho >= 0) {
+	    				data[index_mapping[j]].crust.source = ucvm_plugin_model_id;
+	    				data[index_mapping[j]].crust.vp = ucvm_plugin_data_buffer[j].vp;
+	    				data[index_mapping[j]].crust.vs = ucvm_plugin_data_buffer[j].vs;
+	    				data[index_mapping[j]].crust.rho = ucvm_plugin_data_buffer[j].rho;
 	    			} else {
 	    				datagap = 1;
 	    			}
@@ -298,6 +307,8 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 	    	if (data[i].crust.source == UCVM_SOURCE_NONE) datagap = 1;
 	    }
 	}
+
+	free(index_mapping);
 
 	if (datagap == 1) {
 		return UCVM_CODE_DATAGAP;
