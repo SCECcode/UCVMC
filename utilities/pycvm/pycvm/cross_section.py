@@ -257,8 +257,10 @@ class CrossSection:
             colormap = basemap.cm.GMT_seis
             norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
 #           norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
-
-        if color_scale == "b":
+        elif color_scale == "s_r":
+            colormap = basemap.cm.GMT_seis_r
+            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
+        elif color_scale == "b":
             C = []
             for bound in BOUNDS :
                if bound < scale_gate :
@@ -267,9 +269,11 @@ class CrossSection:
                   C.append("red")
             colormap = mcolors.ListedColormap(C)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
-
-        if color_scale == 'd':
+        elif color_scale == 'd':
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        elif color_scale == 'd_r':
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
     
 

@@ -34,18 +34,6 @@
 /** Have we initialized this model yet? */
 int plugin_model_initialized = 0;
 
-/** Used to store the model ID. */
-int ucvm_plugin_model_id = UCVM_SOURCE_NONE;
-
-/** Store the configuration data. */
-ucvm_modelconf_t ucvm_plugin_model_conf;
-
-/** Stores the points in in WGS84 format. */
-basic_point_t *ucvm_plugin_pnts_buffer;
-
-/** The returned data from the plugin model. */
-basic_properties_t *ucvm_plugin_data_buffer;
-
 /**
  * Initializes the model within the UCVM framework. This is accomplished
  * by dynamically loading the library symbols.
@@ -58,11 +46,16 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 	void *handle;
 	char sopath[1024];
 
+        ucvm_plugin_model_t *pptr=get_plugin_by_label(conf->label);
+      
 	// Have we initialized this model already?
-	if (plugin_model_initialized) {
-		//fprintf(stderr, "Model %s has already been initialized.\n", conf->label);
-		//return UCVM_CODE_ERROR;
-	}
+	if (pptr) {
+	  fprintf(stderr, "Model %d has already been initialized.\n", id);
+	  return UCVM_CODE_ERROR;
+	  } else {
+          // grab the first available space
+              pptr=get_plugin_by_order(plugin_model_initialized);
+        }
 
 #ifndef _UCVM_AM_STATIC
 	snprintf(sopath, 1024, "%s/model/%s/lib/lib%s.so", conf->config, conf->label, conf->label);
@@ -76,28 +69,32 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 	}
 
 	// Load the symbols.
-	model_init = dlsym(handle, "model_init");
+	MIPTR *iptr = dlsym(handle, "get_model_init");
+	pptr->model_init = iptr();
 
 	if (dlerror() != NULL) {
 		fprintf(stderr, "Could not load model_init.\n");
 		return UCVM_CODE_ERROR;
 	}
 
-	model_query = dlsym(handle, "model_query");
+	MQPTR *qptr = dlsym(handle, "get_model_query");
+	pptr->model_query = qptr();
 
 	if (dlerror() != NULL) {
 		fprintf(stderr, "Could not load model_query.\n");
 		return UCVM_CODE_ERROR;
 	}
 
-	model_finalize = dlsym(handle, "model_finalize");
+	MFPTR *fptr = dlsym(handle, "get_model_finalize");
+	pptr->model_finalize = fptr();
 
 	if (dlerror() != NULL) {
 		fprintf(stderr, "Could not load model_finalize.\n");
 		return UCVM_CODE_ERROR;
 	}
 
-	model_version = dlsym(handle, "model_version");
+	MVPTR *vptr = dlsym(handle, "get_model_version");
+	pptr->model_version = vptr();
 
 	if (dlerror() != NULL) {
 		fprintf(stderr, "Could not load model_version.\n");
@@ -105,7 +102,7 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 	}
 
 	// Initialize the model.
-	if ((*model_init)(conf->config, conf->label) != 0) {
+	if ((*pptr->model_init)(conf->config, conf->label) != 0) {
 		fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
 		return UCVM_CODE_ERROR;
 	}
@@ -114,11 +111,11 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #ifdef _UCVM_AM_STATIC
 #ifdef _UCVM_ENABLE_CVMS5
         if (strcmp(conf->label, "cvms5") == 0) {
-                model_init = &cvms5_init;
-                model_query = &cvms5_query;
-                model_finalize = &cvms5_finalize;
-                model_version = &cvms5_version;
-                if ((*model_init)(conf->config, conf->label) != 0) {
+                pptr->model_init = &cvms5_init;
+                pptr->model_query = &cvms5_query;
+                pptr->model_finalize = &cvms5_finalize;
+                pptr->model_version = &cvms5_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
                 }
@@ -126,11 +123,11 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 #ifdef _UCVM_ENABLE_CCA
         if (strcmp(conf->label, "cca") == 0) {
-                model_init = &cca_init;
-                model_query = &cca_query;
-                model_finalize = &cca_finalize;
-                model_version = &cca_version;
-                if ((*model_init)(conf->config, conf->label) != 0) {
+                pptr->model_init = &cca_init;
+                pptr->model_query = &cca_query;
+                pptr->model_finalize = &cca_finalize;
+                pptr->model_version = &cca_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
                 }
@@ -138,17 +135,17 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 #ifdef _UCVM_ENABLE_CS173
         if (strcmp(conf->label, "cs173") == 0) {
-                model_init = &cs173_init;
-                model_query = &cs173_query;
-                model_finalize = &cs173_finalize;
-                model_version = &cs173_version;
-                if ((*model_init)(conf->config, conf->label) != 0) {
+                pptr->model_init = &cs173_init;
+                pptr->model_query = &cs173_query;
+                pptr->model_finalize = &cs173_finalize;
+                pptr->model_version = &cs173_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
                 }
         }
 #endif
-        if (model_init == NULL) {
+        if (pptr->model_init == NULL) {
                 fprintf(stderr, "Model pointer not initialized.\n");
                 return UCVM_CODE_ERROR;
         }
@@ -156,17 +153,13 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 
 	// Assign the id.
-	ucvm_plugin_model_id = id;
+        pptr->ucvm_plugin_model_id = id;
 
 	// Save the model configuration data.
-	memcpy(&ucvm_plugin_model_conf, conf, sizeof(ucvm_modelconf_t));
-
-	// Allocate our point and data buffers.
-	ucvm_plugin_pnts_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_point_t));
-	ucvm_plugin_data_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_properties_t));
+	memcpy(&(pptr->ucvm_plugin_model_conf), conf, sizeof(ucvm_modelconf_t));
 
 	// Yes, this model has been initialized successfully.
-	plugin_model_initialized = 1;
+	plugin_model_initialized += 1;
 
 	return UCVM_CODE_SUCCESS;
 }
@@ -178,15 +171,12 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
  */
 int ucvm_plugin_model_finalize()
 {
-  if (plugin_model_initialized != 0) {
+  int i;
+  for(i=0; i< plugin_model_initialized; i++) {
     // Finalize the model.
-    (*model_finalize)();
+     ucvm_plugin_model_t *pptr=&plugin_models[i];
+     (pptr->model_finalize)();
   }
-
-  // Free our pointers.
-  free(ucvm_plugin_data_buffer);
-  free(ucvm_plugin_pnts_buffer);
-
   // We're no longer initialized.
   plugin_model_initialized = 0;
 
@@ -203,12 +193,13 @@ int ucvm_plugin_model_finalize()
  */
 int ucvm_plugin_model_version(int id, char *ver, int len)
 {
-  if (id != ucvm_plugin_model_id) {
+  ucvm_plugin_model_t *pptr=get_plugin_by_id(id);
+  if (!pptr) {
     fprintf(stderr, "Invalid model id.\n");
     return UCVM_CODE_ERROR;
   }
 
-  if ((*model_version)(ver, len) != 0) {
+  if ((*pptr->model_version)(ver, len) != 0) {
     return UCVM_CODE_ERROR;
   }
 
@@ -224,12 +215,13 @@ int ucvm_plugin_model_version(int id, char *ver, int len)
  */
 int ucvm_plugin_model_label(int id, char *lab, int len)
 {
-  if (id != ucvm_plugin_model_id) {
+  ucvm_plugin_model_t *pptr=get_plugin_by_id(id);
+  if (!pptr) {
     fprintf(stderr, "Invalid model id.\n");
     return UCVM_CODE_ERROR;
   }
 
-  ucvm_strcpy(lab, ucvm_plugin_model_conf.label, len);
+  ucvm_strcpy(lab, pptr->ucvm_plugin_model_conf.label, len);
   return UCVM_CODE_SUCCESS;
 }
 
@@ -245,19 +237,12 @@ int ucvm_plugin_model_label(int id, char *lab, int len)
  */
 int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt, ucvm_data_t *data) {
 	int i = 0, j = 0, nn = 0;
-	int numTimesNN = 0;
 	double depth = 0;
 	int datagap = 0;
 
-        /** Stores the mapping between data array and query buffer array */
-	int* index_mapping = malloc(sizeof(int)*MODEL_POINT_BUFFER);
-	if (index_mapping==NULL) {
-		fprintf(stderr, "Memory allocation of index_mapping failed, aborting.\n");
-		exit(1);
-	}
-
+        ucvm_plugin_model_t *pptr=get_plugin_by_id(id);
+        if (!pptr) {
 	// Check the model id.
-	if (id != ucvm_plugin_model_id) {
 		fprintf(stderr, "Invalid model id.\n");
 		return UCVM_CODE_ERROR;
 	}
@@ -268,9 +253,21 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 		return UCVM_CODE_ERROR;
 	}
 
+        /** Stores the points in in WGS84 format. */
+        /** The returned data from the plugin model. */
+        basic_point_t *ucvm_plugin_pnts_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_point_t));
+        basic_properties_t *ucvm_plugin_data_buffer = malloc(MODEL_POINT_BUFFER * sizeof(basic_properties_t));
+
+        /** Stores the mapping between data array and query buffer array */
+	int* index_mapping = malloc(sizeof(int)*MODEL_POINT_BUFFER);
+	if (index_mapping==NULL || ucvm_plugin_pnts_buffer == NULL || ucvm_plugin_data_buffer == NULL) {
+		fprintf(stderr, "Memory allocation of pnts_buffer, data_buffer or index_mapping failed, aborting.\n");
+		return UCVM_CODE_ERROR;
+	}
+
 	for (i = 0; i < n; i++) {
 	    if ((data[i].crust.source == UCVM_SOURCE_NONE) && ((data[i].domain == UCVM_DOMAIN_INTERP) || (data[i].domain == UCVM_DOMAIN_CRUST)) &&
-	      	(region_contains_null(&(ucvm_plugin_model_conf.region), cmode, &(pnt[i])))) {
+	      	(region_contains_null(&(pptr->ucvm_plugin_model_conf.region), cmode, &(pnt[i])))) {
 
 	        /* Modify pre-computed depth to account for GTL interp range */
 	        depth = data[i].depth + data[i].shift_cr;
@@ -284,12 +281,11 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 
 	    	if (nn == MODEL_POINT_BUFFER || i == n - 1) {
 	    		// We've reached the maximum buffer. Do the query.
-	    		(*model_query)(ucvm_plugin_pnts_buffer, ucvm_plugin_data_buffer, nn);
-
+	    		(*(pptr->model_query))(ucvm_plugin_pnts_buffer, ucvm_plugin_data_buffer, nn);
 	    		// Transfer our findings.
 	    		for (j = 0; j < nn; j++) {
 	    			if (ucvm_plugin_data_buffer[j].vp >= 0 && ucvm_plugin_data_buffer[j].vs >= 0 && ucvm_plugin_data_buffer[j].rho >= 0) {
-	    				data[index_mapping[j]].crust.source = ucvm_plugin_model_id;
+	    				data[index_mapping[j]].crust.source = pptr->ucvm_plugin_model_id;
 	    				data[index_mapping[j]].crust.vp = ucvm_plugin_data_buffer[j].vp;
 	    				data[index_mapping[j]].crust.vs = ucvm_plugin_data_buffer[j].vs;
 	    				data[index_mapping[j]].crust.rho = ucvm_plugin_data_buffer[j].rho;
@@ -297,18 +293,32 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 	    				datagap = 1;
 	    			}
 	    		}
-
-	    		// Reset nn.
-	    		nn = 0;
-    			// Increment numTimesNN.
-    			numTimesNN++;
+	    	// Reset nn.
+	    	nn = 0;
     		}
 	    } else {
 	    	if (data[i].crust.source == UCVM_SOURCE_NONE) datagap = 1;
 	    }
 	}
+        /* catch the last bits of partial chunk */
+        if(nn != 0) {
+	    (*(pptr->model_query))(ucvm_plugin_pnts_buffer, ucvm_plugin_data_buffer, nn);
+	    // Transfer our findings.
+	    for (j = 0; j < nn; j++) {
+	    	if (ucvm_plugin_data_buffer[j].vp >= 0 && ucvm_plugin_data_buffer[j].vs >= 0 && ucvm_plugin_data_buffer[j].rho >= 0) {
+	    		data[index_mapping[j]].crust.source = pptr->ucvm_plugin_model_id;
+	    		data[index_mapping[j]].crust.vp = ucvm_plugin_data_buffer[j].vp;
+	    		data[index_mapping[j]].crust.vs = ucvm_plugin_data_buffer[j].vs;
+	    		data[index_mapping[j]].crust.rho = ucvm_plugin_data_buffer[j].rho;
+	    	} else {
+	    		datagap = 1;
+	    	}
+	   } 
+        }
 
 	free(index_mapping);
+        free(ucvm_plugin_data_buffer);
+        free(ucvm_plugin_pnts_buffer);
 
 	if (datagap == 1) {
 		return UCVM_CODE_DATAGAP;
@@ -328,13 +338,12 @@ int ucvm_plugin_model_query(int id, ucvm_ctype_t cmode, int n, ucvm_point_t *pnt
 int ucvm_plugin_get_model(const char *dir, const char *label, ucvm_model_t *m) {
 	// Does this model exist?
 	char sofile[1024];
-	FILE *file;
+	FILE *fp;
 
 	snprintf(sofile, 1024, "%s/model/%s/lib/lib%s.so", dir, label, label);
-
-    if (file = fopen(sofile, "r")) {
-        fclose(file);
-        m->mtype = UCVM_MODEL_CRUSTAL;
+	if ((fp = fopen(sofile, "r"))) {
+		fclose(fp);
+		m->mtype = UCVM_MODEL_CRUSTAL;
 		m->init = ucvm_plugin_model_init;
 		m->finalize = ucvm_plugin_model_finalize;
 		m->getversion = ucvm_plugin_model_version;
@@ -352,8 +361,9 @@ int ucvm_plugin_model_setparam(int id, int param, ...)
 {
   va_list ap;
 
-  if (id != ucvm_plugin_model_id) {
-    fprintf(stderr, "Invalid model id\n");
+  ucvm_plugin_model_t *pptr=get_plugin_by_id(id);
+  if (!pptr) {
+    fprintf(stderr, "Invalid model id.\n");
     return(UCVM_CODE_ERROR);
   }
 
@@ -367,3 +377,31 @@ int ucvm_plugin_model_setparam(int id, int param, ...)
 
   return(UCVM_CODE_SUCCESS);
 }
+
+ucvm_plugin_model_t *get_plugin_by_label(char *label) {
+   int i;
+   for(i =0; i< plugin_model_initialized; i++) {
+     ucvm_modelconf_t *mptr = &(plugin_models[i].ucvm_plugin_model_conf);
+     if( strcmp(mptr->label,label) == 0) 
+        return &plugin_models[i];
+   }
+   return(0);
+};
+
+ucvm_plugin_model_t *get_plugin_by_id(int id) {
+   int i;
+   for(i =0; i< plugin_model_initialized; i++) {
+     if( plugin_models[i].ucvm_plugin_model_id== id) 
+        return &plugin_models[i];
+   }
+   return(0);
+};
+
+ucvm_plugin_model_t *get_plugin_by_order(int id) {
+   if(id < UCVM_MAX_MODELS) {
+        return &plugin_models[id];
+   }
+   return(0);
+};
+
+

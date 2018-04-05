@@ -109,6 +109,7 @@ class HorizontalSlice:
                                             self.upperleftpoint.depth))
             data = u.query(ucvmpoints, self.cvm)
 
+#        print "largest x is ",self.num_x, " largets y is ",self.num_y
         i = 0
         j = 0
         
@@ -157,14 +158,24 @@ class HorizontalSlice:
             TICKS = [tick * 1.7 for tick in TICKS]
             
         if color_scale == "s":
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
+        elif color_scale == "s_r":
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
+            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
+        elif color_scale == "sd_r":
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
             TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
-        else:
+        elif color_scale == "d_r":
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        else:
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \
@@ -189,19 +200,38 @@ class HorizontalSlice:
         # Get the properties.
         datapoints = np.arange(self.num_x * self.num_y,dtype=float).reshape(self.num_y, self.num_x)
 
+        nancnt=0
+        zerocnt=0
+        negcnt=0
+#        print "total cnt is ",self.num_x * self.num_y
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
                 if property != "poisson":
-                    if color_scale == "sd":
+                    if color_scale == "sd" or color_scale == "sd_r":
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
                         if(datapoints[i][j] == -1 ) :
                             datapoints[i][j]=np.nan
+                            nancnt=nancnt+1
                     else:
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
+#                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
                         if (datapoints[i][j] == 0) :
-                            datapoints[i][j]=np.nan
+                           datapoints[i][j]=np.nan
+                           zerocnt=zerocnt+1
+                        if (datapoints[i][j] < 0) :
+                           negcnt=negcnt+1
+#                           print "negvalue: i ,",i,"j ",j
+#                           print self.upperleftpoint.longitude + i * self.spacing," ", self.bottomrightpoint.latitude + j * self.spacing
+#                           print "or ",self.upperleftpoint.longitude + j * self.spacing, " ",self.bottomrightpoint.latitude + i * self.spacing
+                        if(datapoints[i][j] == -1 ) :
+                           nancnt=nancnt+1
                 else:
                     datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
+
+#        print " total number of nancnt is ", nancnt
+#        print " total number of zerocnt is ", zerocnt
+#        print " total number of negcnt is ", negcnt
+#XX        pdb.set_trace()
                     
         t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
         img = m.imshow(t, cmap=colormap, norm=norm)
@@ -215,7 +245,7 @@ class HorizontalSlice:
         m.drawcoastlines()
     
         cax = plt.axes([0.125, 0.05, 0.775, 0.02])
-        cbar = plt.colorbar(img, cax=cax, orientation='horizontal',ticks=TICKS)
+        cbar = plt.colorbar(img, cax=cax, orientation='horizontal',spacing='proportional',ticks=TICKS)
         if property != "poisson":
             if horizontal_label == None:
                 cbar.set_label(property.title() + " (km/s)")

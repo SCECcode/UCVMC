@@ -366,19 +366,21 @@ class UCVM:
          
         for point in point_list:
             text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+#            print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
         
         output = proc.communicate(input=text_points)[0]
         output = output.split("\n")[1:-1]
-        
+
         for line in output:
 # it is material properties.. line
-#            print line
             try :
               mp = MaterialProperties.fromUCVMOutput(line)
               properties.append(mp)
+ #             print "DUMDUM", line
             except :
               # skip this line
-              print ""
+ #             print "SKIP",line
+              pass
 
 
         if len(properties) == 1:
