@@ -231,7 +231,6 @@ class HorizontalSlice:
 #        print " total number of nancnt is ", nancnt
 #        print " total number of zerocnt is ", zerocnt
 #        print " total number of negcnt is ", negcnt
-#XX        pdb.set_trace()
                     
         t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
         img = m.imshow(t, cmap=colormap, norm=norm)

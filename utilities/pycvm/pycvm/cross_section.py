@@ -255,11 +255,11 @@ class CrossSection:
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis
-            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
-#           norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
+#            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
+            norm = mcolors.Normalize(vmin=0,vmax=round(self.max_val,1))
         elif color_scale == "s_r":
             colormap = basemap.cm.GMT_seis_r
-            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
+            norm = mcolors.Normalize(vmin=0,vmax=round(self.max_val,1))
         elif color_scale == "b":
             C = []
             for bound in BOUNDS :

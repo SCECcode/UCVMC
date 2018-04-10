@@ -376,10 +376,9 @@ class UCVM:
             try :
               mp = MaterialProperties.fromUCVMOutput(line)
               properties.append(mp)
- #             print "DUMDUM", line
+#             print "DUMDUM", line
             except :
-              # skip this line
- #             print "SKIP",line
+#             print "SKIP",line
               pass
 
 
