@@ -3,7 +3,7 @@ import sys
 import os
 from urllib2 import urlopen
 
-ucvmc_largefile_dir = "http://hypocenter.usc.edu/research/ucvmc"
+ucvmc_largefile_dir = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
 
 def download_urlfile(url,fname):
   try:
