@@ -9,6 +9,11 @@
 
 #  Imports
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, plt
+from scipy.interpolate import spline, splprep, splev
+from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
+import scipy.interpolate as interpolate
+import numpy as np
+import pdb
 
 ##
 #  @class DepthProfile
@@ -25,7 +30,7 @@ class DepthProfile:
     #  @param todepth The ending depth, in meters, where this plot should end.
     #  @param spacing The discretization interval in meters.
     #  @param cvm The CVM from which to retrieve these material properties.
-    def __init__(self, startingpoint, todepth, spacing, cvm):
+    def __init__(self, startingpoint, todepth, spacing, cvm, threshold = None):
         if not isinstance(startingpoint, Point):
             raise TypeError("The starting point must be an instance of Point.")
         else:
@@ -52,19 +57,30 @@ class DepthProfile:
         self.vslist = []
         ## Private holding place for returned density data.
         self.rholist = []
+
+        ## Default threshold in simplified units
+        self.threshold = threshold
     
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self):
+    def getplotvals(self, datafile = None):
         
         point_list = []
         
         # Generate the list of points.
-        for i in xrange(self.startingpoint.depth, self.todepth + 1, self.spacing):
+ 
+#        for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):
+        for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
             
         u = UCVM()
-        data = u.query(point_list, self.cvm)
+###MEI
+        if (datafile != None) :
+            print "\nUsing --> "+datafile
+            print "expecting x ",self.num_x," y ",self.num_y
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+        else:
+            data = u.query(point_list, self.cvm)
         
         for matprop in data:
             self.vplist.append(float(matprop.vp) / 1000)
@@ -78,19 +94,19 @@ class DepthProfile:
     #  @param properties An array of properties to plot. Can be vs, vp, or density.
     #  @param colors The colors that the properties should be plotted as. Optional.
     #  @param customlabels An associated array of labels to put for the legend. Optional.
-    def addtoplot(self, plot, properties, colors = None, customlabels = None):
+    def addtoplot(self, plot, properties, colors = None, customlabels = None, datafile = None):
         
         # Check that plot is a Plot
         if not isinstance(plot, Plot):
             raise TypeError("Plot must be an instance of the class Plot.")
         
         # Get the material properties.
-        self.getplotvals()
+        self.getplotvals(datafile = datafile)
         
         max_x = 0
         yvals = []
 
-        for i in xrange(self.startingpoint.depth, self.todepth + 1, self.spacing):  
+        for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):  
             yvals.append(i)       
         
         if customlabels != None and "vp" in properties: 
@@ -129,6 +145,22 @@ class DepthProfile:
         if "vs" in properties:
             max_x = max(max_x, max(self.vslist))
             plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+## attempted to draw a smoothed line, not good
+##            xs=np.array(self.vslist)
+##            ys=np.array(yvals)
+##            # spline parameters
+##            s=3.0 # smoothness parameter
+##            k=2 # spline order
+##            nest=-1 # estimate of number of knots needed (-1 = maximal)
+##            # find the knot points
+##            tckp,u = splprep([xs,ys],s=s,k=k,nest=nest)
+##            # evaluate spline, including interpolated points
+##            newx,newy = splev(np.linspace(0,1,500),tckp)
+##            plot.addsubplot().plot(newx, newy, "b-", label="smoothed"+vslabel)
+            ## add a vline if there is a vs threshold
+            if self.threshold != None : 
+                plot.addsubplot().axvline(self.threshold/1000, color='k', linestyle='dashed')
+
         if "density" in properties:
             max_x = max(max_x, max(self.rholist))
             plot.addsubplot().plot(self.rholist, yvals, "-", color=densitycolor, label=densitylabel) 
@@ -140,13 +172,15 @@ class DepthProfile:
         
         if max_x > plt.xlim()[1]:
             plt.xlim(0, math.ceil(max_x / 0.5) * 0.5)
+
+        plt.axis([0, max_x, int(self.todepth), int(self.startingpoint.depth)])
     
     ##
     #  Plots a new depth profile using all the default plotting options.
     #
     #  @param properties An array of material properties. Can be one or more of vp, vs, and/or density.
     #  @param filename If this is set, the plot will not be shown but rather saved to this location.
-    def plot(self, properties, filename = None):
+    def plot(self, properties, filename = None, meta = {}):
 
         if self.startingpoint.description == None:
             location_text = ""
@@ -160,7 +194,7 @@ class DepthProfile:
             cvmdesc = self.cvm
 
         # Call the plot object.
-        p = Plot("%s%s Depth Profile From %sm To %sm" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth), \
+        p = Plot("%s%s Depth Profile From %sm To %sm at (%.2f,%.2f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
                  "Units (see legend)", "Depth (m)", None, 7, 10)
 
         # Add to plot.

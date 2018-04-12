@@ -24,6 +24,8 @@ VERSION = "17.1.0"
 all_flag = False
 dynamic_flag = True
 use_iobuf = False
+## control adding of explicit dynamic linker flag
+user_dynamic_flag = False
 
 # Should we abort after testing system conditions?
 error_out = False
@@ -38,6 +40,7 @@ shell_script = ""
 def usage():
     print "Automatically sets up UCVM and alerts the user to potential complications.\n"
     print "\t-s  --static       Use static linking."
+    print "\t-d  --dynamic      Use dynamic linking."
     print ""
     print "UCVM %s\n" % VERSION
     
@@ -63,6 +66,8 @@ def which(file):
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script
+#MEI
+    print '  ==> command used.. '+'_'.join(command)
     if nocall == False:
         retVal = call(command)
         if not retVal == 0:
@@ -86,14 +91,24 @@ def printPretty(list):
             buffer += " and "
     print buffer
 
+# create matching install directory from the build directory
+# base on configure's prefix
+# MEI
+def createInstallTargetPath( targetpath ):
+  print 'ADDING '+targetpath
+  if not os.path.exists(targetpath):
+    call(["mkdir", "-p", targetpath])
+
 # Install with the configure, make, make install paradigm.
 #
 # This makes three assumptions
 # (1) All required tar files are in the current_working_directory/work directory, and are gzipped
 # (2) All installs of type "model" go to ucvmpath/model
 # (3) All installs of type "library" go to ucvmpath/lib
+
 #
 def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
+
     print "\nInstalling " + type + " " + tarname
     pathname = "lib"
     if type == "model":
@@ -117,10 +132,14 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     # This enables us to untar into drictories with static names like proj-4
     #
     print "Decompressing " + type
-    callAndRecord(["gunzip", workpath + "/" + tarname])
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
-    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
+    callAndRecord(["tar", "zxvf", workpath  + "/" + tarname, "-C", workpath + "/" + config_data["Path"], \
+#    callAndRecord(["gunzip", workpath + "/" + tarname])
+#    callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
+#    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
+# MEI.. zip it backup
+##    callAndRecord(["gzip", (workpath  + "/" + tarname).replace(".gz", "")])
 
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
@@ -145,8 +164,19 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "\nRunning ./configure"
     
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
+    createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
     if config_data["Path"] == "cvms5":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+    elif config_data["Path"] == "cca":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+    elif config_data["Path"] == "cs173":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
@@ -189,7 +219,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ash", ["all", "static", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
@@ -202,6 +232,9 @@ for o, a in opts:
     elif o in ('-s', '--static'):
         dynamic_flag = False
         print "static Flag: True"
+    elif o in ('-d', '--dynamic'):
+        user_dynamic_flag = True 
+        print "dynamic Flag: True"
     elif o in ('-h', '--help'):
         usage()
         exit(0)
@@ -309,6 +342,12 @@ while enteredpath is not "":
     
 # Copy final selected path back to the UCVM path variable.
 ucvmpath = enteredpath
+
+###MEI... create necessary directories
+if not os.path.exists(ucvmpath):
+  call(["mkdir", "-p", ucvmpath])
+  call(["mkdir", "-p", ucvmpath+'/work'])
+  call(["mkdir", "-p", ucvmpath+'/lib'])
     
 for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
     if config_data["models"][model]["Ask"] != "no" or all_flag == True:
@@ -450,6 +489,8 @@ ucvm_conf_command.append("--prefix=" + ucvmpath)
 
 if dynamic_flag == False:
     ucvm_conf_command.append("--enable-static")
+if user_dynamic_flag == True:
+    ucvm_conf_command.append("--enable-dynamic")
 if use_iobuf == True:
     ucvm_conf_command.append("--enable-iobuf")
  

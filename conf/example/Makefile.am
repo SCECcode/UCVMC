@@ -8,7 +8,9 @@ all:
 
 install:
 	mkdir -p ${prefix}/conf/example
-	cp *.conf ${prefix}/conf/example
+	if ! test . -ef ${prefix}/conf/example; then \
+                cp *.conf ${prefix}/conf/example; \
+        fi
 
 clean:
 

@@ -18,9 +18,11 @@
 #define DEFAULT_ZRANGE_MIN 0.0
 #define DEFAULT_ZRANGE_MAX 350.0
 #define DEFAULT_MAX_DEPTH 15000.0
+#define DEFAULT_NULL_DEPTH -1.0
+#define DEFAULT_ZERO_DEPTH 0.0
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
-#define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf\n"
+#define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf\n"
 
 
 /* Get opt args */
@@ -59,7 +61,7 @@ int extract_basins(int n, ucvm_point_t *pnts, \
 {
   int i, p, dnum, numz;
   double vs_prev;
-  double depths[2];
+  double depths[3];
   
   numz = (int)(max_depth / z_inter);
   for (p = 0; p < n; p++) {
@@ -77,19 +79,26 @@ int extract_basins(int n, ucvm_point_t *pnts, \
     }
 
     /* Check for threshold crossing */
-    vs_prev = 0.0;
+    vs_prev = DEFAULT_ZERO_DEPTH;
     dnum = 0;
-    depths[0] = 0.0;
-    depths[1] = 0.0;
+    depths[0] = DEFAULT_NULL_DEPTH;
+    depths[1] = DEFAULT_NULL_DEPTH;
+    depths[2] = DEFAULT_NULL_DEPTH;
     for (i = 0; i < numz; i++) {
       /* Compare the Vs if it is valid */
-      if (qprops[i].cmb.vs > 0.0) {
+      if (qprops[i].cmb.vs > DEFAULT_ZERO_DEPTH) {
 	if ((vs_prev < vs_thresh) && (qprops[i].cmb.vs >= vs_thresh)) {
 	  depths[dnum] = (double)i * z_inter;
 	  if (dnum == 0) {
-	    depths[1] = depths[0];
+	    depths[2] = depths[1] = depths[0];
 	    dnum++;
-	  }
+	    } else {
+              if(dnum == 1) {
+                 depths[2] = depths[1];
+                 dnum++;
+              }
+          }
+    
 	}
 
 	/* Save current vs value */
@@ -99,7 +108,7 @@ int extract_basins(int n, ucvm_point_t *pnts, \
 
     /* Display output */
     printf(OUTPUT_FMT, pnts[p].coord[0], pnts[p].coord[1], 
-	   depths[0], depths[1]);
+	   depths[0], depths[1], depths[2]);
 
   }
   
@@ -143,7 +152,7 @@ int main(int argc, char **argv)
     switch (opt) {
     case 'd':
       max_depth = (double)atof(optarg);
-      if (max_depth <= 0.0) {
+      if (max_depth <= DEFAULT_ZERO_DEPTH) {
 	fprintf(stderr, "Invalid max depth %s.\n", optarg);
 	usage();
 	exit(1);
@@ -159,7 +168,7 @@ int main(int argc, char **argv)
       break;
     case 'v':
       vs_thresh = (double)atof(optarg);
-      if (vs_thresh <= 0.0) {
+      if (vs_thresh <= DEFAULT_ZERO_DEPTH) {
 	fprintf(stderr, "Invalid vs threshold %s.\n", optarg);
 	usage();
 	exit(1);

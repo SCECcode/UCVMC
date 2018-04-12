@@ -37,11 +37,29 @@ typedef struct basic_properties_t {
 	double qs;
 } basic_properties_t;
 
-// Library Functions
+typedef struct ucvm_plugin_model_t {
+/** Used to store the model ID. */
+int ucvm_plugin_model_id;
+/** Store the configuration data. */
+ucvm_modelconf_t ucvm_plugin_model_conf;
 int (*model_init)(const char *dir, const char *label);
 int (*model_query)(basic_point_t *points, basic_properties_t *data, int numpoints);
 int (*model_finalize)();
 int (*model_version)(char *ver, int len);
+} ucvm_plugin_model_t;
+
+int (*mmodel_init)(const char *dir, const char *label);
+
+ucvm_plugin_model_t plugin_models[UCVM_MAX_MODELS];
+
+ucvm_plugin_model_t *get_plugin_by_label(char *);
+ucvm_plugin_model_t *get_plugin_by_id(int);
+ucvm_plugin_model_t *get_plugin_by_order(int);
+
+typedef int (*MIPTR())(const char *, const char *);
+typedef int (*MQPTR())(basic_point_t *, basic_properties_t *, int);
+typedef int (*MFPTR())();
+typedef int (*MVPTR())(char *, int);
 
 // UCVM API Required Functions
 int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf);		/** Initializes CVM-S5. */

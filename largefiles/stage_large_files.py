@@ -31,6 +31,8 @@ else:
 print src_dir
 
 large_model_list = ["cvms5.tar.gz",
+                    "cca.tar.gz",
+                    "cs173.tar.gz",
                     "cvms4.tar.gz",
                     "cvms426.tar.gz",
                     "cvmh-15.1.0.tar.gz",

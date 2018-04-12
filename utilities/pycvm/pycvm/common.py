@@ -15,28 +15,32 @@ import multiprocessing
 import math
 import struct
 import getopt
+import pdb
+import json
 
 #  Numpy is required.
 try:
     import numpy as np
 except StandardError, e:
-    print "ERROR: NumPy and Matplotlib must be installed on your system in order to generate these plots."
+    print "ERROR: NumPy must be installed on your system in order to generate these plots."
     exit(1)
     
 #  Matplotlib is required.
 try:
+    import matplotlib
+    matplotlib.use('TkAgg')
     import matplotlib.pyplot as plt
     import matplotlib.colors as mcolors
     import matplotlib.cm as cm
 except StandardError, e:
-    print "ERROR: NumPy and Matplotlib must be installed on your system in order to generate these plots."
+    print "ERROR: Matplotlib must be installed on your system in order to generate these plots."
     exit(1)    
 
 #  Basemap is required.
 try:
     from mpl_toolkits import basemap
 except StandardError, e:
-    print "ERROR: Matplotlib Toolkit must be installed on your system in order to generate these plots."
+    print "ERROR: Basemap Toolkit must be installed on your system in order to generate these plots."
     exit(1)
 
 #  Constants
@@ -48,6 +52,8 @@ UCVM_CVMS = {"1d":"1D", \
              "cvms":"CVM-S4", \
              "cvms5":"CVM-S4.26", \
              "cvmsi":"CVM-S4.26.M01", \
+             "cca":"CCA 06", \
+             "cs173":"CyperShake 17.3", \
              "cvmh":"CVM-H 15.1.0", \
              "cencal":"USGS Bay Area Model"}
 
@@ -122,6 +128,13 @@ class Plot:
     #  @param filename The name fo the file to save.
     def savefig(self, filename):
         plt.savefig(filename)
+
+## MEI ToDO
+    def savehtml(self, filename):
+        import mpld3
+#        mpld3.save_html(self.figure,filename)
+#        mpld3.save_json(self.figure, filename)
+        mpld3.fig_to_dict(self.figure)
 
 ##
 #  @class Point
@@ -263,6 +276,25 @@ class MaterialProperties:
             return self.qs
         else:
             raise ValueError("Parameter property must be a valid material property unit.")
+    ##
+    #  Set the corresponding property given the property as a string.
+    # 
+    #  @param property The property name as a string ("vs", "vp", "density", "qp", or "qs").
+    #  @param val The property value.
+    def setProperty(self, property, val):               
+        if property.lower() == "vs":
+            self.vs=val
+        elif property.lower() == "vp":
+            self.vp=val
+        elif property.lower() == "density":
+            self.density=val
+        elif property.lower() == "qp":
+            self.qp=val
+        elif property.lower() == "qs":
+            self.qs=val
+        else:
+            raise ValueError("Parameter property must be a valid material property unit.")
+        
         
     ##
     #  String representation of the material properties.
@@ -334,13 +366,22 @@ class UCVM:
          
         for point in point_list:
             text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+#            print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
         
         output = proc.communicate(input=text_points)[0]
         output = output.split("\n")[1:-1]
-        
+
         for line in output:
-            properties.append(MaterialProperties.fromUCVMOutput(line))
-        
+# it is material properties.. line
+            try :
+              mp = MaterialProperties.fromUCVMOutput(line)
+              properties.append(mp)
+#             print "DUMDUM", line
+            except :
+#             print "SKIP",line
+              pass
+
+
         if len(properties) == 1:
             return properties[0]
         
@@ -413,6 +454,75 @@ class UCVM:
             return floats[0]
         
         return floats
+
+#  import meta data as a json blob
+#
+    def import_json(self, fname):
+	fh = open('data.json', 'r') 
+	data = json.load(fh)
+
+	fh.close()
+
+	return data
+
+#  import raw floats directory from the external file 
+#
+#  if filename is image.png, look for a matching
+#  image_data.bin
+#
+    def import_binary(self, fname, num_x, num_y):
+        k = fname.rfind(".png")
+        rawfile=fname
+        if( k != -1) : 
+            rawfile = fname[:k] + "_data.bin"
+        fh = open(rawfile, 'r') 
+        floats = np.fromfile(fh, dtype=np.float32)
+
+        print "TOTAL number of binary data read:",len(floats),"\n"
+
+        # sanity check,  
+        if len(floats) != (num_x * num_y) :
+            print "import_binary(), wrong size !!!"
+
+        fh.close()
+
+        if len(floats) == 1:
+            return floats[0]
+        
+        return floats
+
+#  export raw floats nxy ndarray  to an external file 
+    def export_binary(self, floats, fname):
+        k = fname.rfind(".png")
+        rawfile=fname
+        if( k != -1) : 
+            rawfile = fname[:k] + "_data.bin"
+        fh = open(rawfile, 'w+') 
+        floats.tofile(fh)
+        fh.close()
+
+#  { 'num_x' : xval, 'num_y' : yval, 'total' : total }
+#  import ascii meta jsoin data to an external file 
+    def import_metadata(self, fname):
+        k = fname.rfind(".png")
+        metafile=fname
+        if( k != -1) : 
+            metafile = fname[:k] + "_meta.json"
+        fh = open(metafile, 'r') 
+        meta = json.load(fh)
+        fh.close()
+        return meta
+
+#  export ascii meta data to an external file 
+    def export_metadata(self,meta,fname):
+        k = fname.rfind(".png")
+        metafile=fname
+        if( k != -1) : 
+            metafile = fname[:k] + "_meta.json"
+        fh = open(metafile, 'w+') 
+        json.dump(meta, fh)
+        fh.close()
+
 
 #  Function Definitions
 

@@ -12,6 +12,10 @@ from mpl_toolkits.basemap import cm
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
+import pdb
+import random
+import string
+
 try:
     import pyproj
 except StandardError, e:
@@ -67,9 +71,12 @@ class CrossSection:
 
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self):
+    def getplotvals(self, property='vs', datafile = None):
 
         point_list = []
+        lon_list = []
+        lat_list = []
+        depth_list = []
 
         proj = pyproj.Proj(proj='utm', zone=11, ellps='WGS84')
 
@@ -79,28 +86,73 @@ class CrossSection:
         num_prof = int(math.sqrt((x2-x1)*(x2-x1) + \
                                  (y2-y1)*(y2-y1))/self.hspacing)
         
+#        cnt=0
+        jstart = self.startingpoint.depth
         for j in xrange(int(self.startingpoint.depth), int(self.todepth) + 1, int(self.vspacing)):
+            depth_list.append( round(j,3))
             for i in xrange(0, num_prof + 1):
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
                 point_list.append(Point(lon, lat, j))
+                if ( j == jstart) :
+                  lon_list.append( round(lon,3))
+                  lat_list.append( round(lat,3))
+#                if(cnt < 10) :
+#                   print("point.. lon ",lon, " lat ",lat," j ",j)
+#                   cnt += 1
                 
+        self.lon_list=lon_list
+        self.lat_list=lat_list
+        self.depth_list=depth_list
+#        print("total points generated..", len(point_list))
+#        print("total lon..", len(lon_list))
+#        print("total lat..", len(lat_list))
+#        print("total lat..", len(depth_list))
         u = UCVM()
-        data = u.query(point_list, self.cvm)
-        
-        ## Private number of x points.
-        self.num_x = num_prof + 1
-        ## Private number of y points.
-        self.num_y = (int(self.todepth) - int(self.startingpoint.depth)) / int(self.vspacing) + 1
+
+### MEI -- TODO, need to have separate routine that generates cross section datafile
+        if (datafile != None) :
+            ## Private number of x points.
+            self.num_x = num_prof +1
+            ## Private number of y points.
+            self.num_y = (int(self.todepth) - int(self.startingpoint.depth)) / int(self.vspacing) +1
+            print "\nUsing -->"+datafile
+            print "expecting x ",self.num_x," y ",self.num_y
+            data = u.import_binary(datafile, self.num_x, self.num_y)
+## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
+        ## The 2D array of retrieved material properties.
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            datapoints = data.reshape(self.num_y, self.num_x)
+
+            for y in xrange(0, self.num_y):
+                for x in xrange(0, self.num_x):   
+                    tmp=datapoints[y][x] *1000
+                    if(property == 'vp'):
+                      self.materialproperties[y][x].setProperty('Vp',tmp)
+                    if(property == 'rho'):
+                      self.materialproperties[y][x].setProperty('Rho',tmp)
+                    if(property == 'poisson'):
+                      self.materialproperties[y][x].setProperty('Poisson',tmp)
+                    if(property == 'vs'):
+                      self.materialproperties[y][x].setProperty('Vs',tmp)
+        else:
+            data = u.query(point_list, self.cvm)
+
+
+            ## Private number of x points.
+            self.num_x = num_prof + 1
+            ## Private number of y points.
+            self.num_y = (int(self.todepth) - int(self.startingpoint.depth)) / int(self.vspacing) + 1
         
         ## The 2D array of retrieved material properties.
-        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+
         
-        for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):   
-                self.materialproperties[y][x] = data[y * self.num_x + x]     
-                
+            for y in xrange(0, self.num_y):
+                for x in xrange(0, self.num_x):   
+                    self.materialproperties[y][x] = data[y * self.num_x + x]     
+            print "outputting num_x ",self.num_x," num_y ",self.num_y
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -108,7 +160,9 @@ class CrossSection:
     #  @param filename The file name of the image if we're saving it. Optional.
     #  @param title The title for the plot. Optional.
     #  @param color_scale The color scale to use. Optional.
-    def plot(self, property, filename = None, title = None, color_scale = "d"):
+    #  @param scale_gate The gate to use to create customized listed colormap. Optional.
+    #  @param meta The meta data used to create the cross plot 
+    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
         
         if self.startingpoint.description == None:
             location_text = ""
@@ -125,29 +179,11 @@ class CrossSection:
             title = "%s%s Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
-        self.getplotvals()
+        self.getplotvals(property=property, datafile = datafile)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)
 
-        BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
-        TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
-        
-        if property == "vp":
-            BOUNDS = [bound * 1.7 for bound in BOUNDS]
-            TICKS = [tick * 1.7 for tick in TICKS]
-
-        # Set default colormap and range
-        colormap = basemap.cm.GMT_seis
-        norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
-        try:
-            if color_scale == "s":
-                colormap = basemap.cm.GMT_seis
-                norm = mcolors.Normalize(vmin=0,vmax=self.max_val)
-        except:
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
-            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-    
         plt.axes([0.1,0.7,0.8,0.25])
     
         # Figure out which is upper-right and bottom-left.
@@ -197,12 +233,76 @@ class CrossSection:
     
         plt.axes([0.05,0.18,0.9,0.54])
     
-        datapoints = np.arange(self.num_x * self.num_y,dtype=float).reshape(self.num_y, self.num_x)
+        datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
+
+        self.max_val=np.nanmax(datapoints)
+        self.min_val=np.nanmin(datapoints)
+
+        BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+        TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+
+        if property == "vp":
+            BOUNDS = [bound * 1.7 for bound in BOUNDS]
+            TICKS = [tick * 1.7 for tick in TICKS]
+
+        # Set default colormap and range
+        colormap = basemap.cm.GMT_seis
+        norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
+
+        umax=round(self.max_val)
+        if( umax < 5 ) :
+            umax=5 
+
+        if color_scale == "s":
+            colormap = basemap.cm.GMT_seis
+#            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
+            norm = mcolors.Normalize(vmin=0,vmax=umax)
+        elif color_scale == "s_r":
+            colormap = basemap.cm.GMT_seis_r
+            norm = mcolors.Normalize(vmin=0,vmax=umax)
+        elif color_scale == "b":
+            C = []
+            for bound in BOUNDS :
+               if bound < scale_gate :
+                  C.append("grey")
+               else:
+                  C.append("red")
+            colormap = mcolors.ListedColormap(C)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
+        elif color_scale == 'd':
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        elif color_scale == 'd_r':
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
     
+
+## MEI, TODO this is a temporary way to generate an output of a cross_section input file
+        if( datafile == None ):
+          u = UCVM()
+          meta['num_x'] = self.num_x
+          meta['num_y'] = self.num_y
+          meta['datapoints'] = datapoints.size
+          meta['max'] = np.asscalar(self.max_val)
+          meta['min'] = np.asscalar(self.min_val)
+          meta['lon_list'] = self.lon_list
+          meta['lat_list'] = self.lat_list
+          meta['depth_list'] = self.depth_list
+          if filename:
+              u.export_metadata(meta,filename)
+              u.export_binary(datapoints,filename)
+          else:
+#https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
+              rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
+              print "random found is..",rnd
+              f = "cross_section"+rnd
+              u.export_metadata(meta,f)
+              u.export_binary(datapoints,f)
+
         img = plt.imshow(datapoints, cmap=colormap, norm=norm)
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.2f" % self.startingpoint.longitude, \
                                                  "%.2f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
@@ -214,7 +314,7 @@ class CrossSection:
         plt.title(title)
     
         cax = plt.axes([0.1, 0.1, 0.8, 0.02])
-        cbar = plt.colorbar(img, cax=cax, orientation='horizontal',ticks=TICKS)
+        cbar = plt.colorbar(img, cax=cax, orientation='horizontal',ticks=TICKS,spacing='regular')
         if property != "poisson":
             cbar.set_label(property.title() + " (km/s)")
         else:

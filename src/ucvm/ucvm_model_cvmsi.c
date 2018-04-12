@@ -18,8 +18,8 @@ ucvm_modelconf_t ucvm_cvmsi_conf;
 #define CVMSI_MAX_POINTS 1000000
 
 /* Query buffers */
-cvmsi_point_t *pntBuffer = NULL;
-cvmsi_data_t *dataBuffer = NULL;
+cvmsi_point_t *ucvm_cvmsi_pnts_buffer = NULL;
+cvmsi_data_t *ucvm_cvmsi_data_buffer = NULL;
 
 /* Init CVM-SI */
 int ucvm_cvmsi_model_init(int id, ucvm_modelconf_t *conf)
@@ -46,8 +46,8 @@ int ucvm_cvmsi_model_init(int id, ucvm_modelconf_t *conf)
   /* Save model conf */
   memcpy(&ucvm_cvmsi_conf, conf, sizeof(ucvm_modelconf_t));
 
-	dataBuffer = malloc(CVMSI_MAX_POINTS * sizeof(cvmsi_data_t));
-	pntBuffer = malloc(CVMSI_MAX_POINTS * sizeof(cvmsi_point_t));
+  ucvm_cvmsi_data_buffer = malloc(CVMSI_MAX_POINTS * sizeof(cvmsi_data_t));
+  ucvm_cvmsi_pnts_buffer = malloc(CVMSI_MAX_POINTS * sizeof(cvmsi_point_t));
 	
   ucvm_cvmsi_init_flag = 1;
 
@@ -63,8 +63,8 @@ int ucvm_cvmsi_model_finalize()
     cvmsi_finalize();
   }
 
-  free(dataBuffer);
-  free(pntBuffer);
+  free(ucvm_cvmsi_data_buffer);
+  free(ucvm_cvmsi_pnts_buffer);
 
   ucvm_cvmsi_init_flag = 0;
   return(UCVM_CODE_SUCCESS);
@@ -133,6 +133,13 @@ int ucvm_cvmsi_model_query(int id, ucvm_ctype_t cmode,
   int nn = 0;
   int maxPtsTimes = 0;
 
+  /** Stores the mapping between data array and query buffer array */
+  int* index_mapping = malloc(sizeof(int)*CVMSI_MAX_POINTS);
+  if (index_mapping==NULL) {
+    fprintf(stderr, "Memory allocation of index_mapping failed, aborting.\n");
+    exit(1);
+  }
+
   if (id != ucvm_cvmsi_id) {
     fprintf(stderr, "Invalid model id\n");
     return(UCVM_CODE_ERROR);
@@ -163,21 +170,21 @@ int ucvm_cvmsi_model_query(int id, ucvm_ctype_t cmode,
       /* CVM-SI extends from free surface on down */
       if (depth >= 0.0) {
 		  
-		  pntBuffer[nn].coord[0] = pnt[i].coord[0];
-		  pntBuffer[nn].coord[1] = pnt[i].coord[1];
-		  pntBuffer[nn].coord[2] = depth;
-
+	  index_mapping[nn]=i;	
+	  ucvm_cvmsi_pnts_buffer[nn].coord[0] = pnt[i].coord[0];
+	  ucvm_cvmsi_pnts_buffer[nn].coord[1] = pnt[i].coord[1];
+	  ucvm_cvmsi_pnts_buffer[nn].coord[2] = depth;
           nn++;
           
 		  
 		  if (nn == CVMSI_MAX_POINTS) {
-			  cvmsi_query(pntBuffer, dataBuffer, nn);
+			  cvmsi_query(ucvm_cvmsi_pnts_buffer, ucvm_cvmsi_data_buffer, nn);
 			  
 			  for (j = 0; j < nn; j++) {
-				  data[(maxPtsTimes * CVMSI_MAX_POINTS) + j].crust.source = ucvm_cvmsi_id;
-				  data[(maxPtsTimes * CVMSI_MAX_POINTS) + j].crust.vp = dataBuffer[j].prop.vp;
-				  data[(maxPtsTimes * CVMSI_MAX_POINTS) + j].crust.vs = dataBuffer[j].prop.vs;
-				  data[(maxPtsTimes * CVMSI_MAX_POINTS) + j].crust.rho = dataBuffer[j].prop.rho;
+				  data[index_mapping[j]].crust.source = ucvm_cvmsi_id;
+				  data[index_mapping[j]].crust.vp = ucvm_cvmsi_data_buffer[j].prop.vp;
+				  data[index_mapping[j]].crust.vs = ucvm_cvmsi_data_buffer[j].prop.vs;
+				  data[index_mapping[j]].crust.rho = ucvm_cvmsi_data_buffer[j].prop.rho;
 			  }
               
               nn = 0;
@@ -196,15 +203,17 @@ int ucvm_cvmsi_model_query(int id, ucvm_ctype_t cmode,
   }
     
     if (nn > 0) {
-        cvmsi_query(pntBuffer, dataBuffer, nn);
+        cvmsi_query(ucvm_cvmsi_pnts_buffer, ucvm_cvmsi_data_buffer, nn);
         
         for (j2 = 0; j2 < nn; j2++) {
-            data[(maxPtsTimes * CVMSI_MAX_POINTS) + j2].crust.source = ucvm_cvmsi_id;
-            data[(maxPtsTimes * CVMSI_MAX_POINTS) + j2].crust.vp = dataBuffer[j2].prop.vp;
-            data[(maxPtsTimes * CVMSI_MAX_POINTS) + j2].crust.vs = dataBuffer[j2].prop.vs;
-            data[(maxPtsTimes * CVMSI_MAX_POINTS) + j2].crust.rho = dataBuffer[j2].prop.rho;
+            data[index_mapping[j2]].crust.source = ucvm_cvmsi_id;
+            data[index_mapping[j2]].crust.vp = ucvm_cvmsi_data_buffer[j2].prop.vp;
+            data[index_mapping[j2]].crust.vs = ucvm_cvmsi_data_buffer[j2].prop.vs;
+            data[index_mapping[j2]].crust.rho = ucvm_cvmsi_data_buffer[j2].prop.rho;
         }
     }
+
+  free(index_mapping);
 
   if (datagap) {
     return(UCVM_CODE_DATAGAP);

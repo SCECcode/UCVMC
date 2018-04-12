@@ -9,7 +9,7 @@
 #  Plots a Vs30 slice given a set of command-line parameters.
 
 from pycvm import Z10Slice, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
@@ -21,6 +21,11 @@ def usage():
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-z, --interval: Z-interval, in meters, for Z%.1f to be queried (lower value means more precision)"
     print "\t-c, --cvm: one of the installed CVMs"
+    print "\t-f, --datafile: optional binary input data filename"
+    print "\t-x, --x: optional x steps matching the datafile"
+    print "\t-y, --y: optional y steps matching the datafile"
+    print "\t-o, --outfile: optional png output filename"
+    print "\t-e, --extra: optional extra note to be appended to the plot title"
     print "UCVM %s\n" % VERSION
 
 
@@ -43,6 +48,7 @@ def get_user_opts(options):
     short_opt_string = ""
     long_opts = []
     opts_left = []
+    opts_opt = []
     ret_val = {}
     
     for key, value in options.iteritems():
@@ -65,8 +71,32 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
+
+# handle optional opts
+    for l in opts_left :
+        if l == "f" :
+            opts_opt.append(l)
+            ret_val["datafile"] = None
+        else :
+            if l == "o" :
+              opts_opt.append(l)
+              ret_val["outfile"] = None
+            else :
+                if l == "e" :
+                  opts_opt.append(l)
+                  ret_val["extra"] = None
+                else :
+                    if l == "x" :
+                      opts_opt.append(l)
+                      ret_val["nx"] = None
+                    else :
+                        if l == "y" :
+                          opts_opt.append(l)
+                          ret_val["ny"] = None
+
+
     
-    if len(opts_left) == 0 or len(opts_left) == len(options):
+    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
@@ -74,8 +104,13 @@ def get_user_opts(options):
 # Create a new UCVM object.
 u = UCVM()
 
+meta = {}
+
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "c,cvm":"cvm_selected"})
+                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
+                         "f,datafile":"datafile", "o,outfile":"outfile", \
+                         "x,nx":"nx", "y,ny":"ny", \
+                         "e,extra":"extra"}) 
 
 if ret_val == "bad":
     usage()
@@ -83,12 +118,16 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        print key , " = " , value
+        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
     useMPI = "n"
 else:      
     print ""
@@ -147,5 +186,6 @@ else:
     cvm_selected = corresponding_cvm[cvm_selected]
 
 # Generate the horizontal slice.
-b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
-b.plot()
+b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected, xsteps=nx, ysteps=ny)
+
+b.plot(datafile=datafile,filename=outfile, note=extra, meta=meta)

@@ -9,7 +9,7 @@
 #  Plots a horizontal slice given a set of command-line parameters.
 
 from pycvm import HorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
@@ -20,9 +20,11 @@ def usage():
     print "\t-u, --upperright: upper-right latitude, longitude (e.g. 35,-117)"
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-e, --depth: depth for horizontal slice in meters (e.g. 1000)"
-    print "\t-d, --datatype: either 'vs', 'vp', 'rho', or 'poisson', without quotation marks"
+    print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed velocity models"
     print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
+    print "\t-f, --datafile: optional binary input data filename"
+    print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
 ## Makes sure the response is a number.
@@ -44,6 +46,7 @@ def get_user_opts(options):
     short_opt_string = ""
     long_opts = []
     opts_left = []
+    opts_opt = []
     ret_val = {}
     
     for key, value in options.iteritems():
@@ -67,17 +70,31 @@ def get_user_opts(options):
                 else:
                     ret_val[value] = a
     
-    if len(opts_left) == 0 or len(opts_left) == len(options):
+    for l in opts_left :
+# data file is optional
+        if l == "f" :
+            opts_opt.append(l)
+            ret_val["datafile"] = None
+        else :
+            if l == "o" :
+              opts_opt.append(l)
+              ret_val["outfile"] = None
+
+    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", "e,depth":"depth", \
-                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color"})
+                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color", \
+                         "f,datafile":"datafile", "o,outfile":"outfile"})
+
 
 # Create a new UCVM object.
 u = UCVM()
+
+meta = {}
 
 if ret_val == "bad":
     usage()
@@ -85,12 +102,16 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        print key , " = " , value
+        meta[key]=value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
 else:  
     print ""
     print "Plot Horizontal Slice - UCVM %s" % VERSION
@@ -137,7 +158,7 @@ else:
         data_type = raw_input("What would you like to plot (either vp, vs, density, or poisson): ")
         data_type = data_type.lower().strip()
     
-        if data_type != "vs" and data_type != "vp" and data_type != "density" and data_type != "poisson":
+        if data_type != "vs" and data_type != "vp" and data_type != "density"  and data_type != "poisson":
             print "Error: you must select either 'vp', 'vs', 'density', 'poisson' (without quotation marks)."
 
     # Ask which CVMs to use.
@@ -182,4 +203,5 @@ print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
 h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
-h.plot(data_type, color_scale=color)
+
+h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color,meta=meta)

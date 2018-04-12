@@ -279,6 +279,8 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
       if (nproc != cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2]) {
 	fprintf(stderr, "[%d] Proc space does not equal MPI core count\n", 
 		myid);
+        int tproc= cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+	fprintf(stderr, "[%d]   expected %d but got %d\n",myid,tproc,nproc);
 	return(1);
       }
     }

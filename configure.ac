@@ -80,6 +80,18 @@ AC_ARG_ENABLE([model-cvms5],
         [enable_model_cvms5=yes],
         [enable_model_cvms5=no])
 
+AC_ARG_ENABLE([model-cca],
+        [AS_HELP_STRING([--enable-model-cca],
+        [enable model SCEC CCA])],
+        [enable_model_cca=yes],
+        [enable_model_cca=no])
+
+AC_ARG_ENABLE([model-cs173],
+        [AS_HELP_STRING([--enable-model-cs173],
+        [enable model SCEC CS173])],
+        [enable_model_cs173=yes],
+        [enable_model_cs173=no])
+
 AC_ARG_ENABLE([model-cencal],
         [AS_HELP_STRING([--enable-model-cencal],
         [enable model USGS CenCalVM])],
@@ -142,8 +154,8 @@ AC_ARG_WITH([proj4-include-path],
   [PROJ4_INCL=""])
 AC_ARG_WITH([proj4-lib-path],
   [AS_HELP_STRING([--with-proj4-lib-path], [location of the Proj.4 libraries])],
-  [PROJ4_LIB="-L$withval -lproj -pthread"],
-  [PROJ4_LIB="-lproj -pthread"])
+  [PROJ4_LIB="-L$withval -lproj -lpthread"],
+  [PROJ4_LIB="-lproj -lpthread"])
 
 # Get optional netCDF library and include locations
 if test "x$enable_netcdf" = xyes; then
@@ -260,6 +272,33 @@ AC_ARG_WITH([cvms5-lib-path],
   [CVMS5_LIB="-lcvms5 -lgfortran -lproj -letree"])
 fi
 
+# Get SCEC CCA library and include locations
+if test "x$enable_model_cca" = xyes; then
+AC_ARG_WITH([cca-include-path],
+  [AS_HELP_STRING([--with-cca-include-path],
+    [location of the SCEC CCA headers])],
+  [CCA_INCL="-I$withval"],
+  [CCA_INCL="/usr/include/cca"])
+AC_ARG_WITH([cca-lib-path],
+  [AS_HELP_STRING([--with-cca-lib-path], [location of the SCEC CCA libraries])],
+  [CCA_LIB="-L$withval -lcca -lgfortran -lproj -letree"],
+  [CCA_LIB="-lcca -lgfortran -lproj -letree"])
+fi
+
+# Get SCEC CS173 library and include locations
+if test "x$enable_model_cs173" = xyes; then
+AC_ARG_WITH([cs173-include-path],
+  [AS_HELP_STRING([--with-cs173-include-path],
+    [location of the SCEC CS173 headers])],
+  [CS173_INCL="-I$withval"],
+  [CS173_INCL="/usr/include/cs173"])
+AC_ARG_WITH([cs173-lib-path],
+  [AS_HELP_STRING([--with-cs173-lib-path], [location of the SCEC CS173 libraries])],
+  [CS173_LIB="-L$withval -lcs173 -lgfortran -lproj -letree"],
+  [CS173_LIB="-lcs173 -lgfortran -lproj -letree"])
+fi
+
+
 # Get SCEC CVM-NCI library and include locations
 if test "x$enable_model_cvmnci" = xyes; then
 AC_ARG_WITH([cvmnci-include-path],
@@ -361,6 +400,9 @@ AC_SUBST(TAPE_MODEL)
 if test "x$enable_static" = xyes; then
    LDFLAGS="-static $LDFLAGS"
 fi
+if test "x$enable_dynamic" = xyes; then
+   LDFLAGS="-dynamic $LDFLAGS"
+fi
 if test "x$enable_iobuf" = xyes; then
    AC_DEFINE(USE_IOBUF_MACROS, 1)
 fi
@@ -383,7 +425,7 @@ AC_CHECK_LIB(fftw3, fftw_execute, [AC_CHECK_HEADER([fftw3.h], [], [AC_MSG_ERROR(
 CFLAGS="$PROJ4_INCL $CHECK_CFLAGS"
 LDFLAGS="$CHECK_LDFLAGS $PROJ4_LIB"
 AC_CHECK_LIB(proj, pj_init_plus, [AC_CHECK_HEADER([proj_api.h], [], [AC_MSG_ERROR(["Proj4 header not found in $PROJ4_INCL; use --with-proj4-include-path"])
-  ], [AC_INCLUDES_DEFAULT])],[AC_MSG_ERROR(["Proj4 library not found; use --with-proj4-lib-path"])], [-pthread -lm])
+  ], [AC_INCLUDES_DEFAULT])],[AC_MSG_ERROR(["Proj4 library not found; use --with-proj4-lib-path"])], [-lpthread -lm])
 
 # Check optional NetCDF library
 if test "x$enable_netcdf" = xyes; then
@@ -419,7 +461,7 @@ if test "x$enable_model_cencal" = xyes; then
    LDFLAGS="$CENCAL_LIB $LDFLAGS"
 
    echo "Checking for USGS CenCalVM"
-   AC_CHECK_LIB(cencalvm, cencalvm_createQuery, [AM_CONDITIONAL(UCVM_AM_ENABLE_CENCAL, true)], [AC_MSG_ERROR(["USGS CenCalVM library not found; use --with-cencal-lib-path"])], [-lstdc++ -pthread -letree -lproj -lm])
+   AC_CHECK_LIB(cencalvm, cencalvm_createQuery, [AM_CONDITIONAL(UCVM_AM_ENABLE_CENCAL, true)], [AC_MSG_ERROR(["USGS CenCalVM library not found; use --with-cencal-lib-path"])], [-lstdc++ -lpthread -letree -lproj -lm])
    AC_CHECK_HEADER(cvmquery.h, [], [AC_MSG_ERROR(["USGS CenCalVM header not found; use --with-cencal-include-path"])], [AC_INCLUDES_DEFAULT])
 
    AC_CHECK_FILE([$CENCAL_MODEL], [], [AC_MSG_ERROR(["USGS CenCalVM model etree not found; use --with-cencal-model-path"])])
@@ -491,6 +533,41 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, false)   
 fi
 
+if test "x$enable_static" = xyes; then
+# Check optional SCEC CCA installation
+if test "x$enable_model_cca" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$CCA_INCL $CFLAGS"
+   LDFLAGS="$CCA_LIB $LDFLAGS"
+
+   echo "Checking for SCEC CCA"
+   AC_CHECK_LIB(cca, cca_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, true)], [AC_MSG_ERROR(["SCEC CCA library not found; use --with-cca-lib-path"])],[-lproj -letree -lgfortran -lm])
+   AC_CHECK_HEADER(cca.h,[],[AC_MSG_ERROR(["SCEC CCA header not found; use --with-cca-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)   
+fi
+
+if test "x$enable_static" = xyes; then
+# Check optional SCEC CS173 installation
+if test "x$enable_model_cs173" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$CS173_INCL $CFLAGS"
+   LDFLAGS="$CS173_LIB $LDFLAGS"
+
+   echo "Checking for SCEC CS173"
+   AC_CHECK_LIB(cs173, cs173_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, true)], [AC_MSG_ERROR(["SCEC CS173 library not found; use --with-cs173-lib-path"])],[-lproj -letree -lgfortran -lm])
+   AC_CHECK_HEADER(cs173.h,[],[AC_MSG_ERROR(["SCEC CS173 header not found; use --with-cs173-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)   
+fi
+
+
 # Check optional SCEC CVM-NCI installation
 if test "x$enable_model_cvmnci" = xyes; then
    # Setup compiler/linker flags
@@ -558,7 +635,7 @@ if test "x$enable_model_tape" = xyes; then
    LDFLAGS="$TAPE_LIB $LDFLAGS"
 
    echo "Checking for TAPE"
-   AC_CHECK_LIB(tape, tape_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_TAPE, true)], [AC_MSG_ERROR(["TAPE library not found; use --with-tape-lib-path"])], [-pthread -lproj -lm])
+   AC_CHECK_LIB(tape, tape_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_TAPE, true)], [AC_MSG_ERROR(["TAPE library not found; use --with-tape-lib-path"])], [-lpthread -lproj -lm])
    AC_CHECK_HEADER(tape.h,[],[AC_MSG_ERROR(["TAPE header not found; use --with-tape-include-path"])],[AC_INCLUDES_DEFAULT])
 
    AC_CHECK_FILE([$TAPE_MODEL], [], [AC_MSG_ERROR(["TAPE model dir not found; use --with-tape-model-path"])])

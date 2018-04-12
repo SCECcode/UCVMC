@@ -3,7 +3,7 @@ import sys
 import os
 from urllib2 import urlopen
 
-ucvmc_largefile_dir = "http://hypocenter.usc.edu/research/ucvmc"
+ucvmc_largefile_dir = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
 
 def download_urlfile(url,fname):
   try:
@@ -44,6 +44,8 @@ large_lib_list = ["proj-4.8.0.tar.gz",
                   "euclid3-1.3.tar.gz"]
 
 large_model_list = ["cvms5.tar.gz",
+                    "cca.tar.gz",
+                    "cs173.tar.gz",
                     "cvms4.tar.gz",
                     "cvms426.tar.gz",
                     "cvmh-15.1.0.tar.gz",

@@ -9,7 +9,9 @@
 #  Plots a cross section given a set of command-line parameters.
 
 from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point
-import getopt, sys
+import getopt, sys, os
+import json
+import pdb
 
 ## Prints usage statement.
 def usage():
@@ -22,9 +24,12 @@ def usage():
     print "\t-v, --vertical: vertical spacing for cross-section (meters)"
     print "\t-d, --datatype: either 'vs', 'vp', 'rho', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed CVMs"
-    print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
-    print "\t-o, --origin: origin latitude, longitude from which to start plot (e.g. 34,-118)"
-    print "\t-f, --final: destination latitude, longitude to end plot (e.g. 35,-117)"
+    print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
+    print "\t-g, --gate: optional gate value for bi-color scale gate"
+    print "\t-b, --origin: origin latitude, longitude from which to start plot (e.g. 34,-118)"
+    print "\t-u, --destination: destination latitude, longitude to end plot (e.g. 35,-117)"
+    print "\t-f, --datafile: optional input filename"
+    print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
 ## Makes sure the response is a number.
@@ -46,6 +51,7 @@ def get_user_opts(options):
     short_opt_string = ""
     long_opts = []
     opts_left = []
+    opts_opt = []
     ret_val = {}
     
     for key, value in options.iteritems():
@@ -68,24 +74,43 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
+
+# handle optional opts
+    for l in opts_left :
+        if l == "o" :
+          opts_opt.append(l)
+          ret_val["outfile"] = None
+        else :
+            if l == "f" :
+              opts_opt.append(l)
+              ret_val["datafile"] = None
+            else :
+                if l == "g" :
+                  opts_opt.append(l)
+                  ret_val["gate"] = 2.5
     
-    if len(opts_left) == 0 or len(opts_left) == len(options):
+    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
 
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
-			"u,upperright":"lat2,lon2", \
-                         "s,starting":"starting_depth", \
-			  "e,ending":"ending_depth", \
-                         "d,datatype":"data_type", \
+ret_val = get_user_opts({"b,origin":"lat1,lon1", \
+			"u,destination":"lat2,lon2", \
+                        "s,starting":"starting_depth", \
+			"e,ending":"ending_depth", \
+                        "d,datatype":"data_type", \
 			"c,cvm":"cvm_selected", \
 			"h,horizonatal":"horizontal_spacing", \
 			"v,vertical":"vertical_spacing", \
-			"a,scale": "color"})
+			"a,scale": "color", \
+			"g,gate": "gate", \
+			"f,datafile":"datafile", \
+			"o,outfile":"outfile"})
 
 # Create a new UCVM object.
 u = UCVM()
+
+meta = {}
 
 if ret_val == "bad":
     usage()
@@ -93,12 +118,16 @@ if ret_val == "bad":
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
-        print key + " = " + value
+        print key , " = " , value
+        meta[key] = value
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
         except StandardError, e:
-            exec("%s = '%s'" % (key, value))
+            if value is None:
+                exec("%s = %s" % (key, value))
+            else:
+                exec("%s = '%s'" % (key, value))
 else: 
     print ""
     print "Plot Cross-Section - UCVM %s" % VERSION
@@ -183,22 +212,25 @@ else:
     cvm_selected = corresponding_cvm[cvm_selected]
 
     # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
+    gate = 2.5
     color = ""
 
-    while color != "s" and color != "d" and data_type != "poisson":
+    while color != "s" and color != "d" and color != "b" and data_type != "poisson":
         print ""
-        color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
+        color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth, 'b' for bi-color): ")
         color = color.strip()
     
-        if color != "s" and color != "d":
+        if color != "s" and color != "d" and color != "b":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
-            print "marks) for a smooth color scale."
+            print "marks) for a smooth color scale and 'b' (without quotation marks) for bi-color scale."
 
 # Now we have all the information so we can actually plot the data.
 print ""
 print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
+
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
-d.plot(data_type)
+
+d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta)
