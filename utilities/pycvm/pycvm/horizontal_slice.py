@@ -231,8 +231,8 @@ class HorizontalSlice:
           meta['num_x'] = self.num_x
           meta['num_y'] = self.num_y
           meta['datapoints'] = datapoints.size
-          meta['max'] = self.max_val
-          meta['min'] = self.min_val
+          meta['max'] = np.asscalar(self.max_val)
+          meta['min'] = np.asscalar(self.min_val)
           if filename:
               u.export_metadata(meta,filename)
               u.export_binary(datapoints,filename)

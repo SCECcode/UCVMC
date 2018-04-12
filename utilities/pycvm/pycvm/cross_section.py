@@ -287,8 +287,8 @@ class CrossSection:
           meta['num_x'] = self.num_x
           meta['num_y'] = self.num_y
           meta['datapoints'] = datapoints.size
-          meta['max'] = self.max_val
-          meta['min'] = self.min_val
+          meta['max'] = np.asscalar(self.max_val)
+          meta['min'] = np.asscalar(self.min_val)
           meta['lon_list'] = self.lon_list
           meta['lat_list'] = self.lat_list
           meta['depth_list'] = self.depth_list
