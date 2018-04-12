@@ -239,8 +239,8 @@ class CrossSection:
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
 
-        self.max_val=np.asscalar(datapoints.max())
-        self.min_val=np.asscalar(datapoints.min())
+        self.max_val=np.nanmax(datapoints)
+        self.min_val=np.nanmin(datapoints)
 
         BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
         TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]

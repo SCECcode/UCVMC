@@ -202,8 +202,8 @@ class HorizontalSlice:
 #        print " total number of nancnt is ", nancnt
 #        print " total number of zerocnt is ", zerocnt
 #        print " total number of negcnt is ", negcnt
-        self.max_val=np.asscalar(datapoints.max())
-        self.min_val=np.asscalar(datapoints.min())
+        self.max_val=np.nanmax(datapoints)
+        self.min_val=np.nanmin(datapoints)
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis
