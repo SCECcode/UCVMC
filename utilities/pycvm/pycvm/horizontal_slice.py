@@ -153,31 +153,6 @@ class HorizontalSlice:
         BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
         TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
 
-        if property == "vp":
-            BOUNDS = [bound * 1.7 for bound in BOUNDS]
-            TICKS = [tick * 1.7 for tick in TICKS]
-            
-        if color_scale == "s":
-            colormap = basemap.cm.GMT_seis
-            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
-        elif color_scale == "s_r":
-            colormap = basemap.cm.GMT_seis_r
-            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
-        elif color_scale == "sd":
-            colormap = basemap.cm.GMT_seis
-            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
-            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
-        elif color_scale == "sd_r":
-            colormap = basemap.cm.GMT_seis_r
-            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
-            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
-        elif color_scale == "d_r":
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
-            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-        else:
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
-            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-        
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \
                             urcrnrlat=self.upperleftpoint.latitude, \
                             llcrnrlon=self.upperleftpoint.longitude, \
@@ -214,15 +189,11 @@ class HorizontalSlice:
                             nancnt=nancnt+1
                     else:
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
-#                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
                         if (datapoints[i][j] == 0) :
                            datapoints[i][j]=np.nan
                            zerocnt=zerocnt+1
                         if (datapoints[i][j] < 0) :
                            negcnt=negcnt+1
-#                           print "negvalue: i ,",i,"j ",j
-#                           print self.upperleftpoint.longitude + i * self.spacing," ", self.bottomrightpoint.latitude + j * self.spacing
-#                           print "or ",self.upperleftpoint.longitude + j * self.spacing, " ",self.bottomrightpoint.latitude + i * self.spacing
                         if(datapoints[i][j] == -1 ) :
                            nancnt=nancnt+1
                 else:
@@ -231,6 +202,38 @@ class HorizontalSlice:
 #        print " total number of nancnt is ", nancnt
 #        print " total number of zerocnt is ", zerocnt
 #        print " total number of negcnt is ", negcnt
+
+        if color_scale == "s":
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
+        elif color_scale == "s_r":
+            colormap = basemap.cm.GMT_seis_r
+            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
+        elif color_scale == "sd":
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
+            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
+        elif color_scale == "sd_r":
+            colormap = basemap.cm.GMT_seis_r
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
+            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
+        elif color_scale == "d_r":
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        else:
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+
+        if( datafile == None ):
+          u = UCVM()
+          meta['num_x'] = self.num_x
+          meta['num_y'] = self.num_y
+          meta['datapoints'] = datapoints.size
+          meta['max'] = self.max_val
+          meta['min'] = self.min_val
+          if filename:
+              u.export_metadata(meta,filename)
+              u.export_binary(datapoints,filename)
                     
         t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
         img = m.imshow(t, cmap=colormap, norm=norm)
