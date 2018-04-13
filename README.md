@@ -82,8 +82,7 @@ Additional documentation advanced features and previous versions of UCVM are pos
 *  http://scec.usc.edu/scecpedia/UCVMC
 
 # 7.0 Preferred Reference
-== Preferred Reference ==
-If you use the UCVM software in your research, please include a reference to the following publication in your reserach papers. References help us obtain continued financial support for the development of the software. The preferred reference for the UCVM software is:
+If you use the UCVM software in your research, please include a reference to the following publication in your research publications. References help us obtain continued financial support for the development of the software. The preferred reference for the UCVM software is:
 
 Small, P., Gill, D., Maechling, P. J., Taborda, R., Callaghan, S., Jordan, T. H., Ely, G. P., Olsen, K. B., & Goulet, C. A. (2017). The SCEC Unified Community Velocity Model Software Framework. Seismological Research Letters, 88(5). doi:10.1785/0220170082.
 
