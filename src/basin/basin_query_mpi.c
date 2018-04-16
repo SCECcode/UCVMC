@@ -466,7 +466,7 @@ int main(int argc, char **argv) {
                 int ii;
                 // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
 		for (ii = 0; ii < nx; ii++) {
-                   double tlat= (double) (ii * spacing) + latlon[0];
+                   double tlat= (double) (ii * spacing) + latlon[1];
                    if(ii==0) {
                        sprintf(latlist,"%10.4f",tlat);
                        } else {
@@ -474,7 +474,7 @@ int main(int argc, char **argv) {
                    }
                 }
 		for (ii = 0; ii < ny; ii++) {
-                   double tlon= (double) (ii * spacing) + latlon[1];
+                   double tlon= (double) (ii * spacing) + latlon[0];
                    
                    if(ii==0) {
                        sprintf(lonlist,"%10.4f",tlon);
