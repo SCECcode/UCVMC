@@ -25,6 +25,8 @@ The following California velocity models packages are included as part of a stan
 *  SCEC CVM-S4
 *  SCEC CVM-S4.26
 *  SCEC CVM-S4.26.M01
+*  SCEC CCA 06, Central California
+*  SCEC CS17.3
 *  USGS BayArea Velocity Model 0.8.3
 *  Southern California 1D Velocity Model
 *  Northridge Region 1D Velocity Model
@@ -63,6 +65,8 @@ CVM-H      | Southern California Velocity Model developed by Harvard Structural 
 CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
 CVM-S4.26  | Tomography improved version of CVM-S4 with no geotechnical layer | cvms5
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
+CCA06 | Central California Velocity Model with optional geotechnical layer | cca
+CS17.3 | Cypershake study 17.3 | cs173
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
