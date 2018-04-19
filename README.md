@@ -25,7 +25,7 @@ The following California velocity models packages are included as part of a stan
 *  SCEC CVM-S4
 *  SCEC CVM-S4.26
 *  SCEC CVM-S4.26.M01
-*  SCEC CCA 06, Central California
+*  SCEC CCA06
 *  SCEC CS17.3
 *  USGS BayArea Velocity Model 0.8.3
 *  Southern California 1D Velocity Model

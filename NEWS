@@ -5,7 +5,7 @@
 * expanded basin_query_mpi to generate additional optional results
 * bugfixes:
     a) model tiling with dynamically loaded model backends 
-    b) missing sections from ucvm_query for dynamically loaded model backends
+    b) missing output segments from ucvm_query for dynamically loaded model backends
 
 2017-01-15 Philip Maecling <maechlin@usc.edu>
 * moved codebase to github

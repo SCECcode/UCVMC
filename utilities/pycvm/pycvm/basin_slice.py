@@ -112,7 +112,7 @@ class BasinSlice(HorizontalSlice):
     #  @param title The title of the plot. Optional.
     #  @param horizontal_label The horizontal label of the plot. Optional.
     #  @param filename The file name to which the plot should be saved. Optional.
-    def plot(self, title = None, horizontal_label = "Depth (m)", datafile = None,  filename = None, meta={}):
+    def plot(self, title = None, horizontal_label = "Depth (m)", datafile = None,  filename = None, meta={}, color_scale="sd"):
  
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -120,15 +120,16 @@ class BasinSlice(HorizontalSlice):
             location_text = self.upperleftpoint.description + " "
 
         # Gets the better CVM description if it exists.
-        cvmdesc = UCVM_CVMS[self.cvm]
-        if cvmdesc == None: 
-            cvmdesc = self.cvm
-        
+        cvmdesc = self.cvm
+        if self.cvm.isalnum() :
+            cvmdesc = UCVM_CVMS[self.cvm]
+
         if title == None:
             title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
         
+        meta['title'] = title
         HorizontalSlice.plot(self, "vs", horizontal_label=horizontal_label, title=title, datafile=datafile, filename=filename, \
-                             color_scale="sd", meta=meta)
+                             color_scale=color_scale, meta=meta)
         
 ##
 #  @class Z10Slice
@@ -178,7 +179,8 @@ class Z10Slice(BasinSlice):
         if note != None:
             title = title + " " + note
         
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta)    
+        meta['title'] = title
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale="sd_r")    
         
 ##
 #  @class Z25Slice
@@ -229,5 +231,6 @@ class Z25Slice(BasinSlice):
         if note != None:
             title = title + " " + note
         
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta)           
+        meta['title'] = title
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale="sd_r")           
         

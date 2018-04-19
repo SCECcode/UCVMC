@@ -38,19 +38,19 @@ shell_script = ""
 
 # Print usage.
 def usage():
-    print "Automatically sets up UCVM and alerts the user to potential complications.\n"
+    print "Automatically sets up UCVMC and alerts the user to potential complications.\n"
     print "\t-s  --static       Use static linking."
     print "\t-d  --dynamic      Use dynamic linking."
     print ""
-    print "UCVM %s\n" % VERSION
+    print "UCVMC %s\n" % VERSION
     
 # Stands for "error gracefully". Prints out a message for the error and asks to contact software@scec.org.
 def eG(err, step):
     print "\nERROR:"
-    print "An error occurred while trying to setup UCVM. Specifically, the error was:\n"
+    print "An error occurred while trying to setup UCVMC. Specifically, the error was:\n"
     print str(err)
     print "\nAt step: %s\n" % step
-    print "Please contact software@scec.org for assistance setting up UCVM. In your message,"
+    print "Please contact software@scec.org for assistance setting up UCVMC. In your message,"
     print "please let us know the operating system on which you are running and some"
     print "specifications about your computer.\n"
     exit(1)
@@ -246,7 +246,7 @@ for o, a in opts:
             exit(1)
 
 print ""
-print "UCVM %s Installation" % VERSION
+print "UCVMC %s Installation" % VERSION
 print "Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0])
 
 print "Using local setup.list and system.list ...."
@@ -309,10 +309,10 @@ try:
 except StandardError, e:
     eG(e, "Parsing available model list.")
 
-print "\nPlease answer the following questions to install UCVM.\n"
+print "\nPlease answer the following questions to install UCVMC.\n"
 print "Note that this install and build process may take up to an hour depending on your"
 print "computer speed."
-print "Where would you like UCVM to be installed?"
+print "Where would you like UCVMC to be installed?"
 
 try:
     if ucvmpath[0] == "$":
@@ -340,7 +340,7 @@ while enteredpath is not "":
     else:
         break
     
-# Copy final selected path back to the UCVM path variable.
+# Copy final selected path back to the UCVMC path variable.
 ucvmpath = enteredpath
 
 ###MEI... create necessary directories
@@ -365,14 +365,14 @@ for library in config_data["libraries"]:
     if the_library["Ask"] == "yes" or library.lower() in unsupported_features:
         if the_library["Prerequisites"] != "":
             if "Dynamic" in the_library["Prerequisites"] and dynamic_flag == False:
-                print library + " requires UCVM to be linked dynamically. If you would like " + library
+                print library + " requires UCVMC to be linked dynamically. If you would like " + library
                 print "to be included, please re-run ucvm_setup.py with the '-d' flag."
             if "Static" in the_library["Prerequisites"] and dynamic_flag == True:
-                print library + " requires UCVM to be linked statically. If you would like " + library
+                print library + " requires UCVMC to be linked statically. If you would like " + library
                 print "to be included, please re-run ucvm_setup.py without the '-d' flag."            
         
         if library.lower() in unsupported_features:
-            print "WARNING: " + library + " is unsupported and we cannot guarantee that UCVM"
+            print "WARNING: " + library + " is unsupported and we cannot guarantee that UCVMC"
             print "will install correctly on your system if you install it with this library included."
             
         print "\nWould you like to download and install support for " + library + "?"
@@ -399,7 +399,7 @@ try:
 except StandardError, e:
     eG(e, "Could not create ./work directory.")
 
-print "\nNow setting up the required UCVM libraries..."
+print "\nNow setting up the required UCVMC libraries..."
 
 for library in config_data["libraries"]:
     the_library = config_data["libraries"][library]
@@ -447,8 +447,8 @@ for model in config_data["models"]:
         except StandardError, e:
             eG(e, "Error installing model " + model + ".")
 
-# Now that the models are installed, we can finally install UCVM!
-print "\nInstalling UCVM software..."
+# Now that the models are installed, we can finally install UCVMC!
+print "\nInstalling UCVMC software..."
 
 print "\nRunning aclocal"
 callAndRecord(["aclocal", "-I", "./m4"])
@@ -457,7 +457,7 @@ callAndRecord(["automake", "--add-missing", "--force-missing"])
 print "\nRunning autoconf"
 callAndRecord(["autoconf"])
  
-print "\nRunning ./configure for UCVM"
+print "\nRunning ./configure for UCVMC"
  
 ucvm_conf_command = ["./configure", "--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include", \
                      "--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib", \
@@ -502,19 +502,19 @@ if "NetCDF" in librariesToInstall:
     
 callAndRecord(ucvm_conf_command)
 
-print "\nMaking UCVM"
+print "\nMaking UCVMC"
 callAndRecord(["make", "clean"])
 callAndRecord(["make"])
-print "\nInstalling UCVM"
+print "\nInstalling UCVMC"
 callAndRecord(["make", "install"])
 
-print "\nDone installing UCVM!"
+print "\nDone installing UCVMC!"
 
-sys.stdout.write("\nThank you for installing UCVM. ")
+sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
 
 if platform.system() == "Darwin":
-    print "To try out UCVM, please edit your ~/.bash_profile to include"
+    print "To try out UCVMC, please edit your ~/.bash_profile to include"
     print "the following lines:"
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-4/lib:$DYLD_LIBRARY_PATH"
