@@ -233,6 +233,8 @@ class HorizontalSlice:
           meta['datapoints'] = datapoints.size
           meta['max'] = np.asscalar(self.max_val)
           meta['min'] = np.asscalar(self.min_val)
+          meta['lon_list']=lons.tolist()
+          meta['lat_list']=lats.tolist()
           if filename:
               u.export_metadata(meta,filename)
               u.export_binary(datapoints,filename)

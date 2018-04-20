@@ -163,7 +163,7 @@ int parse_file_list(char *list, char **files) {
 	char *next;
 	int length,cnt=0;
 
-	if(strlen(list) == 0) {
+	if(list == 0 || strlen(list) == 0) {
 		fprintf(stderr, "Did not specify result files\n");
 		return(UCVM_CODE_ERROR);
 	}
@@ -217,7 +217,7 @@ int parse_file_list2(const char *list, char **files) {
     files[i]=malloc(DEFAULT_MAX_FILE_LEN * sizeof(char));
     strcpy(files[i], "");
   }
-  if(strlen(list) == 0) {
+  if(list == 0 || strlen(list) == 0) {
       fprintf(stderr, "Did not specify result files\n");
       return(UCVM_CODE_ERROR);
   }
@@ -236,7 +236,7 @@ int parse_file_list2(const char *list, char **files) {
       return(UCVM_CODE_ERROR);
     }
 
-    if(strlen(token) != 0) {
+    if(token != 0 && strlen(token) != 0) {
       strcpy(files[num_files], token);
     }
 
@@ -455,8 +455,8 @@ int main(int argc, char **argv) {
                 /* produce the meta data in json.. */
 
                 // 10 chars per float, 1 for comma, 1 for decimal point, 1 for sign
-                char *latlist= (char *)malloc(nx * (13)+10);
-                char *lonlist= (char *)malloc(ny * (13)+10);
+                char *lonlist= (char *)malloc(nx * (13)+10);
+                char *latlist= (char *)malloc(ny * (13)+10);
                 if(latlist == NULL || lonlist == NULL) {
                     fprintf(stderr," fail to latlist or lonlist..\n");
                     exit(1);
@@ -465,7 +465,7 @@ int main(int argc, char **argv) {
                 lonlist[0]='\0';
                 int ii;
                 // pnts.coord's format is coord[0] is the lon, ccord[1] is the lat
-		for (ii = 0; ii < nx; ii++) {
+		for (ii = 0; ii < ny; ii++) {
                    double tlat= (double) (ii * spacing) + latlon[0];
                    if(ii==0) {
                        sprintf(latlist,"%10.4f",tlat);
@@ -473,7 +473,7 @@ int main(int argc, char **argv) {
                            sprintf(latlist,"%s,%10.4f",latlist,tlat);
                    }
                 }
-		for (ii = 0; ii < ny; ii++) {
+		for (ii = 0; ii < nx; ii++) {
                    double tlon= (double) (ii * spacing) + latlon[1];
                    
                    if(ii==0) {
@@ -483,7 +483,7 @@ int main(int argc, char **argv) {
                    }
                 }
                 
-                if(strlen(ascii_meta_outfile) > 0) { 
+                if(ascii_meta_outfile != 0 && strlen(ascii_meta_outfile) > 0) { 
                 // a guess of how big the blob is..
                     int meta_sz=(int) strlen(latlist)+(int)strlen(lonlist)+ META_BASE_LEN;
 		    char *meta_blob=(char *)malloc(meta_sz*sizeof(char));
@@ -516,13 +516,13 @@ int main(int argc, char **argv) {
 
         /* setup result file handler */
 	for( i=0 ; i < DEFAULT_MAX_FILES ; i++ ) {
-		if(strlen(binary_outfiles[i]) > 0) { 
+		if(binary_outfiles[i] != 0 && strlen(binary_outfiles[i]) > 0) { 
 			MPI_File_open(MPI_COMM_SELF, binary_outfiles[i], MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &bfh[i]);
 			} else {
 				bfh[i]=NULL;
 		}
 	}
-        if(strlen(ascii_outfile) > 0) { 
+        if(ascii_outfile !=0 && strlen(ascii_outfile) > 0) { 
 		MPI_File_open(MPI_COMM_SELF, ascii_outfile, MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &afh);
 		} else {
 			afh=NULL;
