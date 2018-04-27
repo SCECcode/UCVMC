@@ -74,7 +74,6 @@ class BasinSlice(HorizontalSlice):
         u = UCVM()
 
 ### MEI
-#        print "Hoping for num_x ", self.num_x, " and num_y", self.num_y
         if (datafile != None) :
 #            print "\nUsing --> "+datafile
             data = u.import_binary(datafile, self.num_x, self.num_y)
@@ -87,7 +86,7 @@ class BasinSlice(HorizontalSlice):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))
-            print "Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y
+#            print "Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y
             data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
 
         i = 0

@@ -152,7 +152,7 @@ class CrossSection:
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):   
                     self.materialproperties[y][x] = data[y * self.num_x + x]     
-            print "outputting num_x ",self.num_x," num_y ",self.num_y
+#            print "outputting num_x ",self.num_x," num_y ",self.num_y
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -298,7 +298,6 @@ class CrossSection:
           else:
 #https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
               rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
-              print "random found is..",rnd
               f = "cross_section"+rnd
               u.export_metadata(meta,f)
               u.export_binary(datapoints,f)
