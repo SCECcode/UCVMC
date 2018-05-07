@@ -119,6 +119,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
 	    myid,mytask, cfg->meshfile);
   }
+  fprintf(stdout, "[%d:%d] mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
   if (mesh_open_mpi(mytask, ntask, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
@@ -127,7 +128,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
   }
 
   /* Allocate buffers */
-  fprintf(stdout, "[%d:%d] Allocating %d grid points\n", myid, mytask, num_grid);
+//  fprintf(stdout, "[%d:%d] Allocating %d grid points\n", myid, mytask, num_grid);
   pntbuf = malloc(num_grid * sizeof(ucvm_point_t));
   propbuf = malloc(num_grid * sizeof(ucvm_data_t));
   node_buf = malloc(num_grid * sizeof(mesh_ijk32_t));
@@ -147,11 +148,10 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 	     % cfg->proc_dims.dim[0]) * part_dims[0];
   i_end = i_start + part_dims[0];
 
-  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid,
-	 mytask,part_dims[0], part_dims[1], part_dims[2]);
-  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, mytask, i_start, j_start, k_start);
-  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, mytask, i_end, j_end, k_end);
-  fflush(stdout);
+//  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid, mytask,part_dims[0], part_dims[1], part_dims[2]);
+//  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, mytask, i_start, j_start, k_start);
+//  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, mytask, i_end, j_end, k_end);
+//  fflush(stdout);
 
   /* Open the grid file */
   ifp = fopen(cfg->gridfile, "rb");
@@ -247,8 +247,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     }
   }
 
-  fprintf(stdout, "[%d:%d] Extracted %d points\n", myid, mytask, num_points);
-  fflush(stdout);
+//  fprintf(stdout, "[%d:%d] Extracted %d points\n", myid, mytask, num_points);
+//  fflush(stdout);
 
   /* Close the mesh writer */
   mesh_close_mpi();
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
   ntask=cfg.proc_dims.dim[0]*cfg.proc_dims.dim[1]*cfg.proc_dims.dim[2];
   mytask=myid;
 
-  fprintf(stdout,"[%d] total tasks expected is %d\n",myid, ntask);
+//  fprintf(stdout,"[%d] total tasks expected is %d\n",myid, ntask);
   stat_t stats[STAT_MAX_STATS]; // per process
   stat_t task_stats[STAT_MAX_STATS]; // per process
 
@@ -423,11 +423,13 @@ int main(int argc, char **argv)
   stats[STAT_MIN_RHO].val = 100000.0;
   stats[STAT_MIN_RATIO].val = 100000.0;
 
-
   while (mytask < ntask) {
+        fprintf(stdout,"[%d:%d] XX looping .. %d\n",myid, mytask, ntask);
+        fflush(stdout);
   	/* Perform extractions */
   	if (extract(myid, mytask, ntask, &cfg, &task_stats[0]) != 0) {
-    	return(1);
+                fprintf(stderr,"[%d:%d] failed to extract..",myid, mytask);
+         	return(1);
   	}
    
   	if (task_stats[STAT_MAX_VP].val > stats[STAT_MAX_VP].val) {
@@ -452,7 +454,9 @@ int main(int argc, char **argv)
   		memcpy(&stats[STAT_MIN_RATIO], &task_stats[STAT_MIN_RATIO], sizeof(stat_t));
   	}
         mytask=mytask+nproc;
-   }
+ }
+   fprintf(stdout,"[%d:%d] XX out of looping from %d\n",myid, mytask,ntask);
+   fflush(stdout);
 	
   mpi_barrier();
 
