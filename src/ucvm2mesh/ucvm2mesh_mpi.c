@@ -130,7 +130,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
 	    myid,mytask, cfg->meshfile);
   }
-  fprintf(stdout, "[%d:%d] before call mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
+  fprintf(stdout, "[%d:%d] ABC mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
   fflush(stdout);
   if (mesh_open_mpi(mytask, ntask, \
 		       &(cfg->dims), &(cfg->proc_dims),
@@ -241,6 +241,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 */
     gettimeofday(&start,NULL);
 
+    fprintf(stdout, "[%d:%d] ABC mesh_write_mpi\n", myid, mytask);
+    fflush(stdout);
     /* Write this buffer */
     if (mesh_write_mpi(&(node_buf[0]), num_grid) != 0) {
       fprintf(stderr, "[%d:%d] Failed to write nodes to mesh file\n", 
@@ -269,6 +271,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 //  fflush(stdout);
 
   /* Close the mesh writer */
+  fprintf(stdout, "[%d:%d] ABC mesh_close_mpi\n", myid, mytask);
+  fflush(stdout);
   mesh_close_mpi();
   fprintf(stdout, "[%d:%d] YYY done extraction\n", myid, mytask);
   fflush(stdout);
