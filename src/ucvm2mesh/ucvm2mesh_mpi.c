@@ -18,6 +18,16 @@
 #include "um_stat.h"
 #include "um_config.h"
 
+void debugMe()
+{
+    int pause = 0;
+    char hostname[256];
+    gethostname(hostname, sizeof(hostname));
+    fprintf(stdout,"PID %d on %s ready for attach\n", getpid(), hostname);
+    fflush(stdout);
+    while (0 == pause)
+        sleep(5);
+}
 
 /* Get opt args */
 extern char *optarg;
@@ -81,7 +91,8 @@ int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 /* Perform extraction from UCVM */
 int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats) 
 {
-  fprintf(stdout,"[%d:%d] calling extract\n",myid,mytask);
+  fprintf(stdout,"[%d:%d] YYY calling extract\n",myid,mytask);
+  fflush(stdout);
 
   /* Performance measurements */
   struct timeval start, end;
@@ -119,7 +130,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
 	    myid,mytask, cfg->meshfile);
   }
-  fprintf(stdout, "[%d:%d] mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
+  fprintf(stdout, "[%d:%d] before call mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
+  fflush(stdout);
   if (mesh_open_mpi(mytask, ntask, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
@@ -177,7 +189,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
   fclose(ifp);
 
   /* For each k in k range, query UCVM */
-  if (myid == 0) {
+ // if (myid == 0) {
+  if (myid > 0) {
     fprintf(stdout, "[%d:%d] Starting extraction\n", myid, mytask);
   }
   num_points = 0;
@@ -217,6 +230,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     gettimeofday(&end,NULL);
     elapsed = (end.tv_sec - start.tv_sec) * 1000.0 +
       (end.tv_usec - start.tv_usec) / 1000.0;
+/* XXX
     if (myid == 0) {
       fprintf(stdout,
 	      "[%d:%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
@@ -224,6 +238,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
+*/
     gettimeofday(&start,NULL);
 
     /* Write this buffer */
@@ -233,11 +248,13 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
       return(1);
     }
     num_points = num_points + num_grid;
+    fprintf(stdout, "[%d:%d] after mesh_write_mpi %d mytask out %d ntask %d num_points\n", myid, mytask,  mytask, ntask, num_points);
 
     /* Calculate write elapsed time */
     gettimeofday(&end,NULL);
     elapsed = (end.tv_sec - start.tv_sec) * 1000.0 +
       (end.tv_usec - start.tv_usec) / 1000.0;
+/* XXX
     if (myid == 0) {
       fprintf(stdout,
 	      "[%d:%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
@@ -245,6 +262,7 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
+*/
   }
 
 //  fprintf(stdout, "[%d:%d] Extracted %d points\n", myid, mytask, num_points);
@@ -252,6 +270,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 
   /* Close the mesh writer */
   mesh_close_mpi();
+  fprintf(stdout, "[%d:%d] YYY done extraction\n", myid, mytask);
+  fflush(stdout);
 
   /* Free buffers */
   free(pntbuf);
@@ -291,13 +311,14 @@ int main(int argc, char **argv)
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
 
   if (myid == 0) {
-    ntask=nproc;
-    mytask=myid;
     printf("[%d] %s Version: %s\n", myid, argv[0],
 	   VERSION);
     printf("[%d] Running on %d cores\n", myid, nproc);
     fflush(stdout);
   }
+
+
+
 
   /* Parse options */
   strcpy(stageoutdir, "");
@@ -424,13 +445,16 @@ int main(int argc, char **argv)
   stats[STAT_MIN_RATIO].val = 100000.0;
 
   while (mytask < ntask) {
-        fprintf(stdout,"[%d:%d] XX looping .. %d\n",myid, mytask, ntask);
+        fprintf(stdout,"[%d:%d] XX looping before extract.. %d\n",myid, mytask, ntask);
         fflush(stdout);
   	/* Perform extractions */
   	if (extract(myid, mytask, ntask, &cfg, &task_stats[0]) != 0) {
                 fprintf(stderr,"[%d:%d] failed to extract..",myid, mytask);
          	return(1);
   	}
+        fprintf(stdout,"[%d:%d] XX looping after extract.. %d\n",myid, mytask, ntask);
+        fflush(stdout);
+        
    
   	if (task_stats[STAT_MAX_VP].val > stats[STAT_MAX_VP].val) {
   		memcpy(&stats[STAT_MAX_VP], &task_stats[STAT_MAX_VP], sizeof(stat_t));
@@ -470,6 +494,7 @@ int main(int argc, char **argv)
 
   /* Allocate statistics buffer */
   fprintf(stdout,"[%d] doing statistics...\n",myid);
+  fflush(stdout);
   rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t));
   /* Gather stats */
 
