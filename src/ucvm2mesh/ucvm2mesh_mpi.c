@@ -119,7 +119,9 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
 	    myid,mytask, cfg->meshfile);
   }
-  fprintf(stdout, "[%d:%d] mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
+
+  fprintf(stdout, "[%d:%d] ABC mesh_open_mpi %d mytask out %d ntask %d num_grid\n", myid, mytask,  mytask, ntask, num_grid);
+  fflush(stdout);
   if (mesh_open_mpi(mytask, ntask, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
@@ -226,6 +228,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
     }
     gettimeofday(&start,NULL);
 
+    fprintf(stdout, "[%d:%d] ABC mesh_write_mpi\n", myid, mytask);
+    fflush(stdout);
     /* Write this buffer */
     if (mesh_write_mpi(&(node_buf[0]), num_grid) != 0) {
       fprintf(stderr, "[%d:%d] Failed to write nodes to mesh file\n", 
@@ -251,6 +255,8 @@ int extract(int myid,int mytask, int ntask, mesh_config_t *cfg, stat_t *stats)
 //  fflush(stdout);
 
   /* Close the mesh writer */
+  fprintf(stdout, "[%d:%d] ABC mesh_close_mpi\n", myid, mytask);
+  fflush(stdout);
   mesh_close_mpi();
 
   /* Free buffers */
@@ -291,8 +297,6 @@ int main(int argc, char **argv)
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
 
   if (myid == 0) {
-    ntask=nproc;
-    mytask=myid;
     printf("[%d] %s Version: %s\n", myid, argv[0],
 	   VERSION);
     printf("[%d] Running on %d cores\n", myid, nproc);
