@@ -376,9 +376,7 @@ class UCVM:
             try :
               mp = MaterialProperties.fromUCVMOutput(line)
               properties.append(mp)
-#             print "DUMDUM", line
             except :
-#             print "SKIP",line
               pass
 
 
@@ -413,7 +411,10 @@ class UCVM:
         output = output.split("\n")[:-1]
         
         for line in output:
-            floats.append(float(line.split()[2]))
+            if ("WARNING" in line) or ("slow performance" in line):
+                 print "skipping text",line
+            else:
+                 floats.append(float(line.split()[2]))
         
         if len(floats) == 1:
             return floats[0]
@@ -448,7 +449,10 @@ class UCVM:
         output = output.split("\n")[:-1]
         
         for line in output:
-            floats.append(float(line.split()[2]))
+            if ("WARNING" in line) or ("slow performance" in line):
+                 print "skipping text",line
+            else:
+                 floats.append(float(line.split()[2]))
         
         if len(floats) == 1:
             return floats[0]
