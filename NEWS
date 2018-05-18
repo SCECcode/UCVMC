@@ -1,3 +1,12 @@
+2018-05-00 Mei-Hui Su <mei@usc.edu>
+* CCA06 with GTL support
+* CS173 
+* update CVMH-15.1.0 to remove compilation errors
+* expanded basin_query_mpi to generate additional optional results
+* bugfixes:
+    a) model tiling with dynamically loaded model backends 
+    b) missing output segments from ucvm_query for dynamically loaded model backends
+
 2017-01-15 Philip Maecling <maechlin@usc.edu>
 * moved codebase to github
 * changed name from UCVM to UCVMC to distinguish from python development version

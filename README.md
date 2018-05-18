@@ -25,6 +25,8 @@ The following California velocity models packages are included as part of a stan
 *  SCEC CVM-S4
 *  SCEC CVM-S4.26
 *  SCEC CVM-S4.26.M01
+*  SCEC CCA06
+*  SCEC CS17.3
 *  USGS BayArea Velocity Model 0.8.3
 *  Southern California 1D Velocity Model
 *  Northridge Region 1D Velocity Model
@@ -63,6 +65,8 @@ CVM-H      | Southern California Velocity Model developed by Harvard Structural 
 CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
 CVM-S4.26  | Tomography improved version of CVM-S4 with no geotechnical layer | cvms5
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
+CCA06 | Central California Velocity Model with optional geotechnical layer | cca
+CS17.3 | Cypershake study 17.3 | cs173
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
@@ -81,5 +85,10 @@ Online UCVMC documentation is available at:
 Additional documentation advanced features and previous versions of UCVM are posted at:
 *  http://scec.usc.edu/scecpedia/UCVMC
 
-# 7.0 License
+# 7.0 Preferred Reference
+If you use the UCVM software in your research, please include a reference to the following publication in your research publications. References help us obtain continued financial support for the development of the software. The preferred reference for the UCVM software is:
+
+Small, P., Gill, D., Maechling, P. J., Taborda, R., Callaghan, S., Jordan, T. H., Ely, G. P., Olsen, K. B., & Goulet, C. A. (2017). The SCEC Unified Community Velocity Model Software Framework. Seismological Research Letters, 88(5). doi:10.1785/0220170082.
+
+# 8.0 License
 UCVMC is released under the Apache 2.0 license. Please see the LICENSE file for distribution license and disclaimers.

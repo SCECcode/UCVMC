@@ -31,7 +31,7 @@ def check_md5file(filename,total_ok,total_errs):
     total_errs += 1
   return total_ok,total_errs
 
-UCVM_Version = "17.1"
+UCVM_Version = "18.5"
 total_ok = 0
 total_errs = 0
 #

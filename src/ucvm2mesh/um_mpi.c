@@ -515,6 +515,8 @@ int mesh_close_mpi()
   node_buf3 = NULL;
   meshtype = MESH_FORMAT_UNKNOWN;
   writer_init_flag = 0;
+  MPI_Type_free(&MPI_MESH_T);
+  MPI_Type_free(&MPI_MESH_FILE_T);
 
   return(0);
 }
