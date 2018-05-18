@@ -480,7 +480,7 @@ class UCVM:
         if( k != -1) : 
             rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
-        floats = np.fromfile(fh, dtype=np.float32)
+        floats = np.fromfile(fh, dtype=float)
 
         print "TOTAL number of binary data read:",len(floats),"\n"
 
