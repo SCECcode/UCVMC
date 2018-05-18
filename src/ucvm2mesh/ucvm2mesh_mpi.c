@@ -23,6 +23,13 @@
 extern char *optarg;
 extern int optind, opterr, optopt;
 
+/* MPI Statistic vars */
+MPI_Datatype MPI_STAT_T;
+int num_fields_stat;
+
+/* Statistics */
+stat_t stats[STAT_MAX_STATS];
+stat_t rank_stats[STAT_MAX_STATS];
 
 /* Display usage information */
 void usage(char *arg)
@@ -79,19 +86,12 @@ int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 
 
 /* Perform extraction from UCVM */
-int extract(int myid, int nproc, mesh_config_t *cfg) 
+int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat_t *rank_stats) 
 {
-  /* Statistics */
-  stat_t stats[STAT_MAX_STATS];
 
   /* Performance measurements */
   struct timeval start, end;
   double elapsed;
-
-  /* MPI Statistic vars */
-  MPI_Datatype MPI_STAT_T;
-  int num_fields_stat;
-  stat_t *rbuf;
 
   /* Buffers */
   int num_grid, num_points;
@@ -100,7 +100,7 @@ int extract(int myid, int nproc, mesh_config_t *cfg)
   mesh_ijk32_t *node_buf;
 
   int part_dims[3];
-  int i, j, k, i_start, i_end, j_start, j_end, k_start, k_end, n;
+  int j, k, i_start, i_end, j_start, j_end, k_start, k_end, n;
   size_t grid_offset, pnt_offset;
   double z;
   FILE *ifp;
@@ -111,14 +111,11 @@ int extract(int myid, int nproc, mesh_config_t *cfg)
   part_dims[2] = cfg->dims.dim[2]/cfg->proc_dims.dim[2];
 
   /* Initialize statistics */
-  memset(&stats[0], 0, STAT_MAX_STATS*sizeof(stat_t));
-  stats[STAT_MIN_VP].val = 100000.0;
-  stats[STAT_MIN_VS].val = 100000.0;
-  stats[STAT_MIN_RHO].val = 100000.0;
-  stats[STAT_MIN_RATIO].val = 100000.0;
-
-  /* Register new mesh data types */
-  mpi_register_stat_4(&MPI_STAT_T, &num_fields_stat);
+  memset(rank_stats, 0, STAT_MAX_STATS*sizeof(stat_t));
+  rank_stats[STAT_MIN_VP].val = 100000.0;
+  rank_stats[STAT_MIN_VS].val = 100000.0;
+  rank_stats[STAT_MIN_RHO].val = 100000.0;
+  rank_stats[STAT_MIN_RATIO].val = 100000.0;
 
   /* Compute number of nodes in my partition of x-y grid  */
   num_grid = ((cfg->dims.dim[0]/cfg->proc_dims.dim[0]) * 
@@ -129,10 +126,10 @@ int extract(int myid, int nproc, mesh_config_t *cfg)
     fprintf(stdout, "[%d] Opening output mesh file %s\n", 
 	    myid, cfg->meshfile);
   }
-  if (mesh_open_mpi(myid, nproc, \
+  if (mesh_open_mpi(myrank, nrank, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
-    fprintf(stderr, "[%d] Error: mesh_open_mpi reported failure\n", myid);
+    fprintf(stderr, "[%d] Error: mesh_open_mpi reported failure\n", myrank);
     return(1);
   }
 
@@ -215,7 +212,7 @@ int extract(int myid, int nproc, mesh_config_t *cfg)
 
     /* Calculate statistics */
     calc_stats_list(i_start, i_end, j_start, j_end, k, 
-		    node_buf, &stats[0]);
+		    node_buf, &rank_stats[0]);
     
     if (n != num_grid) {
       fprintf(stderr, "[%d] Number of nodes mismatch\n", 
@@ -268,68 +265,6 @@ int extract(int myid, int nproc, mesh_config_t *cfg)
   free(propbuf);
   free(node_buf);
 
-  mpi_barrier();
-
-  /* Allocate statistics buffer */
-  rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
-  
-  /* Gather stats */
-  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
-	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
-  if (myid == 0) { 
-    for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
-      switch (i % STAT_MAX_STATS) {
-      case STAT_MAX_VP:
-	if (rbuf[i].val > stats[STAT_MAX_VP].val) {
-	  memcpy(&stats[STAT_MAX_VP], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MAX_VS:
-	if (rbuf[i].val > stats[STAT_MAX_VS].val) {
-	  memcpy(&stats[STAT_MAX_VS], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MAX_RHO:
-	if (rbuf[i].val > stats[STAT_MAX_RHO].val) {
-	  memcpy(&stats[STAT_MAX_RHO], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_VP:
-	if (rbuf[i].val < stats[STAT_MIN_VP].val) {
-	  memcpy(&stats[STAT_MIN_VP], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_VS:
-	if (rbuf[i].val < stats[STAT_MIN_VS].val) {
-	  memcpy(&stats[STAT_MIN_VS], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_RHO:
-	if (rbuf[i].val < stats[STAT_MIN_RHO].val) {
-	  memcpy(&stats[STAT_MIN_RHO], &rbuf[i], sizeof(stat_t));
-	}
-      case STAT_MIN_RATIO:
-	if (rbuf[i].val < stats[STAT_MIN_RATIO].val) {
-	  memcpy(&stats[STAT_MIN_RATIO], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      default:
-	fprintf(stderr, "[%d] Unexpected stat type %d", myid,
-		i % STAT_MAX_STATS);
-	return(1);
-      }
-    }
-    for (j = 0; j < STAT_MAX_STATS; j++) {
-      printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
-      printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
-	     stats[j].i, stats[j].j, stats[j].k);
-      fflush(stdout);
-    }
-  }
-
-  /* Free statistics buffer */
-  free(rbuf);
-
   return(0);
 }
 
@@ -339,6 +274,7 @@ int main(int argc, char **argv)
   /* MPI stuff and distributed computation variables */
   int myid, nproc, pnlen;
   char procname[128];
+  int i, j;
 
   /* Config params */
   mesh_config_t cfg;
@@ -349,16 +285,17 @@ int main(int argc, char **argv)
   ucvm_trans_t trans;
 
   /* Filesytem IO */
-  int i;
   char tmp[UCVM_MAX_PATH_LEN], tmp2[UCVM_MAX_PATH_LEN];
 
   /* Options */
   int opt;
   char configfile[UCVM_MAX_PATH_LEN], stageoutdir[UCVM_MAX_PATH_LEN];
 
-
   /* Init MPI */
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
+
+  /* Register new mesh data types */
+  mpi_register_stat_4(&MPI_STAT_T, &num_fields_stat);
 
   if (myid == 0) {
     printf("[%d] %s Version: %s\n", myid, argv[0],
@@ -478,10 +415,116 @@ int main(int argc, char **argv)
     return(1);
   }
   
+  /* Initialize statistics */
+  memset(stats, 0, STAT_MAX_STATS*sizeof(stat_t));
+  stats[STAT_MIN_VP].val = 100000.0;
+  stats[STAT_MIN_VS].val = 100000.0;
+  stats[STAT_MIN_RHO].val = 100000.0;
+  stats[STAT_MIN_RATIO].val = 100000.0;
+
   /* Perform extractions */
-  if (extract(myid, nproc, &cfg) != 0) {
-    return(1);
+  int myrank=myid;
+  int nrank =get_nrank(&cfg);
+  while (myrank < nrank ) {
+    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+    fflush(stdout);
+    if (extract(myid, myrank, nrank, nproc, &cfg, &rank_stats[0]) != 0) {
+      return(1);
+    }
+
+    if (rank_stats[STAT_MAX_VP].val > stats[STAT_MAX_VP].val) {
+	  memcpy(&stats[STAT_MAX_VP], &rank_stats[STAT_MAX_VP], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MAX_VS].val > stats[STAT_MAX_VS].val) {
+	  memcpy(&stats[STAT_MAX_VS], &rank_stats[STAT_MAX_VS], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MAX_RHO].val > stats[STAT_MAX_RHO].val) {
+	  memcpy(&stats[STAT_MAX_RHO], &rank_stats[i], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MIN_VP].val < stats[STAT_MIN_VP].val) {
+	  memcpy(&stats[STAT_MIN_VP], &rank_stats[STAT_MIN_VP], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MIN_VS].val < stats[STAT_MIN_VS].val) {
+	  memcpy(&stats[STAT_MIN_VS], &rank_stats[STAT_MIN_VS], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MIN_RHO].val < stats[STAT_MIN_RHO].val) {
+	  memcpy(&stats[STAT_MIN_RHO], &rank_stats[STAT_MIN_RHO], sizeof(stat_t));
+	}
+    if (rank_stats[STAT_MIN_RATIO].val < stats[STAT_MIN_RATIO].val) {
+	  memcpy(&stats[STAT_MIN_RATIO], &rank_stats[STAT_MIN_RATIO], sizeof(stat_t));
+	}
+
+    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
+    fflush(stdout);
+
+    myrank = myrank + nproc;
   }
+
+  mpi_barrier();
+
+  fprintf(stdout," >> before summing  >> %d\n",myid);
+  fflush(stdout);
+
+  /* Allocate statistics buffer */
+  stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
+  
+  /* Gather stats */
+  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
+	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
+
+  if (myid == 0) { 
+    for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
+      switch (i % STAT_MAX_STATS) {
+      case STAT_MAX_VP:
+	if (rbuf[i].val > stats[STAT_MAX_VP].val) {
+	  memcpy(&stats[STAT_MAX_VP], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MAX_VS:
+	if (rbuf[i].val > stats[STAT_MAX_VS].val) {
+	  memcpy(&stats[STAT_MAX_VS], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MAX_RHO:
+	if (rbuf[i].val > stats[STAT_MAX_RHO].val) {
+	  memcpy(&stats[STAT_MAX_RHO], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_VP:
+	if (rbuf[i].val < stats[STAT_MIN_VP].val) {
+	  memcpy(&stats[STAT_MIN_VP], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_VS:
+	if (rbuf[i].val < stats[STAT_MIN_VS].val) {
+	  memcpy(&stats[STAT_MIN_VS], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_RHO:
+	if (rbuf[i].val < stats[STAT_MIN_RHO].val) {
+	  memcpy(&stats[STAT_MIN_RHO], &rbuf[i], sizeof(stat_t));
+	}
+      case STAT_MIN_RATIO:
+	if (rbuf[i].val < stats[STAT_MIN_RATIO].val) {
+	  memcpy(&stats[STAT_MIN_RATIO], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      default:
+	fprintf(stderr, "[%d] Unexpected stat type %d", myid,
+		i % STAT_MAX_STATS);
+	return(1);
+      }
+    }
+    for (j = 0; j < STAT_MAX_STATS; j++) {
+      printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
+      printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
+	     stats[j].i, stats[j].j, stats[j].k);
+      fflush(stdout);
+    }
+  }
+
+  /* Free statistics buffer */
+  free(rbuf);
 
   /* Stage out mesh file(s) */
   if ((myid == 0) && (strlen(stageoutdir) > 0)) {
@@ -512,8 +555,6 @@ int main(int argc, char **argv)
     }
   }
 
-  printf("[%d] XXX returning from here\n", myid);
-  fflush(stdout);
   /* Final sync */
   mpi_barrier();
   mpi_final("MPI Done");
