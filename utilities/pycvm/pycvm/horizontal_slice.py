@@ -120,7 +120,6 @@ class HorizontalSlice:
                 j = 0
                 i = i + 1
 
-        self.coords=ucvmpoints
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
