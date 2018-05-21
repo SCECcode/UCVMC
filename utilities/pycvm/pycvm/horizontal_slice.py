@@ -195,6 +195,8 @@ class HorizontalSlice:
                            negcnt=negcnt+1
                         if(datapoints[i][j] == -1 ) :
                            nancnt=nancnt+1
+                elsif self.materialproperties[i][j].vp == 0 or self.materialproperites[i][j].vs == 0.0:
+                    datapoints[i][j] = 0.0
                 else:
                     datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
 
