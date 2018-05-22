@@ -5,6 +5,7 @@ from common import Plot, Point, UCVM, MaterialProperties, \
 from horizontal_slice import HorizontalSlice
 from cross_section import CrossSection
 from vs30_slice import Vs30Slice
+from vs30_etree_slice import Vs30EtreeSlice
 from basin_slice import BasinSlice, Z10Slice, Z25Slice
 from depth_profile import DepthProfile
 from difference import Difference

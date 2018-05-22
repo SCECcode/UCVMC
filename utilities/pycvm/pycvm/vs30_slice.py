@@ -62,10 +62,10 @@ class Vs30Slice(HorizontalSlice):
         
         u = UCVM()
 
-###MEI
+        ###MEI
         if (datafile != None) :
             print "\nUsing --> "+datafile
-#            print "expecting x ",self.num_x," y ",self.num_y
+            # print "expecting x ",self.num_x," y ",self.num_y
             data = u.import_binary(datafile, self.num_x, self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.
@@ -111,4 +111,3 @@ class Vs30Slice(HorizontalSlice):
             title = "%sVs30 Data For %s" % (location_text, cvmdesc)
         
         HorizontalSlice.plot(self, "vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)
-        
