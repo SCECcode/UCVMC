@@ -120,7 +120,6 @@ class HorizontalSlice:
                 j = 0
                 i = i + 1
 
-        self.coords=ucvmpoints
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -196,6 +195,8 @@ class HorizontalSlice:
                            negcnt=negcnt+1
                         if(datapoints[i][j] == -1 ) :
                            nancnt=nancnt+1
+                elif self.materialproperties[i][j].vp == 0 or self.materialproperties[i][j].vs == 0.0:
+                    datapoints[i][j] = 0.0
                 else:
                     datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
 

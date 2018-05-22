@@ -396,6 +396,11 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
   return(0);
 }
 
+/* Return total number of ranks */
+int get_nrank(mesh_config_t *cfg) {
+  int t=cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+  return t;
+}
 
 /* Dump config to stdout */
 int disp_config(mesh_config_t *cfg) {
