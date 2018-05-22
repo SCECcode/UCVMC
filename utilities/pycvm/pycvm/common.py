@@ -431,6 +431,53 @@ class UCVM:
     #  @param point_list An array of @link Point Points @endlink for which UCVM should query.
     #  @param cvm The CVM from which this data should be retrieved.
     #  @return An array of @link MaterialProperties @endlink.
+    def elevation_etree(self, point_list, cvm):
+        
+        shared_object = "../model/" + cvm + "/lib/lib" + cvm + ".so"
+        properties = []
+        
+        # Can we load this library dynamically and bypass the C code entirely?
+        if os.path.isfile(shared_object):
+            import ctypes
+            #obj = ctypes.cdll.LoadLibrary(shared_object)
+            #print obj
+        
+        proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        
+        text_points = ""
+        
+        if isinstance(point_list, Point):
+            point_list = [point_list]
+         
+        for point in point_list:
+            text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+            # print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
+        
+        output = proc.communicate(input=text_points)[0]
+        output = output.split("\n")[1:-1]
+
+        for line in output:
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
+                print "skipping text",line
+            else:
+                # Position 3 returned by ucvm_query is a elevation in the etree. Return this value
+                properties.append(float(line.split()[3]))
+
+        if len(properties) == 1:
+            return properties[0]
+        
+        return properties
+
+
+    ##
+    #  Queries UCVM given a set of points and a CVM to query. If the CVM does not exist,
+    #  this function will throw an error. The set of points must be an array of the 
+    #  @link Point Point @endlink class. This function returns an array of @link MaterialProperties
+    #  MaterialProperties @endlink.
+    #
+    #  @param point_list An array of @link Point Points @endlink for which UCVM should query.
+    #  @param cvm The CVM from which this data should be retrieved.
+    #  @return An array of @link MaterialProperties @endlink.
     def vs30_etree(self, point_list, cvm):
         
         shared_object = "../model/" + cvm + "/lib/lib" + cvm + ".so"
@@ -461,6 +508,7 @@ class UCVM:
                 print "skipping text",line
             else:
                 #print "line:",line
+                # return position 4 from ucvm_query is the etree vs30 value. return that
                 properties.append(float(line.split()[4]))
 
         if len(properties) == 1:
