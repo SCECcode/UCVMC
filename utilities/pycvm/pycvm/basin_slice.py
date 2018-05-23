@@ -119,9 +119,10 @@ class BasinSlice(HorizontalSlice):
             location_text = self.upperleftpoint.description + " "
 
         # Gets the better CVM description if it exists.
-        cvmdesc = self.cvm
-        if self.cvm.isalnum() :
+        try:
             cvmdesc = UCVM_CVMS[self.cvm]
+        except: 
+            cvmdesc = self.cvm
 
         if title == None:
             title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
@@ -168,8 +169,9 @@ class Z10Slice(BasinSlice):
             location_text = self.upperleftpoint.description + " "
 
         # Gets the better CVM description if it exists.
-        cvmdesc = UCVM_CVMS[self.cvm]
-        if cvmdesc == None: 
+        try:
+            cvmdesc = UCVM_CVMS[self.cvm]
+        except: 
             cvmdesc = self.cvm
         
         if title == None:
