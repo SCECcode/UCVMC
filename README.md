@@ -67,6 +67,7 @@ CVM-S4.26  | Tomography improved version of CVM-S4 with no geotechnical layer | 
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
 CCA06 | Central California Velocity Model with optional geotechnical layer | cca
 CS17.3 | Cypershake study 17.3 | cs173
+CS17.3H | Cypershake study 17.3 with AAA | cs173h
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d

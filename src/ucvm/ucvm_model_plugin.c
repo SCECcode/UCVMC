@@ -27,6 +27,12 @@
 	extern int cs173_finalize;
 	extern int cs173_version;
 #endif
+#ifdef _UCVM_ENABLE_CS173H
+	extern int cs173h_init;
+	extern int cs173h_query;
+	extern int cs173h_finalize;
+	extern int cs173h_version;
+#endif
 #endif
 
 // Variables
@@ -139,6 +145,18 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
                 pptr->model_query = &cs173_query;
                 pptr->model_finalize = &cs173_finalize;
                 pptr->model_version = &cs173_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
+                        fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
+                        return UCVM_CODE_ERROR;
+                }
+        }
+#endif
+#ifdef _UCVM_ENABLE_CS173H
+        if (strcmp(conf->label, "cs173h") == 0) {
+                pptr->model_init = &cs173h_init;
+                pptr->model_query = &cs173h_query;
+                pptr->model_finalize = &cs173h_finalize;
+                pptr->model_version = &cs173h_version;
                 if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
