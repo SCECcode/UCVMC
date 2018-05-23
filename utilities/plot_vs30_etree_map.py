@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 ##
-#  @file plot_vs30_slice.py
+#  @file plot_vs30_etree_slice.py
 #  @brief Plots a Vs30 slice using command-line parameters.
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
 #  Plots a Vs30 slice given a set of command-line parameters.
 
-from pycvm import Vs30Slice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import Vs30EtreeSlice, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 
 ## Prints usage of this utility.
@@ -112,7 +112,7 @@ elif len(ret_val) > 0:
                 exec("%s = '%s'" % (key, value))
 else:      
     print ""
-    print "Vs30  - UCVM %s" % VERSION
+    print "Vs30 Etree - UCVM %s" % VERSION
     print ""
     print "This utility helps you either plot a Vs30 basin depth map or save the data in a"
     print "text file that you can then later parse."
@@ -171,5 +171,5 @@ print ""
 print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
-v = Vs30Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
+v = Vs30EtreeSlice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
 v.plot(color_scale=color,datafile=datafile,filename=outfile, meta=meta)

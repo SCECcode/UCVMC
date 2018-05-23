@@ -1,5 +1,5 @@
 ##
-#  @file vs30_slice.py
+#  @file vs30_etree_slice.py
 #  @brief Gets a slice of Vs30 values either to display or save.
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
@@ -14,11 +14,11 @@ from common import Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
 ##
-#  @class Vs30Slice
+#  @class Vs30EtreeSlice
 #  @brief Gets a horizontal slice of Vs30 data.
 #
 #  Retrieves a horizontal slice of Vs30 values for a given CVM.
-class Vs30Slice(HorizontalSlice):
+class Vs30EtreeSlice(HorizontalSlice):
     
     ##
     #  Initializes the super class and copies the parameters over.
@@ -65,7 +65,7 @@ class Vs30Slice(HorizontalSlice):
         ###MEI
         if (datafile != None) :
             print "\nUsing --> "+datafile
-            # print "expecting x ",self.num_x," y ",self.num_y
+        # print "expecting x ",self.num_x," y ",self.num_y
             data = u.import_binary(datafile, self.num_x, self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.
@@ -75,7 +75,7 @@ class Vs30Slice(HorizontalSlice):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))
-            data = u.vs30(ucvmpoints, self.cvm)
+            data = u.vs30_etree(ucvmpoints, self.cvm)
         
         i = 0
         j = 0
@@ -108,6 +108,6 @@ class Vs30Slice(HorizontalSlice):
             cvmdesc = self.cvm
         
         if title == None:
-            title = "%sVs30 Data For %s" % (location_text, cvmdesc)
+            title = "%sVs30 Etree Data For %s" % (location_text, cvmdesc)
         
         HorizontalSlice.plot(self, "vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)

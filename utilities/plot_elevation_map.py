@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
 ##
-#  @file plot_vs30_slice.py
-#  @brief Plots a Vs30 slice using command-line parameters.
+#  @file plot_elevation_map.py
+#  @brief Plots a elevation slice using command-line parameters.
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
-#  Plots a Vs30 slice given a set of command-line parameters.
+#  Plots a Elevation slice given a set of command-line parameters.
 
-from pycvm import Vs30Slice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import ElevationSlice, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
-    print "Generates a Vs30 map or text file given two bounding latitude and longitude "
+    print "Generates a Elevation map text file given two bounding latitude and longitude "
     print "co-ordinates, the CVM to plot, and a couple of other settings."
     print "\nValid arguments:"
     print "\t-b, --bottomleft: bottom-left latitude, longitude (e.g. 34,-118)"
@@ -112,7 +112,7 @@ elif len(ret_val) > 0:
                 exec("%s = '%s'" % (key, value))
 else:      
     print ""
-    print "Vs30  - UCVM %s" % VERSION
+    print "Elevation from Etree - UCVM %s" % VERSION
     print ""
     print "This utility helps you either plot a Vs30 basin depth map or save the data in a"
     print "text file that you can then later parse."
@@ -171,5 +171,5 @@ print ""
 print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
-v = Vs30Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
+v = ElevationSlice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected)
 v.plot(color_scale=color,datafile=datafile,filename=outfile, meta=meta)
