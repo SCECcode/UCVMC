@@ -86,7 +86,7 @@ int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 
 
 /* Perform extraction from UCVM */
-int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat_t *rank_stats) 
+int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_stats) 
 {
 
   /* Performance measurements */
@@ -123,48 +123,47 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
 
   /* Open output mesh file */
   if (myid == 0) {
-    fprintf(stdout, "[%d] Opening output mesh file %s\n", 
-	    myid, cfg->meshfile);
+    fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
+	    myid,myrank, cfg->meshfile);
   }
   if (mesh_open_mpi(myrank, nrank, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
-    fprintf(stderr, "[%d] Error: mesh_open_mpi reported failure\n", myrank);
+    fprintf(stderr, "[%d:%d] Error: mesh_open_mpi reported failure\n", myid,myrank);
     return(1);
   }
 
   /* Allocate buffers */
-  fprintf(stdout, "[%d] Allocating %d grid points\n", myid, num_grid);
+  fprintf(stdout, "[%d:%d] Allocating %d grid points\n", myid,myrank,num_grid);
   pntbuf = malloc(num_grid * sizeof(ucvm_point_t));
   propbuf = malloc(num_grid * sizeof(ucvm_data_t));
   node_buf = malloc(num_grid * sizeof(mesh_ijk32_t));
   if ((pntbuf == NULL) || (propbuf == NULL) || (node_buf == NULL)) {
-    fprintf(stderr, "[%d] Failed to allocate buffers\n", myid);
+    fprintf(stderr, "[%d:%d] Failed to allocate buffers\n", myid,myrank);
     return(1);
   }
 
   /* Compute rank's local i,j,k range */
-  k_start = ((int)(myid / (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1]))
+  k_start = ((int)(myrank / (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1]))
 	     * part_dims[2]);
   k_end = k_start + part_dims[2];
-  j_start = ((myid % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
+  j_start = ((myrank % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
 	     / cfg->proc_dims.dim[0]) * part_dims[1];
   j_end = j_start + part_dims[1];
-  i_start = ((myid % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
+  i_start = ((myrank % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
 	     % cfg->proc_dims.dim[0]) * part_dims[0];
   i_end = i_start + part_dims[0];
 
-  printf("[%d] Partition dimensions: %d x %d x %d\n", myid,
-	 part_dims[0], part_dims[1], part_dims[2]);
-  printf("[%d] I,J,K start: %d, %d, %d\n", myid, i_start, j_start, k_start);
-  printf("[%d] I,J,K end: %d, %d, %d\n", myid, i_end, j_end, k_end);
+  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid, myrank,part_dims[0], part_dims[1], part_dims[2]);
+  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, myrank, i_start, j_start, k_start);
+  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, myrank, i_end, j_end, k_end);
   fflush(stdout);
 
   /* Open the grid file */
   ifp = fopen(cfg->gridfile, "rb");
   if (ifp == NULL) {
-    fprintf(stderr, "[%d] Failed to open gridfile %s for reading\n", 
-	    myid, cfg->gridfile);
+    fprintf(stderr, "[%d:%d] Failed to open gridfile %s for reading\n", 
+	    myid, myrank, cfg->gridfile);
     return(1);
   }
 
@@ -175,7 +174,7 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
     fseek(ifp, grid_offset, SEEK_SET);
     if (fread(&(pntbuf[pnt_offset]), sizeof(ucvm_point_t), 
 	      i_end-i_start, ifp) != i_end-i_start) {
-      fprintf(stderr, "[%d] Failed to read grid partition at j=%d\n", myid, j);
+      fprintf(stderr, "[%d:%d] Failed to read grid partition at j=%d\n", myid, myrank, j);
       return(1);
     }
   }
@@ -184,9 +183,8 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
   fclose(ifp);
 
   /* For each k in k range, query UCVM */
-  if (myid == 0) {
-    fprintf(stdout, "[%d] Starting extraction\n", myid);
-  }
+  fprintf(stdout, "[%d:%d] Starting extraction\n", myid, myrank);
+
   num_points = 0;
   for (k = k_start; k < k_end; k++) {
     gettimeofday(&start,NULL);
@@ -199,7 +197,7 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
 
     /* Query UCVM at this k */
     if (ucvm_query(num_grid, pntbuf, propbuf) != UCVM_CODE_SUCCESS) {
-      fprintf(stderr, "[%d] Query UCVM failed\n", myid);
+      fprintf(stderr, "[%d:%d] Query UCVM failed\n", myid, myrank);
       return(1);
     }
 
@@ -226,8 +224,8 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
       (end.tv_usec - start.tv_usec) / 1000.0;
     if (myid == 0) {
       fprintf(stdout,
-	      "[%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid, k, num_grid, elapsed, 
+	      "[%d:%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
+	      myid, myrank, k, num_grid, elapsed, 
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
@@ -235,8 +233,8 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
 
     /* Write this buffer */
     if (mesh_write_mpi(&(node_buf[0]), num_grid) != 0) {
-      fprintf(stderr, "[%d] Failed to write nodes to mesh file\n", 
-	      myid);
+      fprintf(stderr, "[%d:%d] Failed to write nodes to mesh file\n", 
+	      myid, myrank);
       return(1);
     }
     num_points = num_points + num_grid;
@@ -247,17 +245,16 @@ int extract(int myid, int myrank, int nrank, int nproc, mesh_config_t *cfg, stat
       (end.tv_usec - start.tv_usec) / 1000.0;
     if (myid == 0) {
       fprintf(stdout,
-	      "[%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid, k, num_grid, elapsed, 
+	      "[%d:%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
+	      myid,myrank, k, num_grid, elapsed, 
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
   }
 
-  fprintf(stdout, "[%d] Extracted %d points\n", myid, num_points);
+  fprintf(stdout, "[%d:%d] Extracted total %d points\n", myid, myrank,num_points);
   fflush(stdout);
 
-  /* Close the mesh writer */
   mesh_close_mpi();
 
   /* Free buffers */
@@ -414,7 +411,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "[%d] Failed to set interpolation z range\n", myid);
     return(1);
   }
-  
+
   /* Initialize statistics */
   memset(stats, 0, STAT_MAX_STATS*sizeof(stat_t));
   stats[STAT_MIN_VP].val = 100000.0;
@@ -428,7 +425,7 @@ int main(int argc, char **argv)
   while (myrank < nrank ) {
     fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
     fflush(stdout);
-    if (extract(myid, myrank, nrank, nproc, &cfg, &rank_stats[0]) != 0) {
+    if (extract(myid, myrank, nrank, &cfg, &rank_stats[0]) != 0) {
       return(1);
     }
 
@@ -462,17 +459,15 @@ int main(int argc, char **argv)
 
   mpi_barrier();
 
-  fprintf(stdout," >> before summing  >> %d\n",myid);
-  fflush(stdout);
-
-  /* Allocate statistics buffer */
-  stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
-  
-  /* Gather stats */
-  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
-	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
 
   if (myid == 0) { 
+  /* Allocate statistics buffer */
+    stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
+  
+  /* Gather stats */
+    MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
+	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
+
     for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
       switch (i % STAT_MAX_STATS) {
       case STAT_MAX_VP:
@@ -521,14 +516,12 @@ int main(int argc, char **argv)
 	     stats[j].i, stats[j].j, stats[j].k);
       fflush(stdout);
     }
+    /* Free statistics buffer */
+    free(rbuf);
   }
-
-  /* Free statistics buffer */
-  free(rbuf);
 
   /* Stage out mesh file(s) */
   if ((myid == 0) && (strlen(stageoutdir) > 0)) {
-    printf("[%d] Staging out mesh file(s)\n", myid);
     if (cfg.meshtype == MESH_FORMAT_SORD) {
       sprintf(tmp, "%s_*", cfg.meshfile);
       sprintf(tmp2, "%s", stageoutdir);
@@ -540,14 +533,12 @@ int main(int argc, char **argv)
 	return(1);
       }
     } else {
-      printf("[%d] Copying %s to %s\n", myid, cfg.meshfile, stageoutdir);
       if (copyFile(cfg.meshfile, stageoutdir) != 0) {
 	fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
 		myid);
 	return(1);
       }
     }
-    printf("[%d] Copying %s to %s\n", myid, cfg.gridfile, stageoutdir);
     if (copyFile(cfg.gridfile, stageoutdir) != 0) {
       fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
 	      myid);
