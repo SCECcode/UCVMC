@@ -8,7 +8,6 @@
 #
 #  View a png file
 
-from pycvm import UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 
 import matplotlib
@@ -71,9 +70,6 @@ def get_user_opts(options):
     else:
         return "bad"
 
-# Create a new UCVM object.
-u = UCVM()
-
 ret_val = get_user_opts({ "f,datafile":"datafile"}) 
 if ret_val == "bad":
     usage()
@@ -97,7 +93,7 @@ else:
     print "This utility helps you display any image in png format"
     print ""
 
-fig = plt.figure(figsize=(100, 100), dpi=100)
+fig = plt.figure(figsize=(5, 5), dpi=100)
 view=fig.add_subplot(1,1,1)
 rawim=plt.imread(datafile)
 view.imshow(rawim,cmap='gray')
