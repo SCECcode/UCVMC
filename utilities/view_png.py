@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 def usage():
     print "Generates an image given a png file "
     print "\t-f, --datafile: plot.png"
-    print "UCVM %s\n" % VERSION
 
 
 ## Makes sure the response is a number.
