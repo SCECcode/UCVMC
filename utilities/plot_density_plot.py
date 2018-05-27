@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import sys,getopt
-import nafe_drake
+from pycvm import nafe_drake
 #
 #
 
@@ -52,7 +52,7 @@ def main(argv):
 
   ax.set_title(descript)
   ax.set_xlabel("Density (cm/kg3) at depth %s from model"%(depth))
-  ax.set_ylabel("Density (rho) (cm/kg3) at depth from Nafe-Drake scaling off Vp%s"%(depth))
+  ax.set_ylabel("Density (rho) (cm/kg3) at depth %s from Nafe-Drake Vs to rho Scaling Relation."%(depth))
 
   ## the data
   f = open(list_of_datafiles,'r')
@@ -69,7 +69,7 @@ def main(argv):
     x.append(float(parts[16]))
     vp = (float(parts[15]))
     # print "vp from model:",vp
-    rho = nafe_drake.vp_2_density(vp)
+    rho = nafe_drake.vs_2_density(vp)
     # print "rho from vs:",rho
     y.append(rho)
 

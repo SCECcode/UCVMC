@@ -59,4 +59,13 @@ cmd="./plot_scatter_plot.py -i ./cvmsi_map_grid_1000.txt  -e 1000.0 -n cvmsi_map
 os.system(cmd)
 print cmd
 
+#
+# Test the density rule for cvmh
+cmd="./plot_map_grid.py -b 30.5,-126.0 -u 42.5,-112.5 -s 1.00 -e 1000.0 -c cvmh  -o cvmh_map_grid_1000.txt"
+os.system(cmd)
+print cmd
+cmd="./plot_scatter_plot.py -i ./cvmh_map_grid_1000.txt  -e 1000.0 -n cvmh_map_grid_1000_km -o cvmh_vp_versus_density_1000km.png"
+os.system(cmd)
+print cmd
+
 sys.exit(0)
