@@ -46,6 +46,10 @@ ucvm2mesh-mpi: ucvm2mesh_mpi.o um_config.o um_mpi.o um_utils.o \
 		um_mesh.o um_stat.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
+ucvm2mesh_mpi_fast: ucvm2mesh_mpi_fast.o um_config.o um_mpi.o um_utils.o \
+		um_mesh.o um_stat.o
+	$(CC) -o $@ $^ $(AM_LDFLAGS)
+
 mesh-strip-ijk: mesh_strip_ijk.o um_mesh.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
