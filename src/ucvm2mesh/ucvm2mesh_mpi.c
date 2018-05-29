@@ -442,14 +442,14 @@ int main(int argc, char **argv)
   mpi_barrier();
 
 
-  if (myid == 0) { 
   /* Allocate statistics buffer */
-    stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
+  stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
   
   /* Gather stats */
-    MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
+  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
 	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
 
+  if (myid == 0) { 
     for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
       switch (i % STAT_MAX_STATS) {
       case STAT_MAX_VP:
