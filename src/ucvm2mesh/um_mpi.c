@@ -186,13 +186,15 @@ int mpi_file_write_at(MPI_File *fh, MPI_Offset offset,
   if (MPI_File_write_at(*fh, offset, buf, count, *dt, 
   			&status) != MPI_SUCCESS) {
     fprintf(stderr, "Error writing to file\n");
-    return(1);
+    mpi_exit(3);
+//MEI,    return(1);
   }
 #else
   if (MPI_File_write_at_all(*fh, offset, buf, count, *dt, 
   			    &status) != MPI_SUCCESS) {
     fprintf(stderr, "Error writing to file\n");
-    return(1);
+    mpi_exit(3);
+//MEI,    return(1);
   }
 #endif
   
@@ -515,8 +517,11 @@ int mesh_close_mpi()
   node_buf3 = NULL;
   meshtype = MESH_FORMAT_UNKNOWN;
   writer_init_flag = 0;
-  MPI_Type_free(&MPI_MESH_T);
+  cur_offset = 0;
+  node_buf_size = 0;
+  meshrecsize = 0;
   MPI_Type_free(&MPI_MESH_FILE_T);
+  MPI_Type_free(&MPI_MESH_T);
 
   return(0);
 }

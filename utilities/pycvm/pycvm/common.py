@@ -628,7 +628,7 @@ class UCVM:
 
         # sanity check,  
         if len(floats) != (num_x * num_y) :
-            print "import_binary(), wrong size !!!"
+            print "import_binary(), wrong size !!!", len(floats)
 
         fh.close()
 
@@ -645,6 +645,9 @@ class UCVM:
             rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'w+') 
         floats.tofile(fh)
+
+        print "export_binary(), size=",floats.size
+
         fh.close()
 
 #  { 'num_x' : xval, 'num_y' : yval, 'total' : total }

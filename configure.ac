@@ -92,6 +92,12 @@ AC_ARG_ENABLE([model-cs173],
         [enable_model_cs173=yes],
         [enable_model_cs173=no])
 
+AC_ARG_ENABLE([model-cs173h],
+        [AS_HELP_STRING([--enable-model-cs173h],
+        [enable model SCEC CS173H])],
+        [enable_model_cs173h=yes],
+        [enable_model_cs173h=no])
+
 AC_ARG_ENABLE([model-cencal],
         [AS_HELP_STRING([--enable-model-cencal],
         [enable model USGS CenCalVM])],
@@ -296,6 +302,19 @@ AC_ARG_WITH([cs173-lib-path],
   [AS_HELP_STRING([--with-cs173-lib-path], [location of the SCEC CS173 libraries])],
   [CS173_LIB="-L$withval -lcs173 -lgfortran -lproj -letree"],
   [CS173_LIB="-lcs173 -lgfortran -lproj -letree"])
+fi
+
+# Get SCEC CS173H library and include locations
+if test "x$enable_model_cs173h" = xyes; then
+AC_ARG_WITH([cs173h-include-path],
+  [AS_HELP_STRING([--with-cs173h-include-path],
+    [location of the SCEC CS173H headers])],
+  [CS173H_INCL="-I$withval"],
+  [CS173H_INCL="/usr/include/cs173h"])
+AC_ARG_WITH([cs173h-lib-path],
+  [AS_HELP_STRING([--with-cs173h-lib-path], [location of the SCEC CS173H libraries])],
+  [CS173H_LIB="-L$withval -lcs173h -lgfortran -lproj -letree"],
+  [CS173H_LIB="-lcs173h -lgfortran -lproj -letree"])
 fi
 
 
@@ -567,6 +586,22 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)   
 fi
 
+if test "x$enable_static" = xyes; then
+# Check optional SCEC CS173H installation
+if test "x$enable_model_cs173h" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$CS173H_INCL $CFLAGS"
+   LDFLAGS="$CS173H_LIB $LDFLAGS"
+
+   echo "Checking for SCEC CS173H"
+   AC_CHECK_LIB(cs173h, cs173h_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, true)], [AC_MSG_ERROR(["SCEC CS173H library not found; use --with-cs173h-lib-path"])],[-lproj -letree -lgfortran -lm])
+   AC_CHECK_HEADER(cs173h.h,[],[AC_MSG_ERROR(["SCEC CS173H header not found; use --with-cs173h-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, false)   
+fi
 
 # Check optional SCEC CVM-NCI installation
 if test "x$enable_model_cvmnci" = xyes; then

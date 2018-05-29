@@ -88,11 +88,6 @@ int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 /* Perform extraction from UCVM */
 int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_stats) 
 {
-
-  /* Performance measurements */
-  struct timeval start, end;
-  double elapsed;
-
   /* Buffers */
   int num_grid, num_points;
   ucvm_point_t *pntbuf;
@@ -149,10 +144,10 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 	     % cfg->proc_dims.dim[0]) * part_dims[0];
   i_end = i_start + part_dims[0];
 
-  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid, myrank,part_dims[0], part_dims[1], part_dims[2]);
-  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, myrank, i_start, j_start, k_start);
-  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, myrank, i_end, j_end, k_end);
-  fflush(stdout);
+//  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid, myrank,part_dims[0], part_dims[1], part_dims[2]);
+//  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, myrank, i_start, j_start, k_start);
+//  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, myrank, i_end, j_end, k_end);
+//  fflush(stdout);
 
   /* Open the grid file */
   ifp = fopen(cfg->gridfile, "rb");
@@ -178,9 +173,10 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   fclose(ifp);
 
   /* For each k in k range, query UCVM */
+//  fprintf(stdout, "[%d:%d] Starting extraction\n", myid, myrank);
+
   num_points = 0;
   for (k = k_start; k < k_end; k++) {
-    gettimeofday(&start,NULL);
     
     /* Set z coordinate */
     z = cfg->origin.coord[2] + (k * cfg->spacing);
@@ -211,19 +207,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
       return(1);
     }
 
-    /* Calculate extraction elapsed time */
-    gettimeofday(&end,NULL);
-    elapsed = (end.tv_sec - start.tv_sec) * 1000.0 +
-      (end.tv_usec - start.tv_usec) / 1000.0;
-    if (myid == 0) {
-      fprintf(stdout,
-	      "[%d:%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid, myrank, k, num_grid, elapsed, 
-	      (float)(num_grid/(elapsed/1000.0)));
-      fflush(stdout);
-    }
-    gettimeofday(&start,NULL);
-
     /* Write this buffer */
     if (mesh_write_mpi(&(node_buf[0]), num_grid) != 0) {
       fprintf(stderr, "[%d:%d] Failed to write nodes to mesh file\n", 
@@ -232,18 +215,9 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
     }
     num_points = num_points + num_grid;
 
-    /* Calculate write elapsed time */
-    gettimeofday(&end,NULL);
-    elapsed = (end.tv_sec - start.tv_sec) * 1000.0 +
-      (end.tv_usec - start.tv_usec) / 1000.0;
-    if (myid == 0) {
-      fprintf(stdout,
-	      "[%d:%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid,myrank, k, num_grid, elapsed, 
-	      (float)(num_grid/(elapsed/1000.0)));
-      fflush(stdout);
-    }
   }
+//  fprintf(stdout, "[%d:%d] Extracted total %d points\n", myid, myrank,num_points);
+//  fflush(stdout);
 
   mesh_close_mpi();
 
@@ -352,6 +326,7 @@ int main(int argc, char **argv)
 
     /* Convert grid from Proj.4 projection to latlong */
     printf("[%d] Converting grid to latlong\n", myid);
+    fflush(stdout);
     slice_size = (size_t)cfg.dims.dim[0] * (size_t)cfg.dims.dim[1];
     if (ucvm_grid_convert_file(&oproj, &iproj, slice_size, 
 			       cfg.gridfile) != UCVM_CODE_SUCCESS) {
@@ -361,6 +336,7 @@ int main(int argc, char **argv)
     }
 
     printf("[%d] Grid generation complete\n", myid);
+    fflush(stdout);
   }
 
   /* Stagger each rank */
@@ -369,6 +345,7 @@ int main(int argc, char **argv)
 
   if (myid == 0) {
     printf("[%d] Configuring UCVM\n", myid);
+    fflush(stdout);
   }
 
   /* Setup UCVM */
@@ -410,6 +387,8 @@ int main(int argc, char **argv)
   int myrank=myid;
   int nrank =get_nrank(&cfg);
   while (myrank < nrank ) {
+//    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+//    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg, &rank_stats[0]) != 0) {
       return(1);
     }
@@ -435,6 +414,8 @@ int main(int argc, char **argv)
     if (rank_stats[STAT_MIN_RATIO].val < stats[STAT_MIN_RATIO].val) {
 	  memcpy(&stats[STAT_MIN_RATIO], &rank_stats[STAT_MIN_RATIO], sizeof(stat_t));
 	}
+
+//    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
 
     myrank = myrank + nproc;
   }
@@ -496,6 +477,7 @@ int main(int argc, char **argv)
       printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
       printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
 	     stats[j].i, stats[j].j, stats[j].k);
+      fflush(stdout);
     }
     /* Free statistics buffer */
     free(rbuf);
