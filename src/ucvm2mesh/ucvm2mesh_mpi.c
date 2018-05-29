@@ -122,10 +122,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 	       (cfg->dims.dim[1]/cfg->proc_dims.dim[1]));
 
   /* Open output mesh file */
-  if (myid == 0) {
-    fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
-	    myid,myrank, cfg->meshfile);
-  }
   if (mesh_open_mpi(myrank, nrank, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
@@ -134,7 +130,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   }
 
   /* Allocate buffers */
-  fprintf(stdout, "[%d:%d] Allocating %d grid points\n", myid,myrank,num_grid);
   pntbuf = malloc(num_grid * sizeof(ucvm_point_t));
   propbuf = malloc(num_grid * sizeof(ucvm_data_t));
   node_buf = malloc(num_grid * sizeof(mesh_ijk32_t));
@@ -183,8 +178,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   fclose(ifp);
 
   /* For each k in k range, query UCVM */
-  fprintf(stdout, "[%d:%d] Starting extraction\n", myid, myrank);
-
   num_points = 0;
   for (k = k_start; k < k_end; k++) {
     gettimeofday(&start,NULL);
@@ -251,9 +244,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
       fflush(stdout);
     }
   }
-
-  fprintf(stdout, "[%d:%d] Extracted total %d points\n", myid, myrank,num_points);
-  fflush(stdout);
 
   mesh_close_mpi();
 
@@ -362,7 +352,6 @@ int main(int argc, char **argv)
 
     /* Convert grid from Proj.4 projection to latlong */
     printf("[%d] Converting grid to latlong\n", myid);
-    fflush(stdout);
     slice_size = (size_t)cfg.dims.dim[0] * (size_t)cfg.dims.dim[1];
     if (ucvm_grid_convert_file(&oproj, &iproj, slice_size, 
 			       cfg.gridfile) != UCVM_CODE_SUCCESS) {
@@ -372,7 +361,6 @@ int main(int argc, char **argv)
     }
 
     printf("[%d] Grid generation complete\n", myid);
-    fflush(stdout);
   }
 
   /* Stagger each rank */
@@ -381,7 +369,6 @@ int main(int argc, char **argv)
 
   if (myid == 0) {
     printf("[%d] Configuring UCVM\n", myid);
-    fflush(stdout);
   }
 
   /* Setup UCVM */
@@ -423,8 +410,6 @@ int main(int argc, char **argv)
   int myrank=myid;
   int nrank =get_nrank(&cfg);
   while (myrank < nrank ) {
-    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
-    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg, &rank_stats[0]) != 0) {
       return(1);
     }
@@ -450,9 +435,6 @@ int main(int argc, char **argv)
     if (rank_stats[STAT_MIN_RATIO].val < stats[STAT_MIN_RATIO].val) {
 	  memcpy(&stats[STAT_MIN_RATIO], &rank_stats[STAT_MIN_RATIO], sizeof(stat_t));
 	}
-
-    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
-    fflush(stdout);
 
     myrank = myrank + nproc;
   }
@@ -514,7 +496,6 @@ int main(int argc, char **argv)
       printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
       printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
 	     stats[j].i, stats[j].j, stats[j].k);
-      fflush(stdout);
     }
     /* Free statistics buffer */
     free(rbuf);

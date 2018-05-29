@@ -117,10 +117,6 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 	       (cfg->dims.dim[1]/cfg->proc_dims.dim[1]));
 
   /* Open output mesh file */
-  if (myid == 0) {
-    fprintf(stdout, "[%d:%d] Opening output mesh file %s\n", 
-	    myid,myrank, cfg->meshfile);
-  }
   if (mesh_open_mpi(myrank, nrank, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
@@ -391,8 +387,8 @@ int main(int argc, char **argv)
   int myrank=myid;
   int nrank =get_nrank(&cfg);
   while (myrank < nrank ) {
-    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
-    fflush(stdout);
+//    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+//    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg, &rank_stats[0]) != 0) {
       return(1);
     }
