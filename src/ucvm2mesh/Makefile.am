@@ -3,7 +3,7 @@
 bin_PROGRAMS = ucvm2mesh mesh-strip-ijk mesh-op mesh-check
 
 if UCVM_HAVE_MPI
-bin_PROGRAMS += ucvm2mesh-mpi
+bin_PROGRAMS += ucvm2mesh-mpi ucvm2mesh_mpi_fast
 endif
 
 if UCVM_HAVE_NETCDF
