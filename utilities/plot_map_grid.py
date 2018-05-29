@@ -1,33 +1,28 @@
 #!/usr/bin/env python
 
 ##
-#  @file plot_z10_slice.py
-#  @brief Plots a Z1.0 slice using command-line parameters.
+#  @file plot_map_query.py
+#  @brief Plots a horizontal slice return from ucvm_query using command-line parameters.
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
-#  Plots a Vs30 slice given a set of command-line parameters.
+#  Plots a horizontal slice as ucvm_query returns lines given a set of command-line parameters.
 
-from pycvm import Z10Slice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import MapGridHorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
-    print "Generates a Z1.0 map or text file given two bounding latitude and longitude "
-    print "co-ordinates, the CVM to plot, and a couple of other settings."
+    print "Plots the return values from ucvm_query for a horizontal slice given two bounding latitude and longitude co-ordinates,"
+    print "the CVM to plot, and a couple of other settings."
     print "\nValid arguments:"
     print "\t-b, --bottomleft: bottom-left latitude, longitude (e.g. 34,-118)"
     print "\t-u, --upperright: upper-right latitude, longitude (e.g. 35,-117)"
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
-    print "\t-z, --interval: Z-interval, in meters, for Z%.1f to be queried (lower value means more precision)"
-    print "\t-c, --cvm: one of the installed CVMs"
-    print "\t-f, --datafile: optional binary input data filename"
-    print "\t-x, --x: optional x steps matching the datafile"
-    print "\t-y, --y: optional y steps matching the datafile"
-    print "\t-o, --outfile: optional png output filename"
-    print "\t-e, --extra: optional extra note to be appended to the plot title"
+    print "\t-e, --depth: depth for horizontal slice in meters (e.g. 1000)"
+    print "\t-c, --cvm: one of the installed velocity models"
+    print "\t-o, --outfile: output filename containing list of lines from ucvm_query"
     print "UCVM %s\n" % VERSION
-
 
 ## Makes sure the response is a number.
 def ask_number(question):
@@ -71,46 +66,27 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
-
-# handle optional opts
-    for l in opts_left :
-        if l == "f" :
-            opts_opt.append(l)
-            ret_val["datafile"] = None
-        else :
-            if l == "o" :
-              opts_opt.append(l)
-              ret_val["outfile"] = None
-            else :
-                if l == "e" :
-                  opts_opt.append(l)
-                  ret_val["extra"] = None
-                else :
-                    if l == "x" :
-                      opts_opt.append(l)
-                      ret_val["nx"] = None
-                    else :
-                        if l == "y" :
-                          opts_opt.append(l)
-                          ret_val["ny"] = None
-
-
     
+    for l in opts_left :
+        if l == "o" :
+            opts_opt.append(l)
+            ret_val["outfile"] = None
+
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
 
+ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
+                         "s,spacing":"spacing", "e,depth":"depth", \
+                         "c,cvm":"cvm_selected", \
+                         "o,outfile":"outfile"})
+
+
 # Create a new UCVM object.
 u = UCVM()
 
 meta = {}
-
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
-                         "f,datafile":"datafile", "o,outfile":"outfile", \
-                         "x,nx":"nx", "y,ny":"ny", \
-                         "e,extra":"extra"}) 
 
 if ret_val == "bad":
     usage()
@@ -128,21 +104,20 @@ elif len(ret_val) > 0:
                 exec("%s = %s" % (key, value))
             else:
                 exec("%s = '%s'" % (key, value))
-    useMPI = "n"
-else:      
+else:  
     print ""
-    print "Z1.0  - UCVM %s" % (VERSION)
+    print "Plot ucvm_query return values for a map grid mesh Slice - UCVM %s" % VERSION
     print ""
-    print "This utility helps you either plot a Z1.0 basin depth map or save the data in a"
-    print "text file that you can then later parse."
+    print "This utility helps you plot a horizontal slice across the earth for one of the CVMs"
+    print "that you installed with UCVM."
     print ""
     print "In order to create the plot, you must first specify the region."
     print ""
 
-    lon1 = ask_number("Please enter the bottom-left longitude from which the Z1.0 values should come: ")
-    lat1 = ask_number("Next, enter the bottom-left latitude from which the Z1.0 values should come: ")
-    lon2 = ask_number("Enter the top-right longitude where the Z1.0 values should end: ")
-    lat2 = ask_number("Enter the top-right latitude where the Z1.0 values should end: ")
+    lon1 = ask_number("Please enter the bottom-left longitude from which the plot should start: ")
+    lat1 = ask_number("Next, enter the bottom-left latitude from which the plot should start: ")
+    lon2 = ask_number("Enter the top-right longitude where the plot should end: ")
+    lat2 = ask_number("Enter the top-right latitude where the plot should end: ")
 
     # Check to see that this is a valid box.
     if lon1 > lon2 or lat1 > lat2:
@@ -150,7 +125,7 @@ else:
         print "and specify a valid region. The first point should be the lower-left corner, the"
         print "second point should be the upper-right corner."
         exit(1)
-    
+
     spacing = -1
 
     while spacing <= 0:
@@ -158,11 +133,19 @@ else:
     
         if spacing <= 0:
             print "Error: grid spacing must be a positive number."
-        
+
+    depth = -1
+    print ""
+
+    while depth < 0:
+        depth = ask_number("Please enter the depth, in meters, at which you would like this plot: ")
+        if depth < 0:
+            print "Error: the depth must be a positive number."
+
     print ""
 
     # Ask which CVMs to use.
-    print "From which CVM would you like this data to come:"
+    print "\nFrom which CVM would you like this data to come:"
 
     counter = 1
     corresponding_cvm = []
@@ -185,6 +168,21 @@ else:
 
     cvm_selected = corresponding_cvm[cvm_selected]
 
+    # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
+    color = ""
+
+    while color != "s" and color != "d" and data_type != "poisson":
+        print ""
+        color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
+        color = color.strip()
+    
+        if color != "s" and color != "d":
+            print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
+            print "marks) for a smooth color scale."
+
+# Now that we have all the requisite data, we can actually make the plot now.
+print "Retrieving data. Please wait..."
+
 # Generate the horizontal slice.
-b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected, xsteps=nx, ysteps=ny)
-b.plot(datafile=datafile,filename=outfile, note=extra, meta=meta)
+h = MapGridHorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
+h.plot(filename=outfile, meta=meta)
