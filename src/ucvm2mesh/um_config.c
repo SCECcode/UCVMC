@@ -276,6 +276,15 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 	return(1);
       }
       
+      int tproc= cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+      int rem = tproc % nproc;
+      if (rem != 0) {
+	fprintf(stderr, "[%d] Proc space does not equal or match MPI core count\n", 
+		myid);
+	fprintf(stderr, "[%d]   expected %d(processes) divisible by %d(core count)\n",myid,tproc,nproc);
+	return(1);
+      }
+
 /* ...no need to be restrictive about this
       if (nproc != cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2]) {
 	fprintf(stderr, "[%d] Proc space does not equal MPI core count\n", 
