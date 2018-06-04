@@ -1,7 +1,22 @@
 /**
- * ucvm2mesh_mpi.c - Query UCVM to produce a 3D mesh on a regular grid
+ * ucvm2mesh_mpi_layer.c - Query UCVM to produce a 3D mesh on a regular grid
  *
- * Created by Patrick Small <patrices@usc.edu>
+ * This is a special version that allows a large mesh be created in a piecemeal 
+ * fashion, in layers. From the mesh configuration file, (px * py * pz) is the 
+ * total rank process unit. (px * py) is a set of ranks that are clustered as 
+ * a layer, and pz is the number of layers defined on the mesh
+ *
+ * on blue waters, if the mesh is big try to stripe the result directory like
+ * this:
+ *    cd /path/to/working/directory
+ *    lfs setstripe -c 4 ./
+ *    lfs getstripe ./
+ *
+ * or use MPI IO hints : (haven't tried this)
+ *    MPICH_MPIIO_CB_ALIGN=2
+ *    MPICH_MPIIO_HINTS=striping_factor=32
+ *  
+ * Based on ucvm2mesh_mapi.c, updated by mei@usc.edu
  *
  */
 
