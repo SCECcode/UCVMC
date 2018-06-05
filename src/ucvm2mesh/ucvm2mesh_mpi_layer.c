@@ -396,7 +396,6 @@ int main(int argc, char **argv)
   int layer_rank = get_nrank_layer(&cfg);
   int start_rank = (layer - 1 ) * layer_rank;
   int end_rank = start_rank + (layer_rank * layer_count) - 1;
-  fprintf(stdout," start/end %d:%d\n",start_rank, end_rank);
   while (myrank < nrank) {
 if( myrank >=start_rank && myrank <= end_rank ) {
 //    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
