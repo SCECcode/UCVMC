@@ -3,7 +3,7 @@
 bin_PROGRAMS = ucvm2mesh mesh-strip-ijk mesh-op mesh-check
 
 if UCVM_HAVE_MPI
-bin_PROGRAMS += ucvm2mesh-mpi ucvm2mesh_mpi_fast
+bin_PROGRAMS += ucvm2mesh-mpi ucvm2mesh_mpi_fast ucvm2mesh_mpi_layer
 endif
 
 if UCVM_HAVE_NETCDF
@@ -47,6 +47,10 @@ ucvm2mesh-mpi: ucvm2mesh_mpi.o um_config.o um_mpi.o um_utils.o \
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
 ucvm2mesh_mpi_fast: ucvm2mesh_mpi_fast.o um_config.o um_mpi.o um_utils.o \
+		um_mesh.o um_stat.o
+	$(CC) -o $@ $^ $(AM_LDFLAGS)
+
+ucvm2mesh_mpi_layer: ucvm2mesh_mpi_layer.o um_config.o um_mpi.o um_utils.o \
 		um_mesh.o um_stat.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 

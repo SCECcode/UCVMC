@@ -411,6 +411,11 @@ int get_nrank(mesh_config_t *cfg) {
   return t;
 }
 
+/* Return number of ranks in a layer */
+int get_nrank_layer(mesh_config_t *cfg) {
+  int t=cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1];
+  return t;
+}
 /* Dump config to stdout */
 int disp_config(mesh_config_t *cfg) {
 
