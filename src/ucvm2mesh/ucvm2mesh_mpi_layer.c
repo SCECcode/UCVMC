@@ -403,8 +403,8 @@ if( myrank >=start_rank && myrank <= end_rank ) {
     if (extract(myid, myrank, nrank, &cfg) != 0) {
       return(1);
     }
-    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
-    fflush(stdout);
+//    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
+//    fflush(stdout);
 }
 
     myrank = myrank + nproc;
