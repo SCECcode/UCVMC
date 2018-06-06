@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
         int i;
         // mpi related variables
 	int numprocs, rank;
-        const int charsperblob=DEFAULT_BLOB_LEN; // 44
+        const int charsperblob=DEFAULT_BLOB_LEN; // 70
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
@@ -543,7 +543,7 @@ int main(int argc, char **argv) {
 		float *retLastDepths = malloc(nx * sizeof(float));
 		float *retSecondOnlyDepths = malloc(nx * sizeof(float));
 		float *retThirdLastDepths = malloc(nx * sizeof(float));
-                char *retLiteral= malloc(DEFAULT_BLOB_LEN * nx * sizeof(char));
+                char *retLiteral= malloc(((DEFAULT_BLOB_LEN * nx)+1) * sizeof(char));
                 if(retLiteral == NULL) {
                     fprintf(stderr," fail to reserve big data for retLiteral..\n");
                     exit(1);
