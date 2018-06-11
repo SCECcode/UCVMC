@@ -1,16 +1,17 @@
 #!/usr/bin/env python
-import matplotlib.pyplot as plt
-import numpy as np
-import sys,getopt
-#
 
 ##
 #  @file plot_compare_plot.py
 #  @brief Plot a scatter plot to compare two binary data files 
-#  @author David Gill - SCEC <davidgil@usc.edu>
-#  @version 14.7.0
+#  @author SCEC <mei@usc.edu>
+#  @version 18.5.0
 #
-#  Plots a horizontal slice given a set of command-line parameters.
+#  Plots a scatter plot that compares two binary datasets
+#  for similarity using matplotlib/numpy
+
+import matplotlib.pyplot as plt
+import numpy as np
+import sys,getopt
 
 def usage():
   print "\nPlot a scatter plot to compare two binary data files"
@@ -18,7 +19,7 @@ def usage():
   print "\t-x, --xfile: file to use for x axis"
   print "\t-y, --yfile: file to use for y axis"
   print "\t-o, --ofile: png filename to use for resulting plot"
-  print "./plot_compare_plot.py -x x.bin -y y.bin -o o.png"
+  print "./plot_compare_plot.py -x x.bin -y y.bin [-o o.png]"
   sys.exit(2)
 
 ## need to figure out how to distinguish them
