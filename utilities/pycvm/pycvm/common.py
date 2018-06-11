@@ -622,11 +622,7 @@ class UCVM:
         if( k != -1) : 
             rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
-        floats = np.fromfile(fh, dtype=float)
-        ## data from external is float32 (from basin_query_mpi calls)
-        if len(floats) != (num_x * num_y) and ((num_x * num_y) / len(floats) == 2 ) :
-           fh.seek(0)
-           floats = np.fromfile(fh, dtype=np.float32)
+        floats = np.fromfile(fh, dtype=np.float32)
 
         print "TOTAL number of binary data read:",len(floats),"\n"
 

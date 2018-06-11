@@ -233,7 +233,7 @@ class CrossSection:
     
         plt.axes([0.05,0.18,0.9,0.54])
     
-        datapoints = np.arange(self.num_x * self.num_y,dtype=float).reshape(self.num_y, self.num_x)
+        datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   

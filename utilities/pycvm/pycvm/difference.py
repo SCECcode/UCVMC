@@ -116,7 +116,7 @@ class Difference:
     
             # Get the properties.
             datapoints = np.arange(self.plot_specs.num_x * self.plot_specs.num_y, \
-                                   dtype=float).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
+                                   dtype=np.float32).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
         
             for i in xrange(0, self.plot_specs.num_y):
                 for j in xrange(0, self.plot_specs.num_x):
@@ -191,7 +191,7 @@ class Difference:
     
             plt.axes([0.05,0.18,0.9,0.54])
     
-            datapoints = np.arange(self.plot_specs.num_x * self.plot_specs.num_y,dtype=float).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
+            datapoints = np.arange(self.plot_specs.num_x * self.plot_specs.num_y,dtype=np.float32).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
             
             for i in xrange(0, self.plot_specs.num_y):
                 for j in xrange(0, self.plot_specs.num_x):   
