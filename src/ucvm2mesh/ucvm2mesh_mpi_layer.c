@@ -271,7 +271,7 @@ int main(int argc, char **argv)
   strcpy(stageoutdir, "");
   strcpy(configfile, "");
   int layer = 1;
-  int layer_count = 1;
+  int layer_count = 0;
   while ((opt = getopt(argc, argv, "o:hf:l:c:")) != -1) {
     switch (opt) {
     case 'o':
@@ -395,16 +395,19 @@ int main(int argc, char **argv)
 // do two layers
   int layer_rank = get_nrank_layer(&cfg);
   int start_rank = (layer - 1 ) * layer_rank;
+  if(layer_count == 0) {
+     layer_count = get_nlayer(&cfg);
+  }
   int end_rank = start_rank + (layer_rank * layer_count) - 1;
   while (myrank < nrank) {
 if( myrank >=start_rank && myrank <= end_rank ) {
-//    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
-//    fflush(stdout);
+    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg) != 0) {
       return(1);
     }
-//    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
-//    fflush(stdout);
+    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
+    fflush(stdout);
 }
 
     myrank = myrank + nproc;
