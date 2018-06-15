@@ -401,13 +401,13 @@ int main(int argc, char **argv)
   int end_rank = start_rank + (layer_rank * layer_count) - 1;
   while (myrank < nrank) {
 if( myrank >=start_rank && myrank <= end_rank ) {
-    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
-    fflush(stdout);
+//    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+//    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg) != 0) {
       return(1);
     }
-    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
-    fflush(stdout);
+//    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
+//    fflush(stdout);
 }
 
     myrank = myrank + nproc;
