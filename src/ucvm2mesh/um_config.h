@@ -6,6 +6,7 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg);
 
 int get_nrank(mesh_config_t *cfg);
 int get_nrank_layer(mesh_config_t *cfg);
+int get_nlayer(mesh_config_t *cfg);
 
 /* Dump config to stdout */
 int disp_config(mesh_config_t *cfg);
