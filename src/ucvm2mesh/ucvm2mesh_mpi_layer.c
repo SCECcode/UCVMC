@@ -49,7 +49,6 @@ void usage(char *arg)
 
   printf("where:\n");
   printf("\t-h: help message\n");
-  printf("\t-o: final stage out directory for mesh files\n");
   printf("\t-f: config file containing mesh params\n\n");
   printf("\t-l: which rank layer to start process\n\n");
   printf("\t-c: how many rank layer to process\n\n");
@@ -247,12 +246,9 @@ int main(int argc, char **argv)
   ucvm_projdef_t iproj, oproj;
   ucvm_trans_t trans;
 
-  /* Filesytem IO */
-  char tmp[UCVM_MAX_PATH_LEN], tmp2[UCVM_MAX_PATH_LEN];
-
   /* Options */
   int opt;
-  char configfile[UCVM_MAX_PATH_LEN], stageoutdir[UCVM_MAX_PATH_LEN];
+  char configfile[UCVM_MAX_PATH_LEN];
 
   /* Init MPI */
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
@@ -268,15 +264,11 @@ int main(int argc, char **argv)
   }
 
   /* Parse options */
-  strcpy(stageoutdir, "");
   strcpy(configfile, "");
   int layer = 1;
   int layer_count = 1;
-  while ((opt = getopt(argc, argv, "o:hf:l:c:")) != -1) {
+  while ((opt = getopt(argc, argv, "hf:l:c:")) != -1) {
     switch (opt) {
-    case 'o':
-      strcpy(stageoutdir, optarg);
-      break;
     case 'f':
       strcpy(configfile, optarg);
       break;
@@ -410,38 +402,15 @@ if( myrank >=start_rank && myrank <= end_rank ) {
     myrank = myrank + nproc;
   }
 
+  ucvm_finalize();
+
   /* Final sync */
   mpi_barrier();
+
   mpi_final("MPI Done");
 
 //  fprintf(stdout," >> WRAP UP >> \n");
 //  fflush(stdout);
-
-  /* Stage out mesh file(s) */
-  if ((myid == 0) && (strlen(stageoutdir) > 0)) {
-    if (cfg.meshtype == MESH_FORMAT_SORD) {
-      sprintf(tmp, "%s_*", cfg.meshfile);
-      sprintf(tmp2, "%s", stageoutdir);
-      printf("[%d] Copying %s to %s\n", myid, tmp, tmp2);
-      if (copyFile(tmp, tmp2) != 0) {
-	fprintf(stderr, 
-		"[%d] Failed to copy vp/vs/rho mesh to stage out dir\n", 
-		myid);
-	return(1);
-      }
-    } else {
-      if (copyFile(cfg.meshfile, stageoutdir) != 0) {
-	fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
-		myid);
-	return(1);
-      }
-    }
-    if (copyFile(cfg.gridfile, stageoutdir) != 0) {
-      fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
-	      myid);
-      return(1);
-    }
-  }
 
   return(0);
 }
