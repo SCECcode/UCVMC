@@ -49,7 +49,6 @@ void usage(char *arg)
 
   printf("where:\n");
   printf("\t-h: help message\n");
-  printf("\t-o: final stage out directory for mesh files\n");
   printf("\t-f: config file containing mesh params\n\n");
   printf("\t-l: which rank layer to start process\n\n");
   printf("\t-c: how many rank layer to process\n\n");
@@ -85,7 +84,7 @@ void usage(char *arg)
 int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 {
   /* Read in config */
-  if (read_config(myid, nproc, cfgfile, cfg) != 0) {
+  if (read_config(myid, nproc, cfgfile, cfg, 0) != 0) {
     fprintf(stderr, "[%d] Failed to parse config file %s\n", myid, cfgfile);
     return(1);
   }
@@ -247,15 +246,18 @@ int main(int argc, char **argv)
   ucvm_projdef_t iproj, oproj;
   ucvm_trans_t trans;
 
-  /* Filesytem IO */
-  char tmp[UCVM_MAX_PATH_LEN], tmp2[UCVM_MAX_PATH_LEN];
-
   /* Options */
   int opt;
-  char configfile[UCVM_MAX_PATH_LEN], stageoutdir[UCVM_MAX_PATH_LEN];
+  char configfile[UCVM_MAX_PATH_LEN];
 
   /* Init MPI */
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
+
+// for remote debug/attaching
+//  char hostname[256];
+//  gethostname(hostname, sizeof(hostname));
+//  fprintf(stdout,"PID %d on %s ready for attach\n", getpid(), hostname);
+//  fflush(stdout);
 
   /* Register new mesh data types */
   mpi_register_stat_4(&MPI_STAT_T, &num_fields_stat);
@@ -268,15 +270,11 @@ int main(int argc, char **argv)
   }
 
   /* Parse options */
-  strcpy(stageoutdir, "");
   strcpy(configfile, "");
   int layer = 1;
   int layer_count = 0;
-  while ((opt = getopt(argc, argv, "o:hf:l:c:")) != -1) {
+  while ((opt = getopt(argc, argv, "hf:l:c:")) != -1) {
     switch (opt) {
-    case 'o':
-      strcpy(stageoutdir, optarg);
-      break;
     case 'f':
       strcpy(configfile, optarg);
       break;
@@ -392,59 +390,32 @@ int main(int argc, char **argv)
   /* Perform extractions */
   int myrank=myid;
   int nrank = get_nrank(&cfg);
-// do two layers
   int layer_rank = get_nrank_layer(&cfg);
+  if(layer < 1) {
+    layer = 1;
+  }
   int start_rank = (layer - 1 ) * layer_rank;
   if(layer_count == 0) {
      layer_count = get_nlayer(&cfg);
   }
   int end_rank = start_rank + (layer_rank * layer_count) - 1;
+
   while (myrank < nrank) {
+   
 if( myrank >=start_rank && myrank <= end_rank ) {
-//    fprintf(stdout," >> START >> %d:%d\n",myid, myrank);
+//    fprintf(stdout," >>>> START >> %d:%d\n",myid, myrank);
 //    fflush(stdout);
     if (extract(myid, myrank, nrank, &cfg) != 0) {
       return(1);
     }
-//    fprintf(stdout," >> DONE >> %d:%d\n",myid, myrank);
+//    fprintf(stdout," >>>> DONE >> %d:%d\n",myid, myrank);
 //    fflush(stdout);
 }
 
     myrank = myrank + nproc;
   }
 
-  /* Final sync */
-  mpi_barrier();
-  mpi_final("MPI Done");
-
-//  fprintf(stdout," >> WRAP UP >> \n");
-//  fflush(stdout);
-
-  /* Stage out mesh file(s) */
-  if ((myid == 0) && (strlen(stageoutdir) > 0)) {
-    if (cfg.meshtype == MESH_FORMAT_SORD) {
-      sprintf(tmp, "%s_*", cfg.meshfile);
-      sprintf(tmp2, "%s", stageoutdir);
-      printf("[%d] Copying %s to %s\n", myid, tmp, tmp2);
-      if (copyFile(tmp, tmp2) != 0) {
-	fprintf(stderr, 
-		"[%d] Failed to copy vp/vs/rho mesh to stage out dir\n", 
-		myid);
-	return(1);
-      }
-    } else {
-      if (copyFile(cfg.meshfile, stageoutdir) != 0) {
-	fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
-		myid);
-	return(1);
-      }
-    }
-    if (copyFile(cfg.gridfile, stageoutdir) != 0) {
-      fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
-	      myid);
-      return(1);
-    }
-  }
-
-  return(0);
+  ucvm_finalize();
+  mpi_exit(0);
+  return 0;
 }
