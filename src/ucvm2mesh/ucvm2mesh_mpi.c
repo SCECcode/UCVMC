@@ -23,13 +23,6 @@
 extern char *optarg;
 extern int optind, opterr, optopt;
 
-/* MPI Statistic vars */
-MPI_Datatype MPI_STAT_T;
-int num_fields_stat;
-
-/* Statistics */
-stat_t stats[STAT_MAX_STATS];
-stat_t rank_stats[STAT_MAX_STATS];
 
 /* Display usage information */
 void usage(char *arg)
@@ -86,12 +79,19 @@ int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 
 
 /* Perform extraction from UCVM */
-int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_stats) 
+int extract(int myid, int nproc, mesh_config_t *cfg) 
 {
+  /* Statistics */
+  stat_t stats[STAT_MAX_STATS];
 
   /* Performance measurements */
   struct timeval start, end;
   double elapsed;
+
+  /* MPI Statistic vars */
+  MPI_Datatype MPI_STAT_T;
+  int num_fields_stat;
+  stat_t *rbuf;
 
   /* Buffers */
   int num_grid, num_points;
@@ -100,7 +100,7 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   mesh_ijk32_t *node_buf;
 
   int part_dims[3];
-  int j, k, i_start, i_end, j_start, j_end, k_start, k_end, n;
+  int i, j, k, i_start, i_end, j_start, j_end, k_start, k_end, n;
   size_t grid_offset, pnt_offset;
   double z;
   FILE *ifp;
@@ -111,54 +111,63 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   part_dims[2] = cfg->dims.dim[2]/cfg->proc_dims.dim[2];
 
   /* Initialize statistics */
-  memset(rank_stats, 0, STAT_MAX_STATS*sizeof(stat_t));
-  rank_stats[STAT_MIN_VP].val = 100000.0;
-  rank_stats[STAT_MIN_VS].val = 100000.0;
-  rank_stats[STAT_MIN_RHO].val = 100000.0;
-  rank_stats[STAT_MIN_RATIO].val = 100000.0;
+  memset(&stats[0], 0, STAT_MAX_STATS*sizeof(stat_t));
+  stats[STAT_MIN_VP].val = 100000.0;
+  stats[STAT_MIN_VS].val = 100000.0;
+  stats[STAT_MIN_RHO].val = 100000.0;
+  stats[STAT_MIN_RATIO].val = 100000.0;
+
+  /* Register new mesh data types */
+  mpi_register_stat_4(&MPI_STAT_T, &num_fields_stat);
 
   /* Compute number of nodes in my partition of x-y grid  */
   num_grid = ((cfg->dims.dim[0]/cfg->proc_dims.dim[0]) * 
 	       (cfg->dims.dim[1]/cfg->proc_dims.dim[1]));
 
   /* Open output mesh file */
-  if (mesh_open_mpi(myrank, nrank, \
+  if (myid == 0) {
+    fprintf(stdout, "[%d] Opening output mesh file %s\n", 
+	    myid, cfg->meshfile);
+  }
+  if (mesh_open_mpi(myid, nproc, \
 		       &(cfg->dims), &(cfg->proc_dims),
 		       cfg->meshfile, cfg->meshtype, num_grid) != 0) {
-    fprintf(stderr, "[%d:%d] Error: mesh_open_mpi reported failure\n", myid,myrank);
+    fprintf(stderr, "[%d] Error: mesh_open_mpi reported failure\n", myid);
     return(1);
   }
 
   /* Allocate buffers */
+  fprintf(stdout, "[%d] Allocating %d grid points\n", myid, num_grid);
   pntbuf = malloc(num_grid * sizeof(ucvm_point_t));
   propbuf = malloc(num_grid * sizeof(ucvm_data_t));
   node_buf = malloc(num_grid * sizeof(mesh_ijk32_t));
   if ((pntbuf == NULL) || (propbuf == NULL) || (node_buf == NULL)) {
-    fprintf(stderr, "[%d:%d] Failed to allocate buffers\n", myid,myrank);
+    fprintf(stderr, "[%d] Failed to allocate buffers\n", myid);
     return(1);
   }
 
   /* Compute rank's local i,j,k range */
-  k_start = ((int)(myrank / (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1]))
+  k_start = ((int)(myid / (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1]))
 	     * part_dims[2]);
   k_end = k_start + part_dims[2];
-  j_start = ((myrank % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
+  j_start = ((myid % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
 	     / cfg->proc_dims.dim[0]) * part_dims[1];
   j_end = j_start + part_dims[1];
-  i_start = ((myrank % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
+  i_start = ((myid % (cfg->proc_dims.dim[0] * cfg->proc_dims.dim[1])) 
 	     % cfg->proc_dims.dim[0]) * part_dims[0];
   i_end = i_start + part_dims[0];
 
-  fprintf(stdout,"[%d:%d] Partition dimensions: %d x %d x %d\n", myid, myrank,part_dims[0], part_dims[1], part_dims[2]);
-  fprintf(stdout,"[%d:%d] I,J,K start: %d, %d, %d\n", myid, myrank, i_start, j_start, k_start);
-  fprintf(stdout,"[%d:%d] I,J,K end: %d, %d, %d\n", myid, myrank, i_end, j_end, k_end);
+  printf("[%d] Partition dimensions: %d x %d x %d\n", myid,
+	 part_dims[0], part_dims[1], part_dims[2]);
+  printf("[%d] I,J,K start: %d, %d, %d\n", myid, i_start, j_start, k_start);
+  printf("[%d] I,J,K end: %d, %d, %d\n", myid, i_end, j_end, k_end);
   fflush(stdout);
 
   /* Open the grid file */
   ifp = fopen(cfg->gridfile, "rb");
   if (ifp == NULL) {
-    fprintf(stderr, "[%d:%d] Failed to open gridfile %s for reading\n", 
-	    myid, myrank, cfg->gridfile);
+    fprintf(stderr, "[%d] Failed to open gridfile %s for reading\n", 
+	    myid, cfg->gridfile);
     return(1);
   }
 
@@ -169,7 +178,7 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
     fseek(ifp, grid_offset, SEEK_SET);
     if (fread(&(pntbuf[pnt_offset]), sizeof(ucvm_point_t), 
 	      i_end-i_start, ifp) != i_end-i_start) {
-      fprintf(stderr, "[%d:%d] Failed to read grid partition at j=%d\n", myid, myrank, j);
+      fprintf(stderr, "[%d] Failed to read grid partition at j=%d\n", myid, j);
       return(1);
     }
   }
@@ -178,6 +187,9 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
   fclose(ifp);
 
   /* For each k in k range, query UCVM */
+  if (myid == 0) {
+    fprintf(stdout, "[%d] Starting extraction\n", myid);
+  }
   num_points = 0;
   for (k = k_start; k < k_end; k++) {
     gettimeofday(&start,NULL);
@@ -190,7 +202,7 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 
     /* Query UCVM at this k */
     if (ucvm_query(num_grid, pntbuf, propbuf) != UCVM_CODE_SUCCESS) {
-      fprintf(stderr, "[%d:%d] Query UCVM failed\n", myid, myrank);
+      fprintf(stderr, "[%d] Query UCVM failed\n", myid);
       return(1);
     }
 
@@ -203,7 +215,7 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 
     /* Calculate statistics */
     calc_stats_list(i_start, i_end, j_start, j_end, k, 
-		    node_buf, &rank_stats[0]);
+		    node_buf, &stats[0]);
     
     if (n != num_grid) {
       fprintf(stderr, "[%d] Number of nodes mismatch\n", 
@@ -217,8 +229,8 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
       (end.tv_usec - start.tv_usec) / 1000.0;
     if (myid == 0) {
       fprintf(stdout,
-	      "[%d:%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid, myrank, k, num_grid, elapsed, 
+	      "[%d] Extracted slice %d (%d pnts) in %.2f ms, %f pps\n",
+	      myid, k, num_grid, elapsed, 
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
@@ -226,8 +238,8 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
 
     /* Write this buffer */
     if (mesh_write_mpi(&(node_buf[0]), num_grid) != 0) {
-      fprintf(stderr, "[%d:%d] Failed to write nodes to mesh file\n", 
-	      myid, myrank);
+      fprintf(stderr, "[%d] Failed to write nodes to mesh file\n", 
+	      myid);
       return(1);
     }
     num_points = num_points + num_grid;
@@ -238,19 +250,85 @@ int extract(int myid, int myrank, int nrank, mesh_config_t *cfg, stat_t *rank_st
       (end.tv_usec - start.tv_usec) / 1000.0;
     if (myid == 0) {
       fprintf(stdout,
-	      "[%d:%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
-	      myid,myrank, k, num_grid, elapsed, 
+	      "[%d] Wrote slice %d (%d pnts) in %.2f ms, %f pps\n",
+	      myid, k, num_grid, elapsed, 
 	      (float)(num_grid/(elapsed/1000.0)));
       fflush(stdout);
     }
   }
 
+  fprintf(stdout, "[%d] Extracted %d points\n", myid, num_points);
+  fflush(stdout);
+
+  /* Close the mesh writer */
   mesh_close_mpi();
 
   /* Free buffers */
   free(pntbuf);
   free(propbuf);
   free(node_buf);
+
+  mpi_barrier();
+
+  /* Allocate statistics buffer */
+  rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
+  
+  /* Gather stats */
+  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
+	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
+  if (myid == 0) { 
+    for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
+      switch (i % STAT_MAX_STATS) {
+      case STAT_MAX_VP:
+	if (rbuf[i].val > stats[STAT_MAX_VP].val) {
+	  memcpy(&stats[STAT_MAX_VP], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MAX_VS:
+	if (rbuf[i].val > stats[STAT_MAX_VS].val) {
+	  memcpy(&stats[STAT_MAX_VS], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MAX_RHO:
+	if (rbuf[i].val > stats[STAT_MAX_RHO].val) {
+	  memcpy(&stats[STAT_MAX_RHO], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_VP:
+	if (rbuf[i].val < stats[STAT_MIN_VP].val) {
+	  memcpy(&stats[STAT_MIN_VP], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_VS:
+	if (rbuf[i].val < stats[STAT_MIN_VS].val) {
+	  memcpy(&stats[STAT_MIN_VS], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      case STAT_MIN_RHO:
+	if (rbuf[i].val < stats[STAT_MIN_RHO].val) {
+	  memcpy(&stats[STAT_MIN_RHO], &rbuf[i], sizeof(stat_t));
+	}
+      case STAT_MIN_RATIO:
+	if (rbuf[i].val < stats[STAT_MIN_RATIO].val) {
+	  memcpy(&stats[STAT_MIN_RATIO], &rbuf[i], sizeof(stat_t));
+	}
+	break;
+      default:
+	fprintf(stderr, "[%d] Unexpected stat type %d", myid,
+		i % STAT_MAX_STATS);
+	return(1);
+      }
+    }
+    for (j = 0; j < STAT_MAX_STATS; j++) {
+      printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
+      printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
+	     stats[j].i, stats[j].j, stats[j].k);
+      fflush(stdout);
+    }
+  }
+
+  /* Free statistics buffer */
+  free(rbuf);
 
   return(0);
 }
@@ -261,7 +339,6 @@ int main(int argc, char **argv)
   /* MPI stuff and distributed computation variables */
   int myid, nproc, pnlen;
   char procname[128];
-  int i, j;
 
   /* Config params */
   mesh_config_t cfg;
@@ -272,17 +349,16 @@ int main(int argc, char **argv)
   ucvm_trans_t trans;
 
   /* Filesytem IO */
+  int i;
   char tmp[UCVM_MAX_PATH_LEN], tmp2[UCVM_MAX_PATH_LEN];
 
   /* Options */
   int opt;
   char configfile[UCVM_MAX_PATH_LEN], stageoutdir[UCVM_MAX_PATH_LEN];
 
+
   /* Init MPI */
   mpi_init(&argc, &argv, &nproc, &myid, procname, &pnlen);
-
-  /* Register new mesh data types */
-  mpi_register_stat_4(&MPI_STAT_T, &num_fields_stat);
 
   if (myid == 0) {
     printf("[%d] %s Version: %s\n", myid, argv[0],
@@ -352,6 +428,7 @@ int main(int argc, char **argv)
 
     /* Convert grid from Proj.4 projection to latlong */
     printf("[%d] Converting grid to latlong\n", myid);
+    fflush(stdout);
     slice_size = (size_t)cfg.dims.dim[0] * (size_t)cfg.dims.dim[1];
     if (ucvm_grid_convert_file(&oproj, &iproj, slice_size, 
 			       cfg.gridfile) != UCVM_CODE_SUCCESS) {
@@ -361,6 +438,7 @@ int main(int argc, char **argv)
     }
 
     printf("[%d] Grid generation complete\n", myid);
+    fflush(stdout);
   }
 
   /* Stagger each rank */
@@ -369,6 +447,7 @@ int main(int argc, char **argv)
 
   if (myid == 0) {
     printf("[%d] Configuring UCVM\n", myid);
+    fflush(stdout);
   }
 
   /* Setup UCVM */
@@ -398,111 +477,15 @@ int main(int argc, char **argv)
     fprintf(stderr, "[%d] Failed to set interpolation z range\n", myid);
     return(1);
   }
-
-  /* Initialize statistics */
-  memset(stats, 0, STAT_MAX_STATS*sizeof(stat_t));
-  stats[STAT_MIN_VP].val = 100000.0;
-  stats[STAT_MIN_VS].val = 100000.0;
-  stats[STAT_MIN_RHO].val = 100000.0;
-  stats[STAT_MIN_RATIO].val = 100000.0;
-
-  /* Perform extractions */
-  int myrank=myid;
-  int nrank =get_nrank(&cfg);
-  while (myrank < nrank ) {
-    if (extract(myid, myrank, nrank, &cfg, &rank_stats[0]) != 0) {
-      return(1);
-    }
-
-    if (rank_stats[STAT_MAX_VP].val > stats[STAT_MAX_VP].val) {
-	  memcpy(&stats[STAT_MAX_VP], &rank_stats[STAT_MAX_VP], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MAX_VS].val > stats[STAT_MAX_VS].val) {
-	  memcpy(&stats[STAT_MAX_VS], &rank_stats[STAT_MAX_VS], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MAX_RHO].val > stats[STAT_MAX_RHO].val) {
-	  memcpy(&stats[STAT_MAX_RHO], &rank_stats[i], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MIN_VP].val < stats[STAT_MIN_VP].val) {
-	  memcpy(&stats[STAT_MIN_VP], &rank_stats[STAT_MIN_VP], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MIN_VS].val < stats[STAT_MIN_VS].val) {
-	  memcpy(&stats[STAT_MIN_VS], &rank_stats[STAT_MIN_VS], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MIN_RHO].val < stats[STAT_MIN_RHO].val) {
-	  memcpy(&stats[STAT_MIN_RHO], &rank_stats[STAT_MIN_RHO], sizeof(stat_t));
-	}
-    if (rank_stats[STAT_MIN_RATIO].val < stats[STAT_MIN_RATIO].val) {
-	  memcpy(&stats[STAT_MIN_RATIO], &rank_stats[STAT_MIN_RATIO], sizeof(stat_t));
-	}
-
-    myrank = myrank + nproc;
-  }
-
-  mpi_barrier();
-
-
-  /* Allocate statistics buffer */
-  stat_t *rbuf = (stat_t *)malloc(nproc*STAT_MAX_STATS*sizeof(stat_t)); 
   
-  /* Gather stats */
-  MPI_Gather( &stats[0], STAT_MAX_STATS, MPI_STAT_T, rbuf, STAT_MAX_STATS, 
-	      MPI_STAT_T, 0, MPI_COMM_WORLD); 
-
-  if (myid == 0) { 
-    for (i = 0; i < nproc*STAT_MAX_STATS; i++) {
-      switch (i % STAT_MAX_STATS) {
-      case STAT_MAX_VP:
-	if (rbuf[i].val > stats[STAT_MAX_VP].val) {
-	  memcpy(&stats[STAT_MAX_VP], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MAX_VS:
-	if (rbuf[i].val > stats[STAT_MAX_VS].val) {
-	  memcpy(&stats[STAT_MAX_VS], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MAX_RHO:
-	if (rbuf[i].val > stats[STAT_MAX_RHO].val) {
-	  memcpy(&stats[STAT_MAX_RHO], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_VP:
-	if (rbuf[i].val < stats[STAT_MIN_VP].val) {
-	  memcpy(&stats[STAT_MIN_VP], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_VS:
-	if (rbuf[i].val < stats[STAT_MIN_VS].val) {
-	  memcpy(&stats[STAT_MIN_VS], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      case STAT_MIN_RHO:
-	if (rbuf[i].val < stats[STAT_MIN_RHO].val) {
-	  memcpy(&stats[STAT_MIN_RHO], &rbuf[i], sizeof(stat_t));
-	}
-      case STAT_MIN_RATIO:
-	if (rbuf[i].val < stats[STAT_MIN_RATIO].val) {
-	  memcpy(&stats[STAT_MIN_RATIO], &rbuf[i], sizeof(stat_t));
-	}
-	break;
-      default:
-	fprintf(stderr, "[%d] Unexpected stat type %d", myid,
-		i % STAT_MAX_STATS);
-	return(1);
-      }
-    }
-    for (j = 0; j < STAT_MAX_STATS; j++) {
-      printf("[%d] %s: %f at\n", myid, stat_get_label(j), stats[j].val);
-      printf("[%d]\ti,j,k : %d, %d, %d\n", myid, 
-	     stats[j].i, stats[j].j, stats[j].k);
-    }
-    /* Free statistics buffer */
-    free(rbuf);
+  /* Perform extractions */
+  if (extract(myid, nproc, &cfg) != 0) {
+    return(1);
   }
 
   /* Stage out mesh file(s) */
   if ((myid == 0) && (strlen(stageoutdir) > 0)) {
+    printf("[%d] Staging out mesh file(s)\n", myid);
     if (cfg.meshtype == MESH_FORMAT_SORD) {
       sprintf(tmp, "%s_*", cfg.meshfile);
       sprintf(tmp2, "%s", stageoutdir);
@@ -514,12 +497,14 @@ int main(int argc, char **argv)
 	return(1);
       }
     } else {
+      printf("[%d] Copying %s to %s\n", myid, cfg.meshfile, stageoutdir);
       if (copyFile(cfg.meshfile, stageoutdir) != 0) {
 	fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
 		myid);
 	return(1);
       }
     }
+    printf("[%d] Copying %s to %s\n", myid, cfg.gridfile, stageoutdir);
     if (copyFile(cfg.gridfile, stageoutdir) != 0) {
       fprintf(stderr, "[%d] Failed to copy mesh to stage out dir\n", 
 	      myid);

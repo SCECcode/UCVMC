@@ -416,6 +416,10 @@ if( myrank >=start_rank && myrank <= end_rank ) {
   }
 
   ucvm_finalize();
-  mpi_exit(0);
-  return 0;
+
+  /* Final sync */
+  mpi_barrier();
+  mpi_final("MPI Done");
+
+  return(0);
 }
