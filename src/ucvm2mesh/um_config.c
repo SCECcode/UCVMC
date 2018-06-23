@@ -17,7 +17,7 @@
 
 
 /* Read config file*/
-int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
+int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg, int old_style)
 {
   ucvm_config_t *chead;
   ucvm_config_t *cptr;
@@ -278,11 +278,11 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
       
       int tproc= cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
       int rem = tproc % nproc;
-      if (rem != 0) {
+      if (old_style && rem != 0) {
 	fprintf(stderr, "[%d] Proc space does not equal or match MPI core count\n", 
 		myid);
 	fprintf(stderr, "[%d]   expected %d(processes) divisible by %d(core count)\n",myid,tproc,nproc);
-//XX	return(1);
+	return(1);
       }
 
 /* ...no need to be restrictive about this
