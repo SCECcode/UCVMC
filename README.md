@@ -1,4 +1,27 @@
+# UCVM
+
+The SCEC Unified Community Velocity Model (UCVM) software is used to access information, including estimated Vp and Vs seismic wave velocities and density, about the earth's crust. This is the software repository for the C language version of the software.
+
+UCVM provides seismic velocity information for several California regions. Seismic velocities of rocks and sediments at shallow depths determine how strongly an area will shake. By assigning velocities to rock types in the 3-D geologic model, geologists can gain an understanding of the extent of areas of low shear velocity that are most likely to experience localized strong shaking and future earthquake damage. An important application for the models accessible through UCVM is for use in computer simulations of California earthquakes.
+
+The map below shows the coverage regions for currently supported California velocity models that are accessible through UCVMC. Each of the models shown is considered a regional velocity model. Typically the models return values down to about 50km or 100km, but most models are undefined below 100km. For earth material properties below 100km, global seismic velocity models, such as the Preliminary Earth Reference Model (PREM), are possible alternative models.
+
+<< MAP >>
+![What is this](coverage.png)
+
+Map shows coverage region for California CVMs registered into UCVMC.
+Coverage region for UCVM 2D maps (cyan) overlayed upon regions of various California 3D velocity models 
+(CVM-S4: red,
+CVM-S4 geotechnical regions: Red Polygons,
+CVM-H high resolution: small blue,
+CVM-H low resolution: larger blue,
+USGS High Resolution Bay Area: small white,
+USGS Low Resolution Bay Area: larger white)
+
+UCVM was developed with support from National Science Foundation (NSF), US Geological Survey (USGS), and other sources.
+
 # UCVMC
+
 The Unified Community Velocity Model C-language (UCVMC) software framework is a collection of software tools designed to provide a standard interface to multiple, alternative, California velocity models. UCVMC is used in high resolution 3D wave propagation simulations for California. UCVMC development is an interdisciplinary research collaboration involving geoscientists, computer scientists, and software developers.
 
 The Unified Community Velocity Model C-language (UCVMC) software repository contains a software codebase developed by Patrick Small, David Gill, Philip Maechling, and others at SCEC. UCVMC is released as open-source scientific software under an Apache 2 software license.
@@ -42,13 +65,13 @@ Once the target computer has the required software tools installed, the basic in
 *  cd ..
 *  ./ucvm_setup.py
 
-The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: (CVM-H v15.1,CVM-S4, CVM-S4.26, CVM-S4.26.M01, and USGS CenCal). We recommend that the user installs all available models.
+The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3H, and USGS CenCal). We recommend that the user installs all available models.
 
 The script will then automatically compile, build, and install the selected models.
 
 # 3.0 MPI Compilers and UCVM Programs
 
-If a GNU-based MPI compiler is detected, the MPI version of several utilities are created, including ucvm2mesh_mpi, ucvm2etree_mpi, and basin_query_mpi are built. Otherwise, only the serial versions for these programs are built.
+If a GNU-based MPI compiler is detected, the MPI version of several utilities are created, including ucvm2mesh_mpi, ucvm2mesh_mpi_layer, ucvm2etree_mpi, and basin_query_mpi are built. Otherwise, only the serial versions for these programs are built.
 
 # 4.0 Configuration
 The main UCVMC configuration file is ${UCVM_INSTALL_DIR}/conf/ucvm.conf. 
@@ -64,11 +87,11 @@ Model Name | Description | UCVM Abbreviation
 -----------|-------------|------------------
 CVM-H      | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh
 CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
-CVM-S4.26  | Tomography improved version of CVM-S4 with no geotechnical layer | cvms5
+CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical layer(Ely GTL, default is off)| cvms5
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
-CCA06 | Central California Velocity Model with optional geotechnical layer | cca
-CS17.3 | Cypershake study 17.3 Central California Velocity Model | cs173
-CS17.3H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data and optional Ely GTL | cs173h
+CCA06 | Central California Velocity Model with optional geotechnical layer (Ely GTL, default is off) | cca
+CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely GTL, default is off) | cs173
+CS17.3H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data and optional geoptechnical layer (Ely GTL, default is off) | cs173h
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
