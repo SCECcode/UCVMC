@@ -18,7 +18,7 @@ The map below shows the coverage regions for currently supported California velo
 ![Coverage region of UCVM](coverage.png)
 
 Map shows coverage region for California CVMs registered into UCVMC.
-Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large whiterectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study Tiled velocity Model: blue)
+Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large white rectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study's Tiled Velocity Model: blue)
 
 
 ## System and Software Requirements
