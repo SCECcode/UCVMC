@@ -6,7 +6,7 @@ The SCEC Unified Community Velocity Model (UCVM) software is used to access info
 
 UCVM provides seismic velocity information for several California regions. Seismic velocities of rocks and sediments at shallow depths determine how strongly an area will shake. By assigning velocities to rock types in the 3-D geologic model, geologists can gain an understanding of the extent of areas of low shear velocity that are most likely to experience localized strong shaking and future earthquake damage. An important application for the models accessible through UCVM is for use in computer simulations of California earthquakes.
 
-The Unified Community Velocity Model C-language (UCVMC) software framework is a collection of software tools designed to provide a standard interface to multiple, alternative, California velocity models. UCVMC is used in high resolution 3D wave propagation simulations for California. UCVMC development is an interdisciplinary research collaboration involving geoscientists, computer scientists, and software developers.
+The Unified Community Velocity Model C-language (UCVMC) software framework is a collection of software tools designed to provide a standard interface to multiple, alternative, California velocity models. UCVMC development is an interdisciplinary research collaboration involving geoscientists, computer scientists, and software developers. UCVMC is used in high resolution 3D wave propagation simulations for California. 
 
 UCVMC software repository contains a software codebase developed by Philip Maechling, Mei-Hui Su, David Gill, Patrick Small, and others at SCEC. UCVMC is released as open-source scientific software under an Apache 2 software license.
 
@@ -29,7 +29,7 @@ USGS Low Resolution Bay Area: larger white)
 
 ## System and Software Requirements
 
-Testing UCVM on all possible combinations of operating sysetms and software stacks requires more software developer resources than currently available. So, we have defined a UCVM reference software stack that we use to develop and test the software. This UCVMC distrbution has been shown to work on the following reference software stack. It may work on other software stacks, also, but this is the supported software environment.
+Testing UCVMC on all possible combinations of operating sysetms and software stacks requires more software developer resources than currently available. So, we have defined a UCVMC reference software stack that we use to develop and test the software. This UCVMC distrbution has been shown to work on the following reference software stack. It may work on other software stacks, also, but this is the supported software environment.
 
 *  Linux operating system (e.g. CentOS 7 Linux) x86_64-linux 
 *  GNU gcc/gfortran compilers version 4.8.5
