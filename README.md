@@ -43,7 +43,7 @@ The following California velocity models packages are included as part of a stan
 *  SCEC CVM-S4.26.M01
 *  SCEC CCA06
 *  SCEC CS17.3
-*  SCEC CS17.3H
+*  SCEC CS17.3-H
 *  USGS BayArea Velocity Model 0.8.3
 *  Southern California 1D Velocity Model
 *  Northridge Region 1D Velocity Model
@@ -58,7 +58,7 @@ Once the target computer has the required software tools installed, the basic in
 *  cd ..
 *  ./ucvm_setup.py
 
-The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3H, and USGS CenCal). We recommend that the user installs all available models.
+The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3-H, and USGS CenCal). We recommend that the user installs all available models.
 
 The script will then automatically compile, build, and install the selected models.
 
@@ -84,7 +84,7 @@ CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical la
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
 CCA06 | Central California Velocity Model with optional geotechnical layer (Ely-Jordan GTL, default is off) | cca
 CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely-Jordan GTL, default is off) | cs173
-CS17.3H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
+CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
