@@ -61,6 +61,9 @@ def get_user_opts(options):
     except getopt.GetoptError as err:
         print str(err)   
         exit(1)
+
+    if len(opts) == 0 :
+        return {}
     
     for o, a in opts:
         for key, value in options.iteritems():
@@ -94,8 +97,6 @@ def get_user_opts(options):
                           opts_opt.append(l)
                           ret_val["ny"] = None
 
-
-    
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
