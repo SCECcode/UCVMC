@@ -65,6 +65,9 @@ def get_user_opts(options):
         print str(err)   
         exit(1)
     
+    if len(opts) == 0 :
+        return {}
+
     for o, a in opts:
         for key, value in options.iteritems():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:

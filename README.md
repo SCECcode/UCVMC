@@ -8,17 +8,17 @@ UCVM provides seismic velocity information for several California regions. Seism
 
 The Unified Community Velocity Model C-language (UCVMC) software framework is a collection of software tools designed to provide a standard interface to multiple, alternative, California velocity models. UCVMC development is an interdisciplinary research collaboration involving geoscientists, computer scientists, and software developers. UCVMC is used in high resolution 3D wave propagation simulations for California. 
 
+The map below shows the coverage regions for currently supported California velocity models that are accessible through UCVMC. Each of the models shown is considered a regional velocity model. Typically the models return values down to about 50km or 100km, but most models are undefined below 100km. For earth material properties below 100km, global seismic velocity models, such as the Preliminary Earth Reference Model (PREM), are possible alternative models.
+
+
+<img src="documentation/coverage.png" width="80%">
+
+Map shows coverage region for California CVMs registered into UCVMC.
+Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large white rectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study's Tiled Velocity Model: blue) : [Coverage.kml](documentation/coverage.kml)
+
 UCVMC software repository contains a software codebase developed by Philip Maechling, Mei-Hui Su, David Gill, Patrick Small, and others at SCEC. UCVMC is released as open-source scientific software under an Apache 2 software license.
 
 UCVM was developed with support from National Science Foundation (NSF), US Geological Survey (USGS), and other sources.
-
-
-The map below shows the coverage regions for currently supported California velocity models that are accessible through UCVMC. Each of the models shown is considered a regional velocity model. Typically the models return values down to about 50km or 100km, but most models are undefined below 100km. For earth material properties below 100km, global seismic velocity models, such as the Preliminary Earth Reference Model (PREM), are possible alternative models.
-
-![Coverage region of UCVM](coverage.png)
-
-Map shows coverage region for California CVMs registered into UCVMC.
-Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large white rectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study's Tiled Velocity Model: blue)
 
 
 ## System and Software Requirements
@@ -102,6 +102,20 @@ Online UCVMC documentation is available at:
 
 Additional documentation advanced features and previous versions of UCVM are posted at:
 *  http://scec.usc.edu/scecpedia/UCVMC
+ 
+More Installation instruction:
+
+* [Additional guidelines for building UCVMC](documentation/Installation.md)
+
+## Support
+
+Issue Tracking:
+
+* GitHub: https://github.com/SCECcode/UCVMC/issues
+
+Email:
+
+* Contact: software@scec.usc.edu
 
 ## Preferred Reference
 If you use the UCVM software in your research, please include a reference to the following publication in your research publications. References help us obtain continued financial support for the development of the software. The preferred reference for the UCVM software is:
