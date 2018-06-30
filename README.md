@@ -8,17 +8,17 @@ UCVM provides seismic velocity information for several California regions. Seism
 
 The Unified Community Velocity Model C-language (UCVMC) software framework is a collection of software tools designed to provide a standard interface to multiple, alternative, California velocity models. UCVMC development is an interdisciplinary research collaboration involving geoscientists, computer scientists, and software developers. UCVMC is used in high resolution 3D wave propagation simulations for California. 
 
+The map below shows the coverage regions for currently supported California velocity models that are accessible through UCVMC. Each of the models shown is considered a regional velocity model. Typically the models return values down to about 50km or 100km, but most models are undefined below 100km. For earth material properties below 100km, global seismic velocity models, such as the Preliminary Earth Reference Model (PREM), are possible alternative models.
+
+
+<img src="documentation/coverage.png" width="80%">
+
+Map shows coverage region for California CVMs registered into UCVMC.
+Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large white rectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study's Tiled Velocity Model: blue) : [Coverage.kml](documentation/coverage.kml)
+
 UCVMC software repository contains a software codebase developed by Philip Maechling, Mei-Hui Su, David Gill, Patrick Small, and others at SCEC. UCVMC is released as open-source scientific software under an Apache 2 software license.
 
 UCVM was developed with support from National Science Foundation (NSF), US Geological Survey (USGS), and other sources.
-
-
-The map below shows the coverage regions for currently supported California velocity models that are accessible through UCVMC. Each of the models shown is considered a regional velocity model. Typically the models return values down to about 50km or 100km, but most models are undefined below 100km. For earth material properties below 100km, global seismic velocity models, such as the Preliminary Earth Reference Model (PREM), are possible alternative models.
-
-![Coverage region of UCVM](coverage.png)
-
-Map shows coverage region for California CVMs registered into UCVMC.
-Coverage region for UCVM 2D maps (yellow) overlayed upon regions of various California 3D velocity models (CVM-S4: red, CVM-S4 geotechnical regions: red polygons, CVM-H high resolution: small light blue square, CVM-H low resolution: larger light blue square, USGS High Resolution Bay Area: small white rectangle, USGS Low Resolution Bay Area: large white rectangle, CVM-S4.26, CVM-S4.26M01: green, CCA 06: small yellow, CS17.3, CS17.3-H: large orange rectangle, Havard San Joaquin Basin Model: small orange rectangle, Havard Santa Maria Basin Model: orange square, CS18.5 Cypershake Study's Tiled Velocity Model: blue)
 
 
 ## System and Software Requirements
@@ -84,7 +84,7 @@ CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical la
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
 CCA06 | Central California Velocity Model with optional geotechnical layer (Ely-Jordan GTL, default is off) | cca
 CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely-Jordan GTL, default is off) | cs173
-CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
+CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data from Havard's group and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
 USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
 Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
@@ -102,6 +102,20 @@ Online UCVMC documentation is available at:
 
 Additional documentation advanced features and previous versions of UCVM are posted at:
 *  http://scec.usc.edu/scecpedia/UCVMC
+ 
+More Installation instruction:
+
+* [Additional guidelines for building UCVMC](documentation/Installation.md)
+
+## Support
+
+Issue Tracking:
+
+* GitHub: https://github.com/SCECcode/UCVMC/issues
+
+Email:
+
+* Contact: software@scec.usc.edu
 
 ## Preferred Reference
 If you use the UCVM software in your research, please include a reference to the following publication in your research publications. References help us obtain continued financial support for the development of the software. The preferred reference for the UCVM software is:
