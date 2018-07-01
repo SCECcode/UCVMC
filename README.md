@@ -36,18 +36,6 @@ Optional Software for building MPI binaries:
 *  mpich 1.2.6
 *  openmpi 1.8.8
 
-The following California velocity models packages are included as part of a standard UCVMC installation.
-*  SCEC CVM-H v15.1
-*  SCEC CVM-S4
-*  SCEC CVM-S4.26
-*  SCEC CVM-S4.26.M01
-*  SCEC CCA06
-*  SCEC CS17.3
-*  SCEC CS17.3-H
-*  USGS BayArea Velocity Model 0.8.3
-*  Southern California 1D Velocity Model
-*  Northridge Region 1D Velocity Model
-
 ## Installation
 Once the target computer has the required software tools installed, the basic install of UCVMC is:
 *  git clone https://github.com/SCECcode/UCVMC.git
@@ -71,22 +59,22 @@ The main UCVMC configuration file is ${UCVM_INSTALL_DIR}/conf/ucvm.conf.
 This file defines the paths to all configured models and maps, and it defines selected model flags, such as CVM-H USE_GTL.
 The UCVM installer sets up this ucvm.conf file automatically.
 
-In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf. However, in some circumstatnces, such as if the user wants to move the UCVMC installation directory, or configure the behavior of the CVM-H model, the user  might want to edit the ucvm.conf file. Please see the User Guide for more details on how to edit the UCVMC/conf/ucvm.conf configuration file.
+In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf. However, in some circumstances, such as if the user wants to move the UCVMC installation directory, or configure the behavior of the CVM-H model, the user  might want to edit the ucvm.conf file. Please see the User Guide for more details on how to edit the UCVMC/conf/ucvm.conf configuration file.
 
 ## Standard Models and Maps
-The CVM models available through UCVMC are assigned abbreviations, and these abbreviatioins are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
+The following California velocity models packages are included as part of a standard UCVMC installation.  The models available through UCVMC are assigned abbreviations, and these abbreviatioins are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
 
 Model Name | Description | UCVM Abbreviation
 -----------|-------------|------------------
-CVM-H      | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh
+CVM-H v15.1     | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh
 CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
 CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical layer(Ely-Jordan GTL, default is off)| cvms5
 CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
 CCA06 | Central California Velocity Model with optional geotechnical layer (Ely-Jordan GTL, default is off) | cca
 CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely-Jordan GTL, default is off) | cs173
 CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data from Havard's group and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
-USGS Bay Area | USGS developed San Francisco and Central California velocity model | cencal
-Modified Hadley Kanamori 1D  | Southern California regional 1D model based on Hadley-Kanamori model | 1d
+USGS Bay Area Velocity Model 0.8.3| USGS developed San Francisco and Central California velocity model | cencal
+Southern California 1D  | Modified Hadley Kanamori 1D model based on Hadley-Kanamori model | 1d
 Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
 
 A state-wide California standard topography map is distribued with UCVMC. This is a statewide
