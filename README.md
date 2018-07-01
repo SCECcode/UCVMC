@@ -62,7 +62,7 @@ The UCVM installer sets up this ucvm.conf file automatically.
 In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf. However, in some circumstances, such as if the user wants to move the UCVMC installation directory, or configure the behavior of the CVM-H model, the user  might want to edit the ucvm.conf file. Please see the User Guide for more details on how to edit the UCVMC/conf/ucvm.conf configuration file.
 
 ## Standard Models and Maps
-The following California velocity models packages are included as part of a standard UCVMC installation.  Each model is assigned an abbreviations, and these abbreviatioins are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
+The following California velocity models packages are included as part of a standard UCVMC installation.  Each model is assigned an abbreviation, and these abbreviations are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
 
 Model Name | Description | UCVM Abbreviation
 -----------|-------------|------------------
