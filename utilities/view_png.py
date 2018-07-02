@@ -19,20 +19,6 @@ def usage():
     print "Generates an image given a png file "
     print "\t-f, --datafile: plot.png"
 
-
-## Makes sure the response is a number.
-def ask_number(question):
-    temp_val = None
-    
-    while temp_val is None:
-        temp_val = raw_input(question)
-        try:
-            float(temp_val)
-            return float(temp_val)
-        except ValueError:
-            print temp_val + " is not a number. Please enter a number."
-            temp_val = None
-    
 ## Gets the options and assigns them to the correct variables.
 def get_user_opts(options):
     
