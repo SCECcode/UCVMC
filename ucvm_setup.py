@@ -10,7 +10,7 @@ import sys
 import getopt
 import urllib2
 from subprocess import call, Popen, PIPE
-import simplejson as json
+import json
 import platform
 import socket
 import shlex
@@ -257,7 +257,7 @@ print "Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0])
 print "Using local setup.list and system.list ...."
     
 try:
-    f = open("./system.list", "r")
+    f = open("./setup/system.list", "r")
     json_string = f.read()
     f.close()
     system_data = json.loads(json_string)
@@ -307,7 +307,7 @@ print "Using local setup.list file"
     
 try:
     # We now have our list. Parse it.
-    f = open("./setup.list", "r")
+    f = open("./setup/setup.list", "r")
     json_string = f.read()
     f.close()
     config_data = json.loads(json_string)
