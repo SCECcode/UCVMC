@@ -295,7 +295,6 @@ class MaterialProperties:
         else:
             raise ValueError("Parameter property must be a valid material property unit.")
         
-        
     ##
     #  String representation of the material properties.
     def __str__(self):
@@ -623,6 +622,11 @@ class UCVM:
             rawfile = fname[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
         floats = np.fromfile(fh, dtype=np.float32)
+
+## special case, when floats are written out as float64 instead of float32
+        if len(floats) == 2 * (num_x * num_y) :
+          fh.seek(0,0)
+          floats = np.fromfile(fh, dtype=np.float)
 
         print "TOTAL number of binary data read:",len(floats),"\n"
 
