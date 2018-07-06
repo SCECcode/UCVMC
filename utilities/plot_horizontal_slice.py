@@ -207,4 +207,4 @@ print "Retrieving data. Please wait..."
 # Generate the horizontal slice.
 h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
 
-h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color,meta=meta)
+h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color, meta=meta)

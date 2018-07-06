@@ -38,7 +38,7 @@ class Vs30EtreeSlice(HorizontalSlice):
     
     ##
     #  Retrieves the values for this Vs30 slice and stores them in the class.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, property="vs", datafile = None):
         
         #  How many y and x values will we need?
         

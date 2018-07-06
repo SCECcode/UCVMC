@@ -38,7 +38,7 @@ class Vs30Slice(HorizontalSlice):
     
     ##
     #  Retrieves the values for this Vs30 slice and stores them in the class.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, property="vs", datafile = None):
         
         #  How many y and x values will we need?
         
@@ -110,4 +110,4 @@ class Vs30Slice(HorizontalSlice):
         if title == None:
             title = "%sVs30 Data For %s" % (location_text, cvmdesc)
         
-        HorizontalSlice.plot(self, "vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)
+        HorizontalSlice.plot(self, property="vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)

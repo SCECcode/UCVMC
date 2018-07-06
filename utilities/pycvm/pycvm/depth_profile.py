@@ -63,7 +63,7 @@ class DepthProfile:
     
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, properties=None, datafile = None):
         
         point_list = []
         
@@ -82,10 +82,14 @@ class DepthProfile:
         else:
             data = u.query(point_list, self.cvm)
         
-        for matprop in data:
-            self.vplist.append(float(matprop.vp) / 1000)
-            self.vslist.append(float(matprop.vs) / 1000)
-            self.rholist.append(float(matprop.density) / 1000)
+        if(datafile != None) :
+            for matprop in data:
+                self.vplist.append(float(matprop.vp) / 1000)
+                self.vslist.append(float(matprop.vs) / 1000)
+                self.rholist.append(float(matprop.density) / 1000)
+        else:  ## only read in 1 set at a time
+            pass
+# TODO: not sure how/what to store depth profile external data MEI 
     
     ##
     #  Adds the depth profile to a pre-existing plot.
@@ -101,7 +105,7 @@ class DepthProfile:
             raise TypeError("Plot must be an instance of the class Plot.")
         
         # Get the material properties.
-        self.getplotvals(datafile = datafile)
+        self.getplotvals(properties = properties, datafile = datafile)
         
         max_x = 0
         yvals = []

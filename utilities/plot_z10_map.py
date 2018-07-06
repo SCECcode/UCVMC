@@ -21,6 +21,7 @@ def usage():
     print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
     print "\t-z, --interval: Z-interval, in meters, for Z%.1f to be queried (lower value means more precision)"
     print "\t-c, --cvm: one of the installed CVMs"
+    print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
     print "\t-f, --datafile: optional binary input data filename"
     print "\t-x, --x: optional x steps matching the datafile"
     print "\t-y, --y: optional y steps matching the datafile"
@@ -110,7 +111,7 @@ meta = {}
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", "c,cvm":"cvm_selected", \
                          "f,datafile":"datafile", "o,outfile":"outfile", \
-                         "x,nx":"nx", "y,ny":"ny", \
+                         "x,nx":"nx", "y,ny":"ny", "a,scale": "color", \
                          "e,extra":"extra"}) 
 
 if ret_val == "bad":
@@ -186,6 +187,17 @@ else:
 
     cvm_selected = corresponding_cvm[cvm_selected]
 
+    color = ""
+
+    while color != "s" and color != "d" and data_type != "poisson":
+        print ""
+        color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
+        color = color.strip()
+
+        if color != "s" and color != "d":
+            print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
+            print "marks) for a smooth color scale."
+
 # Generate the horizontal slice.
 b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected, xsteps=nx, ysteps=ny)
-b.plot(datafile=datafile,filename=outfile, note=extra, meta=meta)
+b.plot(datafile=datafile,filename=outfile, color_scale=color, note=extra, meta=meta)

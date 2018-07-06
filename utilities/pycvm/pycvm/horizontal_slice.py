@@ -69,7 +69,7 @@ class HorizontalSlice:
     
     ##
     #  Retrieves the values for this horizontal slice and stores them in the class.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, property="vs",datafile = None):
         
         #  How many y and x values will we need?
         
@@ -109,12 +109,16 @@ class HorizontalSlice:
                                             self.upperleftpoint.depth))
             data = u.query(ucvmpoints, self.cvm)
 
-#        print "largest x is ",self.num_x, " largets y is ",self.num_y
         i = 0
         j = 0
-        
+        isfloat = 0
+        if (datafile != None) :
+            isfloat = 1
         for matprop in data:
-            self.materialproperties[i][j] = matprop
+            if isfloat:
+                self.materialproperties[i][j].setProperty(property,matprop)
+            else:
+                self.materialproperties[i][j]=matprop
             j = j + 1
             if j >= self.num_x:
                 j = 0
@@ -129,7 +133,7 @@ class HorizontalSlice:
     #  @param horizontal_label The horizontal label of the plot. Optional.
     #  @param color_scale The color scale for the plot (d, discretized; s, smooth). Optional.
     def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d", datafile = None, meta={}):
-        
+
         if self.upperleftpoint.description == None:
             location_text = ""
         else:
@@ -144,7 +148,7 @@ class HorizontalSlice:
         if title == None:
             title = "%s%s Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
 
-        self.getplotvals(datafile)
+        self.getplotvals(property,datafile)
 
         # Call the plot object.
         p = Plot(title, "", "", None, 10, 10)
@@ -177,7 +181,7 @@ class HorizontalSlice:
         nancnt=0
         zerocnt=0
         negcnt=0
-#        print "total cnt is ",self.num_x * self.num_y
+#        print ("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
                 if property != "poisson":
@@ -200,9 +204,9 @@ class HorizontalSlice:
                 else:
                     datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
 
-#        print " total number of nancnt is ", nancnt
-#        print " total number of zerocnt is ", zerocnt
-#        print " total number of negcnt is ", negcnt
+#        print (" total number of nancnt is ", nancnt)
+#        print (" total number of zerocnt is ", zerocnt)
+#        print (" total number of negcnt is ", negcnt)
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
 
@@ -223,7 +227,7 @@ class HorizontalSlice:
         elif color_scale == "d_r":
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-        else:
+        else: # color_scale == "d"
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
 

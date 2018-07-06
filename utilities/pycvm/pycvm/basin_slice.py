@@ -44,7 +44,7 @@ class BasinSlice(HorizontalSlice):
         
     ##
     #  Retrieves the values for this basin slice and stores them in the class.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, property=None, datafile = None):
         
         #  How many y and x values will we need?
         
@@ -128,7 +128,7 @@ class BasinSlice(HorizontalSlice):
             title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
         
         meta['title'] = title
-        HorizontalSlice.plot(self, "vs", horizontal_label=horizontal_label, title=title, datafile=datafile, filename=filename, \
+        HorizontalSlice.plot(self, property="vs", horizontal_label=horizontal_label, title=title, datafile=datafile, filename=filename, \
                              color_scale=color_scale, meta=meta)
         
 ##
@@ -153,15 +153,15 @@ class Z10Slice(BasinSlice):
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self, datafile = None):
-        BasinSlice.getplotvals(self, datafile)
+    def getplotvals(self, property=None,  datafile = None):
+        BasinSlice.getplotvals(self, property, datafile)
     
     ##
     #  Plots the Z1.0 slice.
     #
     #  @param title The title of the plot. Optional.
     #  @param filename The name of the file of the plot. Optional.
-    def plot(self, title = None, datafile = None, filename = None, note = None, meta={}):
+    def plot(self, title = None, datafile = None, filename = None, note = None, color_scale="sd", meta={}):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -181,7 +181,7 @@ class Z10Slice(BasinSlice):
             title = title + " " + note
         
         meta['title'] = title
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale="sd_r")    
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale=color_scale)    
         
 ##
 #  @class Z25Slice
@@ -205,15 +205,15 @@ class Z25Slice(BasinSlice):
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self, datafile = None):
-        BasinSlice.getplotvals(self, datafile)
+    def getplotvals(self, property=None, datafile = None):
+        BasinSlice.getplotvals(self, property, datafile)
     
     ##
     #  Generates the Z2.5 slice plot.
     #
     #  @param title The title for the plot. Optional.
     #  @param filename The file to which the plot should be saved. Optional.
-    def plot(self, title = None, datafile = None, filename = None, note = None, meta={}):
+    def plot(self, title = None, datafile = None, filename = None, note = None, color_scale="sd", meta={}):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -233,5 +233,5 @@ class Z25Slice(BasinSlice):
             title = title + " " + note
         
         meta['title'] = title
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale="sd_r")           
-        
+        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale=color_scale)           
+     
