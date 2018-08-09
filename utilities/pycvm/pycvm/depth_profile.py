@@ -82,7 +82,7 @@ class DepthProfile:
         else:
             data = u.query(point_list, self.cvm)
         
-        if(datafile != None) :
+        if(datafile == None) :
             for matprop in data:
                 self.vplist.append(float(matprop.vp) / 1000)
                 self.vslist.append(float(matprop.vs) / 1000)
