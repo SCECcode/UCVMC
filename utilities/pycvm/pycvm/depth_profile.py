@@ -91,7 +91,6 @@ class DepthProfile:
             data = u.import_matprops(datafile)
         else:
             data = u.query(point_list, self.cvm)
-
 #        print "NUMBER of data found ", len(data)
         
         tmp = []
