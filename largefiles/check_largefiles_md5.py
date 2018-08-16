@@ -61,7 +61,7 @@ total_ok, total_errs = check_md5file("euclid3-1.3.tar.gz.md5",total_ok, total_er
 
 total_ok, total_errs = check_md5file("fftw-3.3.3.tar.gz.md5", total_ok, total_errs)
 
-total_ok, total_errs = check_md5file("proj-4.8.0.tar.gz.md5", total_ok, total_errs)
+total_ok, total_errs = check_md5file("proj-5.0.0.tar.gz.md5", total_ok, total_errs)
 #
 # Check etree files
 # 

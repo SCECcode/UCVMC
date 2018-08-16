@@ -39,7 +39,7 @@ print "Retrieving files from: %s"%(ucvmc_largefile_dir)
 print "Installing files in: %s"%(curdir)
 
 
-large_lib_list = ["proj-4.8.0.tar.gz",
+large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
 

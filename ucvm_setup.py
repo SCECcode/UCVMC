@@ -118,7 +118,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     
     strip_level = "2"
     if config_data["Path"] == "fftw" or \
-	    config_data["Path"] == "proj-4" or \
+	    config_data["Path"] == "proj-5" or \
             config_data["Path"] == "euclid3" or \
             config_data["Path"] == "netcdf" or \
             config_data["Path"] == "hdf5" or \
@@ -128,8 +128,8 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     # 
     # We need to un-tar the file.
     # The strip level determines how much of the path found in the tar file are removed.
-    # strip=1 will remove the proj-4.8.0/configure and output only configure.in 
-    # This enables us to untar into drictories with static names like proj-4
+    # strip=1 will remove the proj-5.0.0/configure and output only configure.in 
+    # This enables us to untar into drictories with static names like proj-5
     #
     print "Decompressing " + type
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
@@ -146,9 +146,9 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     callAndRecord(["cd", workpath + "/" + config_data["Path"]], True)
 
     #
-    # proj-4 library is an exception. It does not require use of aclocal, only ./configure
+    # proj-5 library is an exception. It does not require use of aclocal, only ./configure
     #
-    if not config_data["Path"] == "proj-4":
+    if not config_data["Path"] == "proj-5":
         print "\nRunning aclocal"
         aclocal_array = ["aclocal"]
         if os.path.exists("./m4"):
@@ -169,26 +169,26 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     if config_data["Path"] == "cvms5":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
-        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cca":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
-        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cs173h":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
-        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cs173":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
-        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cencal":
-        configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/euclid3/lib -L" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/euclid3/include -I" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/euclid3/lib -L" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/euclid3/include -I" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "netcdf":
         configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/hdf5/lib")
         configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/hdf5/include")
@@ -466,8 +466,8 @@ print "\nRunning ./configure for UCVMC"
  
 ucvm_conf_command = ["./configure", "--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include", \
                      "--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib", \
-                     "--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include", \
-                     "--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib", \
+                     "--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include", \
+                     "--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib", \
                      "--with-fftw-include-path=" + ucvmpath + "/lib/fftw/include", \
                      "--with-fftw-lib-path=" + ucvmpath + "/lib/fftw/lib"]
 
@@ -522,7 +522,7 @@ if platform.system() == "Darwin":
     print "To try out UCVMC, please edit your ~/.bash_profile to include"
     print "the following lines:"
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
-    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-4/lib:$DYLD_LIBRARY_PATH"
+    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$DYLD_LIBRARY_PATH"
     if "CVM-S4.26" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$DYLD_LIBRARY_PATH"
     if "CenCalVM" in modelsToInstall:
@@ -532,7 +532,7 @@ if platform.system() == "Darwin":
 elif dynamic_flag == True:
     print "Please export the following library paths (note this is in Bash format):"
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
-    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-4/lib:$LD_LIBRARY_PATH"
+    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
     if "CVM-S4.26" in modelsToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$LD_LIBRARY_PATH"    
     if "CenCalVM" in modelsToInstall:

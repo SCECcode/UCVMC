@@ -39,7 +39,7 @@ large_model_list = ["cvms5.tar.gz",
                     "cvmh-15.1.0.tar.gz",
                     "cencal080.tar.gz"]
 
-large_lib_list = ["proj-4.8.0.tar.gz",
+large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
 
