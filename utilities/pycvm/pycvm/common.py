@@ -442,6 +442,42 @@ class UCVM:
             
         return floats
 
+
+    ##
+    #  Gets the basin depths for a given set of points, CVM, and desired Vs.
+    #  If the CVM does not exist, an error is given. The set of points is an
+    #  array of @link Point Points @endlink. The function returns the depths
+    #  as floats.
+    # 
+    #  @param point_list An array of @link Point Points @endlink to query.
+    #  @param cvm The CVM from which the depths should come.
+    #  @param vs_threshold The Vs threshold to check for (e.g. Z1.0 = 1000).
+    #  @return An array of floats which correspond to the depths.
+    def basin_depth(self, point_list, cvm, vs_threshold):
+
+        proc = Popen([self.binary_dir + "/basin_query", "-f", self.config, "-m", \
+                      cvm, "-v", "%.0f" % vs_threshold], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+
+        text_points = ""
+        floats = []
+
+        if isinstance(point_list, Point):
+            point_list = [point_list]
+
+        for point in point_list:
+            text_points += "%.5f %.5f\n" % (point.longitude, point.latitude)
+
+        output = proc.communicate(input=text_points)[0]
+        output = output.split("\n")[:-1]
+
+        for line in output:
+            floats.append(float(line.split()[2]))
+
+        if len(floats) == 1:
+            return floats[0]
+
+        return floats
+
     ##
     #  Queries UCVM given a set of points and a CVM to query. If the CVM does not exist,
     #  this function will throw an error. The set of points must be an array of the 
@@ -715,6 +751,7 @@ class UCVM:
         fh = open(matpropsfile, 'w+') 
         json.dump(blob, fh)
         fh.close()
+
 
 
 #  Function Definitions

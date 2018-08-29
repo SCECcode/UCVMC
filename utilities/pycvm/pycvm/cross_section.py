@@ -256,6 +256,7 @@ class CrossSection:
         umax=round(self.max_val)
         if( umax < 5 ) :
             umax=5 
+        umin=round(self.min_val)
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis
@@ -279,6 +280,15 @@ class CrossSection:
         elif color_scale == 'd_r':
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        elif color_scale == "sd":
+            colormap = basemap.cm.GMT_seis
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val) 
+            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]
+        elif color_scale == 'sd_r':
+            colormap = basemap.cm.GMT_seis_r
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val) 
+            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]
+
     
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file
@@ -309,6 +319,12 @@ class CrossSection:
         plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % self.startingpoint.depth, \
                                                  "%.0f" % (self.todepth / 2000), \
                                                  "%.0f" % (self.todepth / 1000)])
+
+#        print("yticks:")
+#        print("XXX yticks, 0,",(self.num_y/2),",",self.num_y)
+#        print("YYY %.0f" % self.startingpoint.depth)
+#        print("YYY %.0f" % (self.todepth / 2000))
+#        print("YYY %.0f" % (self.todepth / 1000))
     
         plt.title(title)
     
