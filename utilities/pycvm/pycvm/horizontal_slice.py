@@ -193,7 +193,7 @@ class HorizontalSlice:
                     else:
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
                         if (datapoints[i][j] == 0) :
-                           datapoints[i][j]=np.nan
+#Leave it as 0                           datapoints[i][j]=np.nan
                            zerocnt=zerocnt+1
                         if (datapoints[i][j] < 0) :
                            negcnt=negcnt+1
