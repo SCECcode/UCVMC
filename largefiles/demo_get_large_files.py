@@ -44,6 +44,7 @@ large_lib_list = ["proj-5.0.0.tar.gz",
                   "euclid3-1.3.tar.gz"]
 
 large_model_list = ["cvms4.tar.gz",
+                    "cvms426.tar.gz",
                     "cvmh-15.1.0.tar.gz"]
 
 large_etree_list = ["ucvm.e"]
