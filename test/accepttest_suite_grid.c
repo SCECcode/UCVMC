@@ -44,7 +44,6 @@ int test_grid_tool_1d()
   return(0);
 }
 
-
 int test_grid_lib_1d()
 {
   ucvm_point_t *pnts;
@@ -125,6 +124,15 @@ int test_grid_lib_1d()
     free(data);
     return(1);
   }
+
+  /* Write out new data -- optional
+  if (write_data(outfile, num_pnts, data, pnts, "1d","none","crust") != 0) {
+    fprintf(stderr, "FAIL: Failed to write points to grid file\n");
+    free(pnts);
+    free(data);
+    return(1);
+  }
+  */
 
   /* Compare query and reference data */
   for (i = 0; i < num_pnts; i++) {

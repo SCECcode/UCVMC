@@ -13,6 +13,9 @@
 #define MAX_TEST_NAME 64
 #define MAX_STRING_LEN 256
 
+#define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
+
+
 /* Test datatype */
 typedef struct test_info_t {
   char class_name[MAX_TEST_NAME];
@@ -55,6 +58,10 @@ int read_points(const char *file, int max, ucvm_point_t *pnts, int *nn);
 
 /* Read data values from text file */
 int read_data(const char *file, int max, ucvm_data_t *data, int *nn);
+
+/* write data values to text file */
+int write_data(const char *file, int num_pnts, ucvm_data_t *data, ucvm_point_t *pnts,
+              const char *cr_label, const char *gtl_label, const char *if_label);
 
 /* UCVM query tool */
 int run_ucvm_query(const char *bindir, const char *conf,
