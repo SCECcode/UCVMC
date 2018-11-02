@@ -276,6 +276,38 @@ int read_data(const char *file, int max,
 }
 
 
+/* write data values */
+int write_data(const char *file, int num_pnts, ucvm_data_t *data, ucvm_point_t *pnts, 
+              const char *cr_label, const char *gtl_label, const char *if_label)
+{
+  FILE *fp;
+  int i;
+
+  fp = fopen(file, "w");
+  if (fp == NULL) {
+    return(1);
+  }
+
+  i = 0;
+  while (i < num_pnts) {
+    if(fprintf(fp, OUTPUT_FMT,
+                 pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
+                 data[i].surf, data[i].vs30,
+                 cr_label, data[i].crust.vp, data[i].crust.vs,
+                 data[i].crust.rho,gtl_label, data[i].gtl.vp,
+                 data[i].gtl.vs, data[i].gtl.rho,
+                 if_label, data[i].cmb.vp, data[i].cmb.vs,
+                 data[i].cmb.rho) < 0) {
+        fprintf(stderr, "Failed to write line %d to %s\n", i, file);
+        fclose(fp);
+        return(1);
+    }
+    i++;
+  }
+  fclose(fp);
+  return(0);
+}
+
 /* Run UCVM query tool */
 int run_ucvm_query(const char *bindir, const char *conf, 
 		   const char *model, const char *map,
