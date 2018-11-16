@@ -677,6 +677,16 @@ class UCVM:
         fh.close()
 
 
+    def export_velocity(self,filename,vslist,vplist,rholist):
+        k = filename.rfind(".png")
+        rawfile=filename
+        if( k != -1) :
+            rawfile= filename[:k] + "_data.json"
+        fh = open(rawfile, 'w+')
+        raw={"vs":vslist, "vp":vplist, "rho":rholist};
+        json.dump(raw, fh)
+        fh.close()
+
 #  Function Definitions
 
 ##

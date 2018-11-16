@@ -58,6 +58,9 @@ class DepthProfile:
         ## Private holding place for returned density data.
         self.rholist = []
 
+        ## Private holding place for depth data.
+        self.depthlist = []
+
         ## Default threshold in simplified units
         self.threshold = threshold
     
@@ -149,6 +152,7 @@ class DepthProfile:
         if "vs" in properties:
             max_x = max(max_x, max(self.vslist))
             plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+
 ## attempted to draw a smoothed line, not good
 ##            xs=np.array(self.vslist)
 ##            ys=np.array(yvals)
@@ -164,6 +168,8 @@ class DepthProfile:
             ## add a vline if there is a vs threshold
             if self.threshold != None : 
                 plot.addsubplot().axvline(self.threshold/1000, color='k', linestyle='dashed')
+
+        self.depthlist=yvals
 
         if "density" in properties:
             max_x = max(max_x, max(self.rholist))
@@ -184,7 +190,7 @@ class DepthProfile:
     #
     #  @param properties An array of material properties. Can be one or more of vp, vs, and/or density.
     #  @param filename If this is set, the plot will not be shown but rather saved to this location.
-    def plot(self, properties, filename = None, meta = {}):
+    def plot(self, properties, filename = None, meta = {}, datafile=None):
 
         if self.startingpoint.description == None:
             location_text = ""
@@ -203,7 +209,21 @@ class DepthProfile:
 
         # Add to plot.
         self.addtoplot(p, properties)
-                
+
+        # only output these if there is no datafile
+        if (datafile == None) :
+          meta['depth_list'] = self.depthlist
+          u = UCVM()
+          if filename:
+              u.export_metadata(meta,filename)
+              u.export_velocity(filename,self.vslist, self.vplist, self.rholist)
+          else:
+#https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
+              rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
+              f = "depth_profile"+rnd
+              u.export_metadata(meta,f)
+              u.export_velocity(f,self.vslist, self.vplist, self.rholist)
+
         if filename == None:
             plt.show()
         else:
