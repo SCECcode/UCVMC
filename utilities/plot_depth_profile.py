@@ -17,6 +17,7 @@ def usage():
     print "the CVM to plot, and a couple of other settings."
     print "\nValid arguments:"
     print "\t-s, --startingpoint: latitude, longitude (e.g. 34,-118)"
+    print "\t-b, --startingdepth: starting depth for depth profile (meters)"
     print "\t-e, --endingdepth: ending depth for depth profile (meters)"
     print "\t-d, --datatype: one or more 'vs', 'vp' and/or 'density'(e.g. vs,vp,density)"
     print "\t-v, --vertical: vertical spacing for depth interval (meters)"
@@ -86,7 +87,10 @@ def get_user_opts(options):
     else:
         return "bad"
 
+starting_depth = 0
+
 ret_val = get_user_opts({ "s,startingpoint":"lat1,lon1", \
+			"b,startingdepth":"starting_depth", \
 			"e,endingdepth":"ending_depth", \
 			"c,cvm":"cvm_selected", \
 			"d,datatype":"data_type", \
@@ -99,7 +103,6 @@ u = UCVM()
 
 meta = {}
 
-starting_depth = 0 
 if ret_val == "bad":
     usage()
     exit(1)
@@ -128,6 +131,13 @@ else:
 
     lon1 = ask_number("Please enter the longitude: ")
     lat1 = ask_number("Next, enter the latitude: ")
+
+    staring_depth = -1  ## default, 0
+    while starting_depth < 0:
+        starting_depth = ask_number("Please enter the depth, in meters, at which you would like \n" + \
+                                  "this plot to start: ")
+        if starting_depth < 0:
+            print "Error: the depth must be a positive number."
 
     ending_depth = -1  ## max, 15000
     while ending_depth < 0:

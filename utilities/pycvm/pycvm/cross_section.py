@@ -96,8 +96,8 @@ class CrossSection:
                 lon, lat = proj(x, y, inverse=True)
                 point_list.append(Point(lon, lat, j))
                 if ( j == jstart) :
-                  lon_list.append( round(lon,3))
-                  lat_list.append( round(lat,3))
+                  lon_list.append( round(lon,5))
+                  lat_list.append( round(lat,5))
 #                if(cnt < 10) :
 #                   print("point.. lon ",lon, " lat ",lat," j ",j)
 #                   cnt += 1
@@ -306,8 +306,8 @@ class CrossSection:
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.2f" % self.startingpoint.longitude, \
                                                  "%.2f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
                                                  "[E] %.2f" % self.endingpoint.longitude])
-        plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % self.startingpoint.depth, \
-                                                 "%.0f" % (self.todepth / 2000), \
+        plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % (self.startingpoint.depth/1000), \
+                                                 "%.0f" % (self.startingpoint.depth+ ((self.todepth-self.startingpoint.depth)/2)/1000), \
                                                  "%.0f" % (self.todepth / 1000)])
     
         plt.title(title)
