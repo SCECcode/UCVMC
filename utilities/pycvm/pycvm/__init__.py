@@ -4,6 +4,7 @@ from common import Plot, Point, UCVM, MaterialProperties, \
 
 from horizontal_slice import HorizontalSlice
 from cross_section import CrossSection
+from elevation_cross_section import ElevationCrossSection
 from vs30_slice import Vs30Slice
 from elevation_slice import ElevationSlice
 from vs30_etree_slice import Vs30EtreeSlice

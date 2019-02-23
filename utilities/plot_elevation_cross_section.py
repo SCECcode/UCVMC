@@ -8,7 +8,7 @@
 #
 #  Plots a cross section given a set of command-line parameters.
 
-from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import ElevationCrossSection, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 import json
 import pdb
