@@ -10,5 +10,6 @@ from vs30_etree_slice import Vs30EtreeSlice
 from map_grid_horizontal_slice import MapGridHorizontalSlice
 from basin_slice import BasinSlice, Z10Slice, Z25Slice
 from depth_profile import DepthProfile
+from elevation_profile import ElevationProfile
 from difference import Difference
 from cybershake import CyberShake
