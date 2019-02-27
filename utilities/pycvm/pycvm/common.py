@@ -368,7 +368,8 @@ class UCVM:
         if( elevation ) :
           proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         else :
-          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+#          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -378,11 +379,11 @@ class UCVM:
         for point in point_list:
             if( elevation ) :
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.elevation)
-#              print "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.elevation)
             else:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
-        
+
         output = proc.communicate(input=text_points)[0]
+       
         output = output.split("\n")[1:-1]
 
         for line in output:
@@ -396,7 +397,7 @@ class UCVM:
 
         if len(properties) == 1:
             return properties[0]
-        
+
         return properties
     
     ##

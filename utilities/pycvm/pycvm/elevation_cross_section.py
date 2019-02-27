@@ -57,7 +57,7 @@ class ElevationCrossSection:
                           "Please make sure that the elevation (%.2f - %.2f) divided by the spacing " % (toelevation, startingpoint.elevation), \
                           "%.2f has no remainder" % (vspacing)))
         else:
-            ## Defines the depth to which the plot should go in meters.
+            ## Defines the elevation to which the plot should go in meters.
             self.toelevation = toelevation
             self.startelevation = self.startingpoint.elevation
             
@@ -71,7 +71,7 @@ class ElevationCrossSection:
         self.cvm = cvm
 
     ## 
-    #  Generates the depth profile in a format that is ready to plot.
+    #  Generates the elevation profile in a format that is ready to plot.
     def getplotvals(self, property='vs', datafile = None):
 
         point_list = []
@@ -87,44 +87,37 @@ class ElevationCrossSection:
         num_prof = int(math.sqrt((x2-x1)*(x2-x1) + \
                                  (y2-y1)*(y2-y1))/self.hspacing)
         
-#        cnt=0
-        jstart = self.startingpoint.depth
+        jstart = self.startelevation
 
         toto=int(self.toelevation)
         if(toto <=0 ):
           toto = toto-1
         else:
           toto = toto+1
+
         for j in xrange(int(self.startelevation), toto, int(self.vspacing)):
             elevation_list.append( round(j,3))
             for i in xrange(0, num_prof + 1):
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
-                point_list.append(Point(lon, lat, j))
+                point_list.append(Point(lon, lat, elevation=j))
                 if ( j == jstart) :
                   lon_list.append( round(lon,5))
                   lat_list.append( round(lat,5))
-#                if(cnt < 10) :
-#                   print("point.. lon ",lon, " lat ",lat," j ",j)
-#                   cnt += 1
                 
         self.lon_list=lon_list
         self.lat_list=lat_list
         self.elevation_list=elevation_list
-#        print("total points generated..", len(point_list))
-#        print("total lon..", len(lon_list))
-#        print("total lat..", len(lat_list))
-#        print("total lat..", len(elevation_list))
+
         u = UCVM()
-XXX
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
         if (datafile != None) :
             ## Private number of x points.
             self.num_x = num_prof +1
             ## Private number of y points.
-            self.num_y = (int(self.todepth) - int(self.startingpoint.depth)) / int(self.vspacing) +1
+            self.num_y = abs((int(self.toelevation) - int(self.startelevation)) / int(self.vspacing)) +1
             print "\nUsing -->"+datafile
             print "expecting x ",self.num_x," y ",self.num_y
             data = u.import_binary(datafile, self.num_x, self.num_y)
@@ -145,13 +138,14 @@ XXX
                     if(property == 'vs'):
                       self.materialproperties[y][x].setProperty('Vs',tmp)
         else:
-            data = u.query(point_list, self.cvm)
+            data = u.query(point_list, self.cvm, elevation=1)
 
 
             ## Private number of x points.
             self.num_x = num_prof + 1
             ## Private number of y points.
-            self.num_y = (int(self.todepth) - int(self.startingpoint.depth)) / int(self.vspacing) + 1
+            self.num_y = abs((int(self.toelevation) - int(self.startelevation)) / int(self.vspacing)) + 1
+
         
         ## The 2D array of retrieved material properties.
             self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
@@ -184,7 +178,7 @@ XXX
             cvmdesc = self.cvm
 
         if title == None:
-            title = "%s%s Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
+            title = "%s%s Elevation Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
         self.getplotvals(property=property, datafile = datafile)
@@ -314,9 +308,9 @@ XXX
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.2f" % self.startingpoint.longitude, \
                                                  "%.2f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
                                                  "[E] %.2f" % self.endingpoint.longitude])
-        plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % (self.startingpoint.depth/1000), \
-                                                 "%.0f" % (self.startingpoint.depth+ ((self.todepth-self.startingpoint.depth)/2)/1000), \
-                                                 "%.0f" % (self.todepth / 1000)])
+        plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % (self.startelevation/1000), \
+                                                 "%.0f" % (self.startelevation+ ((self.toelevation-self.startelevation)/2)/1000), \
+                                                 "%.0f" % (self.toelevation / 1000)])
     
         plt.title(title)
     

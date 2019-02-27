@@ -190,6 +190,11 @@ class HorizontalSlice:
                         if(datapoints[i][j] == -1 ) :
                             datapoints[i][j]=np.nan
                             nancnt=nancnt+1
+##to have blank background
+##                        if (datapoints[i][j] == 0) :
+##                            datapoints[i][j]=np.nan
+##                            zerocnt=zerocnt+1
+##
                     else:
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
                         if (datapoints[i][j] == 0) :
@@ -207,6 +212,7 @@ class HorizontalSlice:
 #        print (" total number of nancnt is ", nancnt)
 #        print (" total number of zerocnt is ", zerocnt)
 #        print (" total number of negcnt is ", negcnt)
+
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
 

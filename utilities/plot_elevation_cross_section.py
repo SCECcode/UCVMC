@@ -227,7 +227,7 @@ print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
 
-d = CrossSection(Point(lon1, lat1, elevation=starting_elevation), Point(lon2, lat2, elevation=starting_elevation), \
+d = ElevationCrossSection(Point(lon1, lat1, elevation=starting_elevation), Point(lon2, lat2, elevation=starting_elevation), \
                  ending_elevation, horizontal_spacing, vertical_spacing, cvm_selected)
 
 d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta)
