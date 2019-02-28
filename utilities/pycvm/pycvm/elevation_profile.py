@@ -125,8 +125,6 @@ class ElevationProfile:
         else:
           toto=toto+1
 
-        toto=self.toelevation
-
         for i in xrange(int(self.startelevation), int(toto), int(self.spacing)):  
             yvals.append(i)       
         
