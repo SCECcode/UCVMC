@@ -702,6 +702,54 @@ class UCVM:
         json.dump(raw, fh)
         fh.close()
 
+    #  make the proper bounds for colormap
+    def makebounds(self,minval=0.0,maxval=5.0,nstep=0,mean=None, substep=5) :
+        bounds=[]
+        if(nstep == 0) :
+          bounds = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+          return bounds
+
+        step=float(maxval - minval)/nstep
+
+        l=0
+        nsubstep=substep
+        nnstep=float(step)/nsubstep
+        if(mean != None) :
+          l= mean//step
+
+        for i in range(0,nstep) :
+          s= step*i+minval
+          if (i == l) :
+            for j in range(nsubstep) :
+              bound= round(s+(j * nnstep),2)
+              bounds.append(bound)
+          
+          else:
+            bounds.append(round(s,2))
+
+        bounds.append(round((step * nstep + minval),2))
+#        print "bounds", bounds
+        return bounds
+
+    ## 
+    #  make the proper ticks for subplot
+    def maketicks(self,minval=None,maxval=None,nstep=0) :
+        ticks=[]
+
+        if(nstep == 0) :
+          ticks = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+          return ticks
+
+        step=(maxval - minval)/nstep
+        for i in range(nstep) :
+            tick= round((step * i) + minval,2)
+            ticks.append(tick)
+
+        ticks.append(round((step * nstep + minval),2))
+#        print "ticks ", ticks
+        return ticks
+
+
 #  Function Definitions
 
 ##

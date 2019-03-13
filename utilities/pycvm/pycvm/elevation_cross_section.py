@@ -155,6 +155,7 @@ class ElevationCrossSection:
                 for x in xrange(0, self.num_x):   
                     self.materialproperties[y][x] = data[y * self.num_x + x]     
 #            print "outputting num_x ",self.num_x," num_y ",self.num_y
+
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
@@ -241,11 +242,18 @@ class ElevationCrossSection:
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
 
+        u = UCVM()
+
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
+        self.mean_val=np.mean(datapoints)
 
-        BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
-        TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+#        print "max_val ", self.max_val
+#        print "min_val ", self.min_val
+#        print "mean_val", self.mean_val
+
+        BOUNDS = u.makebounds()
+        TICKS = u.maketicks()
 
         if property == "vp":
             BOUNDS = [bound * 1.7 for bound in BOUNDS]
@@ -261,11 +269,15 @@ class ElevationCrossSection:
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis
-#            norm = mcolors.Normalize(vmin=0,vmax=math.ceil(self.max_val))
             norm = mcolors.Normalize(vmin=0,vmax=umax)
         elif color_scale == "s_r":
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=0,vmax=umax)
+        elif color_scale == "sd":
+            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            colormap = basemap.cm.GMT_globe
+            TICKS = u.maketicks(self.min_val, self.max_val, 5)
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)
         elif color_scale == "b":
             C = []
             for bound in BOUNDS :
@@ -281,16 +293,23 @@ class ElevationCrossSection:
         elif color_scale == 'd_r':
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-    
+        elif color_scale == 'dd':
+            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            TICKS = u.maketicks(self.min_val, self.max_val, 5)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        else:
+            print "ERROR: unknown option for colorscale."
+
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file
         if( datafile == None ):
-          u = UCVM()
           meta['num_x'] = self.num_x
           meta['num_y'] = self.num_y
           meta['datapoints'] = datapoints.size
           meta['max'] = np.asscalar(self.max_val)
           meta['min'] = np.asscalar(self.min_val)
+          meta['mean'] = np.asscalar(self.mean_val)
           meta['lon_list'] = self.lon_list
           meta['lat_list'] = self.lat_list
           meta['elevation_list'] = self.elevation_list
@@ -305,15 +324,15 @@ class ElevationCrossSection:
               u.export_binary(datapoints,f)
 
         img = plt.imshow(datapoints, cmap=colormap, norm=norm)
-        plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.2f" % self.startingpoint.longitude, \
-                                                 "%.2f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
-                                                 "[E] %.2f" % self.endingpoint.longitude])
-        plt.yticks([0,self.num_y/2,self.num_y], ["%.0f" % (self.startelevation/1000), \
-                                                 "%.0f" % (self.startelevation+ ((self.toelevation-self.startelevation)/2)/1000), \
-                                                 "%.0f" % (self.toelevation / 1000)])
+        plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.3f" % self.startingpoint.longitude, \
+                                                 "%.3f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
+                                                 "[E] %.3f" % self.endingpoint.longitude])
+        plt.yticks([0,self.num_y/2,self.num_y], ["%.2f" % (self.startelevation/1000), \
+                                                 "%.2f" % ((self.startelevation+ ((self.toelevation-self.startelevation)/2))/1000), \
+                                                 "%.2f" % (self.toelevation / 1000)])
     
         plt.title(title)
-    
+
         cax = plt.axes([0.1, 0.1, 0.8, 0.02])
         cbar = plt.colorbar(img, cax=cax, orientation='horizontal',ticks=TICKS,spacing='regular')
         if property != "poisson":

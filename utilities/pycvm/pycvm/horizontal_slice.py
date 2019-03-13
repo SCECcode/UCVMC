@@ -153,8 +153,10 @@ class HorizontalSlice:
         # Call the plot object.
         p = Plot(title, "", "", None, 10, 10)
 
-        BOUNDS = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
-        TICKS = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+        u = UCVM()
+
+        BOUNDS = u.makebounds()
+        TICKS = u.maketicks()
 
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \
                             urcrnrlat=self.upperleftpoint.latitude, \
@@ -181,7 +183,7 @@ class HorizontalSlice:
         nancnt=0
         zerocnt=0
         negcnt=0
-#        print ("total cnt is ",self.num_x * self.num_y)
+        print ("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
                 if property != "poisson":
@@ -215,6 +217,7 @@ class HorizontalSlice:
 
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
+        self.mean_val=np.mean(datapoints)
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis
@@ -223,27 +226,40 @@ class HorizontalSlice:
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
-            colormap = basemap.cm.GMT_seis
-            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
-            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
-        elif color_scale == "sd_r":
-            colormap = basemap.cm.GMT_seis_r
-            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)      
-            TICKS = [self.min_val, (self.min_val + self.max_val) / 2, self.max_val]      
+            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            colormap = basemap.cm.GMT_globe
+            TICKS = u.maketicks(self.min_val, self.max_val, 5)
+            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)
+        elif color_scale == "b":
+            C = []
+            for bound in BOUNDS :
+               if bound < scale_gate :
+                  C.append("grey")
+               else:
+                  C.append("red")
+            colormap = mcolors.ListedColormap(C)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
+        elif color_scale == "d":
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         elif color_scale == "d_r":
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
-        else: # color_scale == "d"
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
-            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
+        elif color_scale == 'dd':
+            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            TICKS = u.maketicks(self.min_val, self.max_val, 5)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
+            norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
+        else:
+            print "ERROR: unknown option for colorscale."
 
         if( datafile == None ):
-          u = UCVM()
           meta['num_x'] = self.num_x
           meta['num_y'] = self.num_y
           meta['datapoints'] = datapoints.size
           meta['max'] = np.asscalar(self.max_val)
           meta['min'] = np.asscalar(self.min_val)
+          meta['mean'] = np.asscalar(self.mean_val)
           meta['lon_list']=lons.tolist()
           meta['lat_list']=lats.tolist()
           if filename:
