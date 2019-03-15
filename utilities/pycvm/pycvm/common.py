@@ -715,8 +715,8 @@ class UCVM:
         nsubstep=substep
         nnstep=float(step)/nsubstep
         if(mean != None) :
-          l= mean//step
-
+          l =(mean-minval) //step
+ 
         for i in range(0,nstep) :
           s= step*i+minval
           if (i == l) :

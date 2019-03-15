@@ -115,6 +115,8 @@ class HorizontalSlice:
         if (datafile != None) :
             isfloat = 1
         for matprop in data:
+            if(datafile != None) :
+                matprop=matprop * 1000.0
             if isfloat:
                 self.materialproperties[i][j].setProperty(property,matprop)
             else:
@@ -157,6 +159,7 @@ class HorizontalSlice:
 
         BOUNDS = u.makebounds()
         TICKS = u.maketicks()
+       
 
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \
                             urcrnrlat=self.upperleftpoint.latitude, \
