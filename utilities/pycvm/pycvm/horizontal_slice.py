@@ -249,7 +249,7 @@ class HorizontalSlice:
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         elif color_scale == 'dd':
-            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5,all=True)
             TICKS = u.maketicks(self.min_val, self.max_val, 5)
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)

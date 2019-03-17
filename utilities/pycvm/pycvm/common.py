@@ -703,7 +703,8 @@ class UCVM:
         fh.close()
 
     #  make the proper bounds for colormap
-    def makebounds(self,minval=0.0,maxval=5.0,nstep=0,mean=None, substep=5) :
+    #  when all is True, then need to substep all the range
+    def makebounds(self,minval=0.0,maxval=5.0,nstep=0,meanval=None, substep=5,all=True) :
         bounds=[]
         if(nstep == 0) :
           bounds = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
@@ -714,12 +715,12 @@ class UCVM:
         l=0
         nsubstep=substep
         nnstep=float(step)/nsubstep
-        if(mean != None) :
-          l =(mean-minval) //step
- 
+        if(meanval != None) :
+          l =(meanval-minval) //step
+
         for i in range(0,nstep) :
           s= step*i+minval
-          if (i == l) :
+          if (i == l or all == True) :
             for j in range(nsubstep) :
               bound= round(s+(j * nnstep),2)
               bounds.append(bound)
