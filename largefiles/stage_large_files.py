@@ -93,12 +93,12 @@ for l in target_large_lib_list:
     continue
   if not os.path.exists(target_file):
     print "Linking lib:",l
-    link_largefile(l, largefilepath, lib_dir)
+    link_largefile(l, largefilepath, work_lib_dir)
     # 
     # remove existing tar file so gzip doesn't ask for permisson
     #
     tarfile = os.path.splitext(os.path.basename(l))[0]
-    tarfilepath = lib_dir + "/" + tarfile
+    tarfilepath = work_lib_dir + "/" + tarfile
     if os.path.exists(tarfilepath):
       print "Removing existing lib tar file",tarfilepath
       os.remove(tarfilepath)
@@ -112,7 +112,7 @@ for m in target_large_model_list:
     continue
   if not os.path.exists(target_file):
     print "Linking model:",m
-    link_largefile(l, largefilepath, lib_dir)
+    link_largefile(m, largefilepath, work_model_dir)
     # 
     # remove existing tar file so gzip doesn't ask for permisson
     #
@@ -131,7 +131,7 @@ for r in large_ref_list:
     continue
   if not os.path.exists(target_file):
     print "Linking ref file:",r
-    link_largefile(r, largefilepath, lib_dir)
+    link_largefile(r, largefilepath, test_ref_dir)
   else:
     print "Target model file already exists",target_file
 
