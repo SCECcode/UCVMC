@@ -93,7 +93,7 @@ for l in target_large_lib_list:
     continue
   if not os.path.exists(target_file):
     print "Linking lib:",l
-    link_largefile(l, largefilepath, lib_dir):
+    link_largefile(l, largefilepath, lib_dir)
     # 
     # remove existing tar file so gzip doesn't ask for permisson
     #
@@ -112,7 +112,7 @@ for m in target_large_model_list:
     continue
   if not os.path.exists(target_file):
     print "Linking model:",m
-    link_largefile(l, largefilepath, lib_dir):
+    link_largefile(l, largefilepath, lib_dir)
     # 
     # remove existing tar file so gzip doesn't ask for permisson
     #
@@ -131,7 +131,7 @@ for r in large_ref_list:
     continue
   if not os.path.exists(target_file):
     print "Linking ref file:",r
-    link_largefile(r, largefilepath, lib_dir):
+    link_largefile(r, largefilepath, lib_dir)
   else:
     print "Target model file already exists",target_file
 
@@ -147,7 +147,7 @@ for e in target_large_etree_list:
     continue
   if not os.path.exists(target_file):
     print "Linking etree file:",e
-    link_largefile(e, largefilepath, etree_dir):
+    link_largefile(e, largefilepath, etree_dir)
   else:
     print "Target etree file already exists",target_file
 
