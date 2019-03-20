@@ -1,10 +1,35 @@
 #!/usr/bin/env python
-import sys
+# 
+# Script for downloading UCVM largefiles from remote repository site
+# into the UCVMC/largefiles subdirectory.
+#
+#
 import os
+import sys
 from urllib2 import urlopen
 
-ucvmc_largefile_dir = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
+#
+UCVM_Version = "18.5"
 
+# remote repository
+ucvmc_largefile_repository = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
+
+#
+target_large_lib_list = ["proj-5.0.0.tar.gz",
+                  "fftw-3.3.3.tar.gz",
+                  "euclid3-1.3.tar.gz"]
+target_large_model_list = ["cvms5.tar.gz",
+                    "cca.tar.gz",
+                    "cs173.tar.gz",
+                    "cs173h.tar.gz",
+                    "cvms4.tar.gz",
+                    "cvms426.tar.gz",
+                    "cvmh-15.1.0.tar.gz",
+                    "cencal080.tar.gz"]
+target_large_etree_list = ["ucvm.e"]
+target_large_ref_list = ["test-grid-lib-1d.ref"]
+
+#
 def download_urlfile(url,fname):
   try:
     response = urlopen(url)
@@ -35,35 +60,16 @@ else:
   print "Due to the size of the files, this download could take minutes to hours to complete."
   sys.exit(0)
 
-print "Retrieving files from: %s"%(ucvmc_largefile_dir)
+print "Retrieving files from: %s"%(ucvmc_largefile_repository)
 print "Installing files in: %s"%(curdir)
-
-
-large_lib_list = ["proj-5.0.0.tar.gz",
-                  "fftw-3.3.3.tar.gz",
-                  "euclid3-1.3.tar.gz"]
-
-large_model_list = ["cvms5.tar.gz",
-                    "cca.tar.gz",
-                    "cs173.tar.gz",
-                    "cs173h.tar.gz",
-                    "cvms4.tar.gz",
-                    "cvms426.tar.gz",
-                    "cvmh-15.1.0.tar.gz",
-                    "cencal080.tar.gz"]
-
-large_etree_list = ["ucvm.e"]
-
-large_ref_list = ["test-grid-lib-1d.ref"]
-
 
 #
 # First, download the required library files
 #
-for m in large_lib_list:
+for m in target_large_lib_list:
   print "Retrieving: ",m
   outfilename = "./%s"%(m)
-  scec_url = "%s/%s"%(ucvmc_largefile_dir,m)
+  scec_url = "%s/%s"%(ucvmc_largefile_repository,m)
   #
   # First check if file exists. If so, don't re-download.
   # Tell user that old files must be deleted from UCVMC/largefiles to download new version
@@ -82,10 +88,10 @@ for m in large_lib_list:
 #
 # Second download the CVM model files
 #
-for m in large_model_list:
+for m in target_large_model_list:
   print "Retrieving: ",m
   outfilename = "./%s"%(m)
-  scec_url = "%s/%s"%(ucvmc_largefile_dir,m)
+  scec_url = "%s/%s"%(ucvmc_largefile_repository,m)
   #
   # First check if file exists. If so, don't re-download.
   # Tell user that old files must be deleted from UCVMC/largefiles to download new version
@@ -105,10 +111,10 @@ for m in large_model_list:
 # Next download the topography and vs30 etree files
 #
 
-for m in large_etree_list:
+for m in target_large_etree_list:
   print "Retrieving: ",m
   outfilename = "./%s"%(m)
-  scec_url = "%s/%s"%(ucvmc_largefile_dir,m)
+  scec_url = "%s/%s"%(ucvmc_largefile_repository,m)
   #
   # First check if file exists. If so, don't re-download.
   # Tell user that old files must be deleted from UCVMC/largefiles to download new version
@@ -127,10 +133,10 @@ for m in large_etree_list:
 #
 # Download the large reference result file
 #
-for m in large_ref_list:
+for m in target_large_ref_list:
   print "Retrieving: ",m
   outfilename = "./%s"%(m)
-  scec_url = "%s/%s"%(ucvmc_largefile_dir,m)
+  scec_url = "%s/%s"%(ucvmc_largefile_repository,m)
   #
   # First check if file exists. If so, don't re-download.
   # Tell user that old files must be deleted from UCVMC/largefiles to download new version
