@@ -51,6 +51,8 @@ def check_md5file(filename,total_ok,total_errs):
 #
 #
 print "Checking largefiles for UCVMC version: %s"%(UCVM_Version)
+total_ok = 0
+total_errs = 0
 
 #
 # Check Model Files
