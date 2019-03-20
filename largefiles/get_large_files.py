@@ -15,18 +15,18 @@ UCVM_Version = "18.5"
 ucvmc_largefile_repository = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
 
 #
+complete_large_model_list = ["cvms5",
+                    "cca",
+                    "cs173",
+                    "cs173h",
+                    "cvms4",
+                    "cvms426",
+                    "cvmh-15.1.0",
+                    "cencal080"]
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
 target_large_model_list = []
-complete_large_model_list = ["cvms5.tar.gz",
-#                    "cca.tar.gz",
-#                    "cs173.tar.gz",
-#                    "cs173h.tar.gz",
-                    "cvms4.tar.gz",
-                    "cvms426.tar.gz",
-                    "cvmh-15.1.0.tar.gz",
-                    "cencal080.tar.gz"]
 target_large_etree_list = ["ucvm.e"]
 target_large_ref_list = ["test-grid-lib-1d.ref"]
 
@@ -65,8 +65,11 @@ else:
 #
 #
 for m in complete_large_model_list:
-   target_large_model_list.push(m)
-
+   print "\nWould you like to download and install " + m + "?"
+   yesmodel = raw_input("Enter yes or no: ")
+   if yesmodel != "" and yesmodel.lower()[0] == "y":
+     model = m + '.tar.gz'
+     target_large_model_list.append(model)
 
 print "Retrieving files from: %s"%(ucvmc_largefile_repository)
 print "Installing files in: %s"%(curdir)

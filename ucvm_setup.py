@@ -41,6 +41,7 @@ def usage():
     print "Automatically sets up UCVMC and alerts the user to potential complications.\n"
     print "\t-s  --static       Use static linking."
     print "\t-d  --dynamic      Use dynamic linking."
+    print "\t-a  --all          Use all available models."
     print ""
     print "UCVMC %s\n" % VERSION
     
@@ -355,7 +356,10 @@ if not os.path.exists(ucvmpath):
   call(["mkdir", "-p", ucvmpath+'/lib'])
     
 for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
-    if config_data["models"][model]["Ask"] != "no" or all_flag == True:
+    if all_flag == True:
+        modelsToInstall.append(model)
+        continue
+    if config_data["models"][model]["Ask"] != "no":
         print "\nWould you like to download and install " + model + "?"
         dlinstmodel = raw_input("Enter yes or no: ")
      
