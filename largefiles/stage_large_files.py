@@ -32,8 +32,9 @@ target_large_ref_list = ["test-grid-lib-1d.ref"]
 # for UCVM. For standard installation, the default values can be used. The user 
 # only needs to edit these paths if they are doing custom installation methods
 #
-largefilepath = "."
-curpath = ".."
+curdir = os.getcwd()
+largefilepath = curdir
+curpath = curdir + '/' + ".."
 
 #
 def link_largefile(filename, src, dst):
