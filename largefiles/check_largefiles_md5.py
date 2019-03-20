@@ -56,6 +56,8 @@ print "Checking largefiles for UCVMC version: %s"%(UCVM_Version)
 # Check Model Files
 #
 for model in target_large_model_list :
+  if not os.path.exists(model):
+    continue
   md5 = model + ".md5"
   total_ok, total_errs = check_md5file(md5,total_ok,total_errs)
 
@@ -63,6 +65,8 @@ for model in target_large_model_list :
 # Check Library Files
 #
 for lib in target_large_lib_list :
+  if not os.path.exists(lib):
+    continue
   md5 = lib + ".md5"
   total_ok, total_errs = check_md5file(md5,total_ok,total_errs)
 
@@ -70,6 +74,8 @@ for lib in target_large_lib_list :
 # Check etree files
 # 
 for etree in target_large_etree_list :
+  if not os.path.exists(etree):
+    continue
   md5 = etree + ".md5"
   total_ok, total_errs = check_md5file(md5,total_ok,total_errs)
 
@@ -77,6 +83,8 @@ for etree in target_large_etree_list :
 # Check reference grids files
 #
 for ref in target_large_ref_list :
+  if not os.path.exists(ref):
+    continue
   md5 = ref + ".md5"
   total_ok, total_errs = check_md5file(md5,total_ok,total_errs)
 

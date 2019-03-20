@@ -87,7 +87,10 @@ if not os.path.exists(work_lib_dir):
 # Now move files one by one to destinations
 #
 for l in target_large_lib_list:
+  src_file = largefilepath + "/" + l
   target_file = work_lib_dir + "/" + l 
+  if not os.path.exists(src_file):
+    continue
   if not os.path.exists(target_file):
     print "Linking lib:",l
     link_largefile(l, largefilepath, lib_dir):
@@ -103,7 +106,10 @@ for l in target_large_lib_list:
     print "Target lib file already exists",target_file
 
 for m in target_large_model_list:
+  src_file = largefilepath + "/" + m
   target_file = work_model_dir + "/" + m
+  if not os.path.exists(src_file):
+    continue
   if not os.path.exists(target_file):
     print "Linking model:",m
     link_largefile(l, largefilepath, lib_dir):
@@ -119,7 +125,10 @@ for m in target_large_model_list:
     print "Target model file already exists",target_file
 
 for r in large_ref_list:
+  src_file = largefilepath + "/" + r
   target_file = test_ref_dir + "/" + r 
+  if not os.path.exists(src_file):
+    continue
   if not os.path.exists(target_file):
     print "Linking ref file:",r
     link_largefile(r, largefilepath, lib_dir):
@@ -132,7 +141,10 @@ for r in large_ref_list:
 # works only for ucvm.e due to hardcoded directory name
 #
 for e in target_large_etree_list:
+  src_file = largefilepath + "/" + e
   target_file = etree_dir + "/" + e 
+  if not os.path.exists(src_file):
+    continue
   if not os.path.exists(target_file):
     print "Linking etree file:",e
     link_largefile(e, largefilepath, etree_dir):
