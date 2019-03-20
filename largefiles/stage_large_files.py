@@ -124,7 +124,7 @@ for m in target_large_model_list:
   else:
     print "Target model file already exists",target_file
 
-for r in large_ref_list:
+for r in target_large_ref_list:
   src_file = largefilepath + "/" + r
   target_file = test_ref_dir + "/" + r 
   if not os.path.exists(src_file):

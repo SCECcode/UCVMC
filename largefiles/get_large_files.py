@@ -18,7 +18,8 @@ ucvmc_largefile_repository = "http://hypocenter.usc.edu/research/ucvmc/V18_5"
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
-target_large_model_list = ["cvms5.tar.gz",
+target_large_model_list = []
+complete_large_model_list = ["cvms5.tar.gz",
 #                    "cca.tar.gz",
 #                    "cs173.tar.gz",
 #                    "cs173h.tar.gz",
@@ -59,6 +60,13 @@ else:
   print "This script will download and install ucvm.e and several other files."
   print "Due to the size of the files, this download could take minutes to hours to complete."
   sys.exit(0)
+
+######################################################################
+#
+#
+for m in complete_large_model_list:
+   target_large_model_list.push(m)
+
 
 print "Retrieving files from: %s"%(ucvmc_largefile_repository)
 print "Installing files in: %s"%(curdir)
