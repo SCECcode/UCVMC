@@ -18,7 +18,7 @@ import shlex
 # Variables
 
 # Set the version number for the installation script.
-VERSION = "18.5.0"
+VERSION = "19.4.0"
 
 # User defined variables.
 all_flag = False
