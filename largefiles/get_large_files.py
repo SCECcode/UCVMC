@@ -65,7 +65,7 @@ else:
 #
 #
 for m in complete_large_model_list:
-   print "\nWould you like to download and install " + m + "?"
+   print "\nWould you like to download " + m + "?"
    yesmodel = raw_input("Enter yes or no: ")
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
