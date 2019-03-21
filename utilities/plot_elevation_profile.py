@@ -1,29 +1,28 @@
 #!/usr/bin/env python
 
 ##
-#  @file plot_depth_profile.py
-#  @brief Plots a depth profile using command-line parameters.
+#  @file plot_elevation_profile.py
+#  @brief Plots a elevation profile using command-line parameters.
 #  @author 
 #  @version 
 #
-#  Plots a depth profile given a set of command-line parameters.
+#  Plots a elevation profile given a set of command-line parameters.
 
-from pycvm import DepthProfile, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import ElevationProfile, UCVM, VERSION, UCVM_CVMS, Point
 import getopt, sys, os
 
 ## Prints usage statement.
 def usage():
-    print "Plots a depth profile given a latitude, longitude, a depth,"
+    print "Plots a elevation profile given a latitude, longitude, a elevation,"
     print "the CVM to plot, and a couple of other settings."
     print "\nValid arguments:"
     print "\t-s, --startingpoint: latitude, longitude (e.g. 34,-118)"
-    print "\t-b, --startingdepth: starting depth for depth profile (meters)"
-    print "\t-e, --endingdepth: ending depth for depth profile (meters)"
+    print "\t-b, --startingelevation: starting elevation for elevation profile (meters)"
+    print "\t-e, --endingelevation: ending elevation for elevation profile (meters)"
     print "\t-d, --datatype: one or more 'vs', 'vp' and/or 'density'(e.g. vs,vp,density)"
-    print "\t-v, --vertical: vertical spacing for depth interval (meters)"
+    print "\t-v, --vertical: vertical spacing for elevation interval (meters)"
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-g, --threshold: optional  Vs threshold to display as gating"
-    print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
@@ -75,34 +74,28 @@ def get_user_opts(options):
 
 # handle optional opts
     for l in opts_left :
-# data file is optional
-        if l == "f" :
-            opts_opt.append(l)
-            ret_val["datafile"] = None
+        if l == "o" :
+          opts_opt.append(l)
+          ret_val["outfile"] = None
         else :
-            if l == "o" :
+            if l == "g" :
               opts_opt.append(l)
-              ret_val["outfile"] = None
-            else :
-                if l == "g" :
-                  opts_opt.append(l)
-                  ret_val["vs_threshold"] = None
+              ret_val["vs_threshold"] = None
 
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
 
-starting_depth = 0
+starting_elevation = 0
 
 ret_val = get_user_opts({ "s,startingpoint":"lat1,lon1", \
-			"b,startingdepth":"starting_depth", \
-			"e,endingdepth":"ending_depth", \
+			"b,startingelevation":"starting_elevation", \
+			"e,endingelevation":"ending_elevation", \
 			"c,cvm":"cvm_selected", \
 			"d,datatype":"data_type", \
 			"v,vertical":"vertical_spacing", \
 			"g,gating":"vs_threshold", \
-			"f,datafgile":"datafile", \
 			"o,outfile":"outfile"})
 
 # Create a new UCVM object.
@@ -128,9 +121,9 @@ elif len(ret_val) > 0:
                 exec("%s = '%s'" % (key, value))
 else: 
     print ""
-    print "Plot Depth-Profile - UCVM %s" % VERSION
+    print "Plot Elevation-Profile - UCVM %s" % VERSION
     print ""
-    print "This utility helps you plot a depth-profile for one of the CVMs"
+    print "This utility helps you plot a elevation-profile for one of the CVMs"
     print "that you installed with UCVM."
     print ""
     print "In order to create the plot, you must first specify the grid point."
@@ -139,22 +132,16 @@ else:
     lon1 = ask_number("Please enter the longitude: ")
     lat1 = ask_number("Next, enter the latitude: ")
 
-    starting_depth = -1  ## default, 0
-    while starting_depth < 0:
-        starting_depth = ask_number("Please enter the depth, in meters, at which you would like \n" + \
+    starting_elevation = 0  ## default, 0
+    starting_elevation = ask_number("Please enter the elevation, in meters, at which you would like \n" + \
                                   "this plot to start: ")
-        if starting_depth < 0:
-            print "Error: the depth must be a positive number."
 
-    ending_depth = -1  ## max, 15000
-    while ending_depth < 0:
-        ending_depth = ask_number("Please enter the depth, in meters, at which you would like \n" + \
+    ending_elevation = -150000  ## max, -15000
+    ending_elevation = ask_number("Please enter the elevation, in meters, at which you would like \n" + \
                                   "this plot to end: ")
-        if ending_depth < 0:
-            print "Error: the depth must be a positive number."
 
-    if ending_depth <= starting_depth:
-        print "Error: the bottom, ending depth must be greater than the starting depth."
+    if ending_elevation >= starting_elevation:
+        print "Error: the bottom, ending elevation must be less than the starting elevation."
  
     print ""
     vertical_spacing = -1
@@ -206,10 +193,10 @@ else:
 print ""
 print "Retrieving data. Please wait..."
 
-# Generate the depth profile
+# Generate the elevation profile
 
-d = DepthProfile(Point(lon1, lat1, starting_depth),
-         ending_depth, vertical_spacing, cvm_selected, threshold=vs_threshold)
+d = ElevationProfile(Point(lon1, lat1, elevation=starting_elevation),
+         ending_elevation, vertical_spacing, cvm_selected, threshold=vs_threshold)
 
-d.plot(data_type, meta=meta)
+d.plot(data_type, filename=outfile, meta=meta)
 

@@ -141,9 +141,9 @@ class Plot:
 #  @brief Defines a point in WGS84 latitude, longitude projection.
 #
 #  Allows for a point to be defined within the 3D earth structure.
-#  It has a longitude, latitude, and depth as minimum parameters, but you can
-#  specify a type, e.g. "LA Basin", and a description, e.g. "New point of 
-#  interest".
+#  It has a longitude, latitude, and depth/elevation as minimum parameters,
+#  but you can specify a type, e.g. "LA Basin", and a description, 
+#  e.g. "New point of interest".
 class Point:
     
     ##
@@ -153,10 +153,11 @@ class Point:
     #  @param longitude Longitude provided as a float.
     #  @param latitude Latitude provided as a float.
     #  @param depth The depth in meters with the surface being 0.
+    #  @param elevation The elevation in meters.
     #  @param type The type or classification of this location. Not required.
     #  @param code A short code for the site (unique identifier). Not required.
     #  @param description A longer description of what this point represents. Not required.
-    def __init__(self, longitude, latitude, depth = 0, type = None, code = None, description = None):
+    def __init__(self, longitude, latitude, depth = 0, elevation = None, type = None, code = None, description = None):
         if pycvm_is_num(longitude):
             ## Longitude as a float in WGS84 projection.
             self.longitude = longitude
@@ -168,6 +169,10 @@ class Point:
             self.latitude = latitude
         else:
             raise TypeError("Latitude must be a number")
+
+        self.elevation = None;
+        if elevation != None :
+            self.elevation = elevation
         
         if pycvm_is_num(depth):
             if depth >= 0:
@@ -188,7 +193,10 @@ class Point:
     ##
     #  String representation of the point.    
     def __str__(self):
-        return "(%.4f, %.4f, %.4f)" % (float(self.longitude), float(self.latitude), float(self.depth))
+        if(self.elevation) :
+            return "(%.4f, %.4f, %.4f)" % (float(self.longitude), float(self.latitude), float(self.elevation))
+        else:
+            return "(%.4f, %.4f, %.4f)" % (float(self.longitude), float(self.latitude), float(self.depth))
 
 ##
 #  @class MaterialProperties
@@ -367,7 +375,7 @@ class UCVM:
     #  @param point_list An array of @link Point Points @endlink for which UCVM should query.
     #  @param cvm The CVM from which this data should be retrieved.
     #  @return An array of @link MaterialProperties @endlink.
-    def query(self, point_list, cvm):
+    def query(self, point_list, cvm, elevation = None):
         
         shared_object = "../model/" + cvm + "/lib/lib" + cvm + ".so"
         properties = []
@@ -378,7 +386,11 @@ class UCVM:
             #obj = ctypes.cdll.LoadLibrary(shared_object)
             #print obj
         
-        proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        if( elevation ) :
+          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        else :
+#          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -386,10 +398,13 @@ class UCVM:
             point_list = [point_list]
          
         for point in point_list:
-            text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
-#            print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
-        
+            if( elevation ) :
+              text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.elevation)
+            else:
+              text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+
         output = proc.communicate(input=text_points)[0]
+       
         output = output.split("\n")[1:-1]
 
         for line in output:
@@ -403,7 +418,7 @@ class UCVM:
 
         if len(properties) == 1:
             return properties[0]
-        
+
         return properties
     
     ##
@@ -752,6 +767,65 @@ class UCVM:
         json.dump(blob, fh)
         fh.close()
 
+
+
+    def export_velocity(self,filename,vslist,vplist,rholist):
+        k = filename.rfind(".png")
+        rawfile=filename
+        if( k != -1) :
+            rawfile= filename[:k] + "_data.json"
+        fh = open(rawfile, 'w+')
+        raw={"vs":vslist, "vp":vplist, "rho":rholist};
+        json.dump(raw, fh)
+        fh.close()
+
+    #  make the proper bounds for colormap
+    #  when all is True, then need to substep all the range
+    def makebounds(self,minval=0.0,maxval=5.0,nstep=0,meanval=None, substep=5,all=True) :
+        bounds=[]
+        if(nstep == 0) :
+          bounds = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+          return bounds
+
+        step=float(maxval - minval)/nstep
+
+        l=0
+        nsubstep=substep
+        nnstep=float(step)/nsubstep
+        if(meanval != None) :
+          l =(meanval-minval) //step
+
+        for i in range(0,nstep) :
+          s= step*i+minval
+          if (i == l or all == True) :
+            for j in range(nsubstep) :
+              bound= round(s+(j * nnstep),2)
+              bounds.append(bound)
+          
+          else:
+            bounds.append(round(s,2))
+
+        bounds.append(round((step * nstep + minval),2))
+#        print "bounds", bounds
+        return bounds
+
+    ## 
+    #  make the proper ticks for subplot
+    def maketicks(self,minval=None,maxval=None,nstep=0) :
+        ticks=[]
+
+        if(nstep == 0) :
+          ticks = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+          return ticks
+
+        step=(maxval - minval)/nstep
+        for i in range(nstep) :
+            tick= round((step * i) + minval,2)
+            ticks.append(tick)
+
+        ticks.append(round((step * nstep + minval),2))
+#        print "ticks ", ticks
+        return ticks
 
 
 #  Function Definitions
