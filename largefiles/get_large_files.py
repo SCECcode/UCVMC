@@ -22,6 +22,13 @@ optional_large_model_list = ["cvms5",
                     "cvms4",
                     "cvms426",
                     "cencal080"]
+optional_large_model_size = { 'cvms5':'1.2G',
+                              'cca':'9.2G',
+                              'cs173':'72G',
+                              'cs173h':'72G',
+                              'cvms4':'326M',
+                              'cvms426':'1.6G',
+                              'cencal080':'17M'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
@@ -64,7 +71,7 @@ else:
 #
 #
 for m in optional_large_model_list:
-   print "\nWould you like to download " + m + "?"
+   print "\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?" 
    yesmodel = raw_input("Enter yes or no: ")
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
