@@ -362,9 +362,12 @@ for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data[
     ltarname = "./work/model/" + tarname
 ## continue only if the model is in work_model_dir 
     if not os.path.isfile(ltarname):
-      continue
+        continue
+    if all_flag == True:
+        modelsToInstall.append(model)
+        continue
 
-    if config_data["models"][model]["Ask"] != "no" or all_flag == True:
+    if config_data["models"][model]["Ask"] != "no":
         print "\nWould you like to download and install " + model + "?"
         dlinstmodel = raw_input("Enter yes or no: ")
      
