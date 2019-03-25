@@ -14,6 +14,7 @@ from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
 import scipy.interpolate as interpolate
 import numpy as np
 import pdb
+import json
 
 ##
 #  @class DepthProfile
@@ -66,34 +67,50 @@ class DepthProfile:
     
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self, properties=None, datafile = None):
+    def getplotvals(self, properties=None, meta = {}):
         
         point_list = []
+
+        datafile = None
+        if 'datafile' in meta :
+            datafile = meta['datafile']
+
+        filename = None
+        if 'outfile' in meta :
+           filename = meta['outfile']
         
         # Generate the list of points.
  
 #        for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):
+        meta['depth'] = []
         for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
+            meta['depth'].append(i)
             
         u = UCVM()
 ###MEI
         if (datafile != None) :
             print "\nUsing --> "+datafile
-            print "expecting x ",self.num_x," y ",self.num_y
-            data = u.import_binary(datafile, self.num_x, self.num_y)
+            data = u.import_matprops(datafile)
         else:
             data = u.query(point_list, self.cvm)
+#        print "NUMBER of data found ", len(data)
         
-        if(datafile == None) :
-            for matprop in data:
-                self.vplist.append(float(matprop.vp) / 1000)
-                self.vslist.append(float(matprop.vs) / 1000)
-                self.rholist.append(float(matprop.density) / 1000)
-        else:  ## only read in 1 set at a time
-            pass
-# TODO: not sure how/what to store depth profile external data MEI 
+        tmp = []
+        for matprop in data:
+            self.vplist.append(float(matprop.vp) / 1000)
+            self.vslist.append(float(matprop.vs) / 1000)
+            self.rholist.append(float(matprop.density) / 1000)
+## create the blob
+            if(datafile == None) : ## save an external copy of matprops 
+              b= { 'vp':float(matprop.vp), 'vs':float(matprop.vs), 'density':float(matprop.density) }
+              tmp.append(b)
     
+        if(datafile == None) :
+              blob = json.dumps({ 'matprops' : tmp })
+              u.export_matprops(blob,filename)
+              u.export_metadata(meta,filename)
+           
     ##
     #  Adds the depth profile to a pre-existing plot.
     #
@@ -101,14 +118,14 @@ class DepthProfile:
     #  @param properties An array of properties to plot. Can be vs, vp, or density.
     #  @param colors The colors that the properties should be plotted as. Optional.
     #  @param customlabels An associated array of labels to put for the legend. Optional.
-    def addtoplot(self, plot, properties, colors = None, customlabels = None, datafile = None):
+    def addtoplot(self, plot, properties, colors = None, customlabels = None, meta= {}):
         
         # Check that plot is a Plot
         if not isinstance(plot, Plot):
             raise TypeError("Plot must be an instance of the class Plot.")
         
         # Get the material properties.
-        self.getplotvals(properties = properties, datafile = datafile)
+        self.getplotvals(properties = properties, meta=meta)
         
         max_x = 0
         yvals = []
@@ -190,7 +207,7 @@ class DepthProfile:
     #
     #  @param properties An array of material properties. Can be one or more of vp, vs, and/or density.
     #  @param filename If this is set, the plot will not be shown but rather saved to this location.
-    def plot(self, properties, filename = None, meta = {}, datafile=None):
+    def plot(self, properties, meta = {}):
 
         if self.startingpoint.description == None:
             location_text = ""
@@ -204,25 +221,15 @@ class DepthProfile:
             cvmdesc = self.cvm
 
         # Call the plot object.
-        p = Plot("%s%s Depth Profile From %sm To %sm at (%.2f,%.2f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
+        p = Plot("%s%s Depth Profile From %sm To %sm at (%.6f,%.6f)" % (location_text, cvmdesc, self.startingpoint.depth, self.todepth, self.startingpoint.longitude, self.startingpoint.latitude), \
                  "Units (see legend)", "Depth (m)", None, 7, 10)
 
         # Add to plot.
-        self.addtoplot(p, properties)
-
-        # only output these if there is no datafile
-        if (datafile == None) :
-          meta['depth_list'] = self.depthlist
-          u = UCVM()
-          if filename:
-              u.export_metadata(meta,filename)
-              u.export_velocity(filename,self.vslist, self.vplist, self.rholist)
-          else:
-#https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
-              rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
-              f = "depth_profile"+rnd
-              u.export_metadata(meta,f)
-              u.export_velocity(f,self.vslist, self.vplist, self.rholist)
+        self.addtoplot(p, properties, meta=meta)
+                
+        filename = None
+        if 'outfile' in meta :
+           filename = meta['outfile']
 
         if filename == None:
             plt.show()

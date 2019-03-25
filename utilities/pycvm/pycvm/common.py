@@ -265,6 +265,27 @@ class MaterialProperties:
     def fromUCVMOutput(cls, line):
         new_line = line.split()
         return cls(new_line[14], new_line[15], new_line[16])
+
+    ##
+    #  Initializes the class from a JSON  output string line.
+    #
+    #  @param cls Not used. Call as MaterialProperties.fromJSONOutput(jdict).
+    #  @param jdict The jdict line containing the material properties as imported from file
+    #  @return A constructed MaterialProperties class.
+    @classmethod
+    def fromJSONOutput(cls, jdict):
+        vp=jdict['vp']
+        vs=jdict['vs']
+        density=jdict['density']
+        return cls(vp, vs, density)
+
+    ##
+    #  Create a JSON output string line
+    #
+    #  @param depth The depth from surface.
+    #  @return A JSON string
+    def toJSON(self, depth):
+        return "{ 'depth':%2f, 'vp':%.5f, 'vs':%.5f, 'density':%.5f }" % (depth, self.vp, self.vs, self.density)
     
     ##
     #  Retrieves the corresponding property given the property as a string.
@@ -436,6 +457,42 @@ class UCVM:
             
         return floats
 
+
+    ##
+    #  Gets the basin depths for a given set of points, CVM, and desired Vs.
+    #  If the CVM does not exist, an error is given. The set of points is an
+    #  array of @link Point Points @endlink. The function returns the depths
+    #  as floats.
+    # 
+    #  @param point_list An array of @link Point Points @endlink to query.
+    #  @param cvm The CVM from which the depths should come.
+    #  @param vs_threshold The Vs threshold to check for (e.g. Z1.0 = 1000).
+    #  @return An array of floats which correspond to the depths.
+    def basin_depth(self, point_list, cvm, vs_threshold):
+
+        proc = Popen([self.binary_dir + "/basin_query", "-f", self.config, "-m", \
+                      cvm, "-v", "%.0f" % vs_threshold], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+
+        text_points = ""
+        floats = []
+
+        if isinstance(point_list, Point):
+            point_list = [point_list]
+
+        for point in point_list:
+            text_points += "%.5f %.5f\n" % (point.longitude, point.latitude)
+
+        output = proc.communicate(input=text_points)[0]
+        output = output.split("\n")[:-1]
+
+        for line in output:
+            floats.append(float(line.split()[2]))
+
+        if len(floats) == 1:
+            return floats[0]
+
+        return floats
+
     ##
     #  Queries UCVM given a set of points and a CVM to query. If the CVM does not exist,
     #  this function will throw an error. The set of points must be an array of the 
@@ -581,20 +638,6 @@ class UCVM:
     #  Gets the basin depths for a given set of points, CVM, and desired Vs.
     #  If the CVM does not exist, an error is given. The set of points is an
     #  array of @link Point Points @endlink. The function returns the depths
-    #  as floats.
-    # 
-    #  @param point_list An array of @link Point Points @endlink to query.
-    #  @param cvm The CVM from which the depths should come.
-    #  @param vs_threshold The Vs threshold to check for (e.g. Z1.0 = 1000).
-    #  @return An array of floats which correspond to the depths.
-    def basin_depth(self, point_list, cvm, vs_threshold):
-        
-        proc = Popen([self.binary_dir + "/basin_query", "-f", self.config, "-m", \
-                      cvm, "-v", "%.0f" % vs_threshold], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-        
-        text_points = ""
-        floats = []
-        
         if isinstance(point_list, Point):
             point_list = [point_list]
         
@@ -618,23 +661,25 @@ class UCVM:
 #  import meta data as a json blob
 #
     def import_json(self, fname):
-	fh = open('data.json', 'r') 
+        rawfile=fname
+        k = rawfile.rfind(".json")
+        if( k == -1) : 
+            print "Supplied ",fname," did not have .json suffix\n"
+	fh = open(rawfile, 'r') 
 	data = json.load(fh)
-
 	fh.close()
-
 	return data
 
-#  import raw floats directory from the external file 
+#  import raw floats data from the external file 
 #
 #  if filename is image.png, look for a matching
 #  image_data.bin
 #
     def import_binary(self, fname, num_x, num_y):
-        k = fname.rfind(".png")
         rawfile=fname
+        k = rawfile.rfind(".png")
         if( k != -1) : 
-            rawfile = fname[:k] + "_data.bin"
+            rawfile = rawfile[:k] + "_data.bin"
         fh = open(rawfile, 'r') 
         floats = np.fromfile(fh, dtype=np.float32)
 
@@ -658,10 +703,12 @@ class UCVM:
 
 #  export raw floats nxy ndarray  to an external file 
     def export_binary(self, floats, fname):
-        k = fname.rfind(".png")
-        rawfile=fname
+        rawfile = fname
+        if rawfile is None :
+            rawfile="data.bin"
+        k = rawfile.rfind(".png")
         if( k != -1) : 
-            rawfile = fname[:k] + "_data.bin"
+            rawfile = rawfile[:k] + "_data.bin"
         fh = open(rawfile, 'w+') 
         floats.tofile(fh)
 
@@ -672,10 +719,10 @@ class UCVM:
 #  { 'num_x' : xval, 'num_y' : yval, 'total' : total }
 #  import ascii meta jsoin data to an external file 
     def import_metadata(self, fname):
-        k = fname.rfind(".png")
         metafile=fname
+        k = metafile.rfind(".png")
         if( k != -1) : 
-            metafile = fname[:k] + "_meta.json"
+            metafile = metafile[:k] + "_meta.json"
         fh = open(metafile, 'r') 
         meta = json.load(fh)
         fh.close()
@@ -683,13 +730,43 @@ class UCVM:
 
 #  export ascii meta data to an external file 
     def export_metadata(self,meta,fname):
-        k = fname.rfind(".png")
         metafile=fname
+        if metafile is None:
+          metafile = "meta.json"
+        k = metafile.rfind(".png")
         if( k != -1) : 
-            metafile = fname[:k] + "_meta.json"
+            metafile = metafile[:k] + "_meta.json"
         fh = open(metafile, 'w+') 
         json.dump(meta, fh)
         fh.close()
+
+#  import binary material properties in JSON form from an external file 
+#  { matprops: [ 
+#          { 'vp': pval, 'vs': sval, 'density': dval },
+#          ...
+#          { 'vp': pval, 'vs': sval, 'density': dval } ] }
+    def import_matprops(self, fname):
+        properties=[]
+        blob=self.import_json(fname)
+        jblob=json.loads(blob)
+        mlist= jblob["matprops"]
+        for item in mlist :
+           mp=MaterialProperties.fromJSONOutput(item)
+           properties.append(mp)
+        return properties
+
+#  export binary material properties in JSON form to an external file 
+    def export_matprops(self,blob,fname):
+        matpropsfile=fname
+        if matpropsfile is None :
+            matpropsfile="matprops.json"
+        k = matpropsfile.rfind(".png")
+        if( k != -1) : 
+            matpropsfile = matpropsfile[:k] + "_matprops.json"
+        fh = open(matpropsfile, 'w+') 
+        json.dump(blob, fh)
+        fh.close()
+
 
 
     def export_velocity(self,filename,vslist,vplist,rholist):

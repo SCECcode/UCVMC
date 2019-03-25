@@ -23,6 +23,7 @@ def usage():
     print "\t-v, --vertical: vertical spacing for depth interval (meters)"
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-g, --threshold: optional  Vs threshold to display as gating"
+    print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
     print "UCVM %s\n" % VERSION
 
@@ -74,13 +75,18 @@ def get_user_opts(options):
 
 # handle optional opts
     for l in opts_left :
-        if l == "o" :
-          opts_opt.append(l)
-          ret_val["outfile"] = None
+# data file is optional
+        if l == "f" :
+            opts_opt.append(l)
+            ret_val["datafile"] = None
         else :
-            if l == "g" :
+            if l == "o" :
               opts_opt.append(l)
-              ret_val["vs_threshold"] = None
+              ret_val["outfile"] = None
+            else :
+                if l == "g" :
+                  opts_opt.append(l)
+                  ret_val["vs_threshold"] = None
 
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
@@ -96,6 +102,7 @@ ret_val = get_user_opts({ "s,startingpoint":"lat1,lon1", \
 			"d,datatype":"data_type", \
 			"v,vertical":"vertical_spacing", \
 			"g,gating":"vs_threshold", \
+			"f,datafgile":"datafile", \
 			"o,outfile":"outfile"})
 
 # Create a new UCVM object.
@@ -204,5 +211,5 @@ print "Retrieving data. Please wait..."
 d = DepthProfile(Point(lon1, lat1, starting_depth),
          ending_depth, vertical_spacing, cvm_selected, threshold=vs_threshold)
 
-d.plot(data_type, filename=outfile, meta=meta)
+d.plot(data_type, meta=meta)
 

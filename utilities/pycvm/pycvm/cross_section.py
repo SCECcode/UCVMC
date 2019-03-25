@@ -259,6 +259,7 @@ class CrossSection:
         umax=round(self.max_val)
         if( umax < 5 ) :
             umax=5 
+        umin=round(self.min_val)
 
         if color_scale == "s":
             colormap = basemap.cm.GMT_seis

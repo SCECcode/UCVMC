@@ -46,7 +46,7 @@ Once the target computer has the required software tools installed, the basic in
 *  cd ..
 *  ./ucvm_setup.py
 
-The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3-H, and USGS CenCal). We recommend that the user installs all available models.
+The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3-H, and USGS CenCal). Several models are very large. CCA06, CS17.3 and CS17.3-H are 9.2G, 72G and 72G respectively. We recommend that the user only installs needed models.
 
 The script will then automatically compile, build, and install the selected models.
 
