@@ -38,7 +38,7 @@ Optional Software for building MPI binaries:
 
 ## Installation
 Once the target computer has the required software tools installed, the basic install of UCVMC is:
-*  git clone https://github.com/SCECcode/UCVMC.git
+*  git clone https://github.com/SCECcode/UCVMC.git -b dev
 *  cd UCVMC/largefiles
 *  ./get_large_files.py
 *  ./check_largefiles_md5.py
@@ -46,7 +46,7 @@ Once the target computer has the required software tools installed, the basic in
 *  cd ..
 *  ./ucvm_setup.py
 
-The ucvm_setup.py script runs in a terminal window and prints text questions to the user.  The user types answers to the questions in the terminal window. The install script asks the user which velocity models they would like to install from the following list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3-H, and USGS CenCal). Several models are very large. CCA06, CS17.3 and CS17.3-H are 9.2G, 72G and 72G respectively. We recommend that the user only installs needed models.
+The get_large_files.py and ucvm_setup.py scripts run in a terminal window and print text questions to the user.  The user types answers to the questions in the terminal window. The retrieval script asks the user which velocity model they would like to stage into the local system and the install script asks the user which velocity models they would like to install from retrieved model list: ( CVM-H v15.1, CVM-S4, CVM-S4.26, CVM-S4.26.M01, CCA06, CS17.3, CS17.3-H, and USGS CenCal). Several models are very large. CCA06, CS17.3 and CS17.3-H are 9.2G, 72G and 72G respectively. We recommend that the user only retrieve needed models and install all retrieved models.
 
 The script will then automatically compile, build, and install the selected models.
 
