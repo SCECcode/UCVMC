@@ -356,15 +356,15 @@ if not os.path.exists(ucvmpath):
   call(["mkdir", "-p", ucvmpath+'/lib'])
     
 for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
-    if all_flag == True:
-        the_model = config_data["models"][model]
-        tarname = the_model["URL"].split("/")[-1]
-        ltarname = "./work/model/" + tarname
-##XX if it is in work_model_dir then add into the modellist
-        if os.path.isfile(ltarname):
-            modelsToInstall.append(model)
-        continue
-    if config_data["models"][model]["Ask"] != "no":
+
+    the_model = config_data["models"][model]
+    tarname = the_model["URL"].split("/")[-1]
+    ltarname = "./work/model/" + tarname
+## continue only if the model is in work_model_dir 
+    if not os.path.isfile(ltarname):
+      continue
+
+    if config_data["models"][model]["Ask"] != "no" or all_flag == True:
         print "\nWould you like to download and install " + model + "?"
         dlinstmodel = raw_input("Enter yes or no: ")
      
@@ -452,7 +452,6 @@ for model in config_data["models"]:
             ltarname = "./work/model/" + tarname
             print "Preparing to install model with tarname: ",tarname
 	    if not os.path.isfile(ltarname):
-#XX
                 print "Model file not found in work directory:",tarname
                 print "Exiting..."
                 sys.exit(1)
