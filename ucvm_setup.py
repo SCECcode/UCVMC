@@ -56,15 +56,6 @@ def eG(err, step):
     print "specifications about your computer.\n"
     exit(1)
 
-# Write out a installation json file (expanded from setup.list)
-def saveInstallList(json_string)
-    try:
-        f = open("./install.list", "w+")
-        f.write(json_string)
-        f.close()
-    except StandardError, e:
-        eG(e, "Saving list of installed models.")
-
 # Find out if we have certain executables installed.
 def which(file):
     for path in os.environ["PATH"].split(":"):
@@ -581,5 +572,13 @@ try:
     f.close()
 except StandardError, e:
     eG(e, "Saving setup_log.sh.")
-    
+
+# Write out a installation json file (expanded from setup.list)
+try:
+    f = open('./install.list', 'w')
+    f.write(json.dumps(config_data))
+    f.close()
+except StandardError, e:
+    eG(e, "Saving install.sh.")
+
 print "\nInstallation complete. Installation log file saved at ./setup_log.sh\n"
