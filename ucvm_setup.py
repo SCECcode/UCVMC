@@ -67,7 +67,6 @@ def which(file):
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script
-#MEI
     print '  ==> command used.. '+'_'.join(command)
     if nocall == False:
         retVal = call(command)
@@ -94,7 +93,6 @@ def printPretty(list):
 
 # create matching install directory from the build directory
 # base on configure's prefix
-# MEI
 def createInstallTargetPath( targetpath ):
   print 'ADDING '+targetpath
   if not os.path.exists(targetpath):
@@ -135,12 +133,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "Decompressing " + type
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
     callAndRecord(["tar", "zxvf", workpath  + "/" + tarname, "-C", workpath + "/" + config_data["Path"], \
-#    callAndRecord(["gunzip", workpath + "/" + tarname])
-#    callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
-#    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
-# MEI.. zip it backup
-##    callAndRecord(["gzip", (workpath  + "/" + tarname).replace(".gz", "")])
 
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
@@ -218,6 +211,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
         callAndRecord(["mv", "./model/USGSBayAreaVM-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
         callAndRecord(["mv", "./model/USGSBayAreaVMExt-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
     
+    config_data["Install"]="true"
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
 #
@@ -349,7 +343,7 @@ while enteredpath is not "":
 # Copy final selected path back to the UCVMC path variable.
 ucvmpath = enteredpath
 
-###MEI... create necessary directories
+# Create necessary directories
 if not os.path.exists(ucvmpath):
   call(["mkdir", "-p", ucvmpath])
   call(["mkdir", "-p", ucvmpath+'/work'])
@@ -578,5 +572,13 @@ try:
     f.close()
 except StandardError, e:
     eG(e, "Saving setup_log.sh.")
-    
+
+# Write out a installation json file (expanded from setup.list)
+try:
+    f = open('./setup_install.list', 'w')
+    f.write(json.dumps(config_data,indent=2,sort_keys=True))
+    f.close()
+except StandardError, e:
+    eG(e, "Saving setup_install.list.")
+
 print "\nInstallation complete. Installation log file saved at ./setup_log.sh\n"
