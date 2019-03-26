@@ -56,6 +56,15 @@ def eG(err, step):
     print "specifications about your computer.\n"
     exit(1)
 
+# Write out a installation json file (expanded from setup.list)
+def saveInstallList(json_string)
+    try:
+        f = open("./install.list", "w+")
+        f.write(json_string)
+        f.close()
+    except StandardError, e:
+        eG(e, "Saving list of installed models.")
+
 # Find out if we have certain executables installed.
 def which(file):
     for path in os.environ["PATH"].split(":"):
@@ -67,7 +76,6 @@ def which(file):
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script
-#MEI
     print '  ==> command used.. '+'_'.join(command)
     if nocall == False:
         retVal = call(command)
@@ -94,7 +102,6 @@ def printPretty(list):
 
 # create matching install directory from the build directory
 # base on configure's prefix
-# MEI
 def createInstallTargetPath( targetpath ):
   print 'ADDING '+targetpath
   if not os.path.exists(targetpath):
@@ -135,12 +142,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "Decompressing " + type
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
     callAndRecord(["tar", "zxvf", workpath  + "/" + tarname, "-C", workpath + "/" + config_data["Path"], \
-#    callAndRecord(["gunzip", workpath + "/" + tarname])
-#    callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
-#    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
-# MEI.. zip it backup
-##    callAndRecord(["gzip", (workpath  + "/" + tarname).replace(".gz", "")])
 
     savedPath = os.getcwd()
     os.chdir(workpath + "/" + config_data["Path"])
@@ -349,7 +351,7 @@ while enteredpath is not "":
 # Copy final selected path back to the UCVMC path variable.
 ucvmpath = enteredpath
 
-###MEI... create necessary directories
+# Create necessary directories
 if not os.path.exists(ucvmpath):
   call(["mkdir", "-p", ucvmpath])
   call(["mkdir", "-p", ucvmpath+'/work'])
