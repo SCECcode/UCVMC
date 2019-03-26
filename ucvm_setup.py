@@ -211,7 +211,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
         callAndRecord(["mv", "./model/USGSBayAreaVM-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
         callAndRecord(["mv", "./model/USGSBayAreaVMExt-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
     
-    config_data["Install"]=True
+    config_data["Install"]="true"
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
 #
@@ -575,10 +575,10 @@ except StandardError, e:
 
 # Write out a installation json file (expanded from setup.list)
 try:
-    f = open('./install.list', 'w')
-    f.write(json.dumps(config_data))
+    f = open('./setup_install.list', 'w')
+    f.write(json.dumps(config_data,indent=2,sort_keys=True))
     f.close()
 except StandardError, e:
-    eG(e, "Saving install.sh.")
+    eG(e, "Saving setup_install.list.")
 
 print "\nInstallation complete. Installation log file saved at ./setup_log.sh\n"
