@@ -220,6 +220,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
         callAndRecord(["mv", "./model/USGSBayAreaVM-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
         callAndRecord(["mv", "./model/USGSBayAreaVMExt-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
     
+    config_data["Install"]=True
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
 #
