@@ -464,7 +464,7 @@ int test_lib_add_model_cs173()
   return(0);
 }
 
-int test_lib_add_model_cca()
+int test_lib_add_model_cs173h()
 {
   printf("Test: UCVM lib add model CS173H\n");
 
