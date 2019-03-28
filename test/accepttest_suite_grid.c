@@ -22,7 +22,8 @@ int test_grid_tool_1d()
   
   sprintf(infile, "%s/inputs/%s", currentdir, "test-grid.in");
   sprintf(outfile, "%s/%s", currentdir, "test-grid-ucvm_query-1d.out");
-  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-ucvm_query-1d.ref");
+//  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-ucvm_query-1d.ref");
+  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-lib-1d.ref");
   
   if (test_assert_int(run_ucvm_query(".", 
 				     "../conf/ucvm.conf", 
@@ -38,7 +39,7 @@ int test_grid_tool_1d()
     return(1);
   }
   
-  unlink(outfile);
+//  unlink(outfile);
 
   printf("PASS\n");
   return(0);
@@ -176,13 +177,13 @@ int suite_grid(const char *xmldir)
   test_get_time(&suite.exec_time);
 
   /* Setup test cases */
-  //strcpy(suite.tests[0].test_name, "test_grid_tool_1d");
-  //suite.tests[0].test_func = &test_grid_tool_1d;
-  //suite.tests[0].elapsed_time = 0.0;
-
   strcpy(suite.tests[0].test_name, "test_grid_lib_1d");
   suite.tests[0].test_func = &test_grid_lib_1d;
   suite.tests[0].elapsed_time = 0.0;
+
+  strcpy(suite.tests[1].test_name, "test_grid_tool_1d");
+  suite.tests[1].test_func = &test_grid_tool_1d;
+  suite.tests[1].elapsed_time = 0.0;
 
   if (test_run_suite(&suite) != 0) {
     fprintf(stderr, "Failed to execute tests\n");

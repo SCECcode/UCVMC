@@ -37,14 +37,14 @@ def test_ssh_generate(dir):
                   stdout=PIPE, stdin=PIPE, stderr=STDOUT)    
     output = proc.communicate()
     
-    f = open("./ssh.out", "rb")
+    f = open("./ssh_tmp.out", "rb")
     generatedfloats = array.array("f")
     generatedfloats.fromfile(f, 100 * 100 * 100)
     f.close()
     
-    os.remove("./ssh.out")
+    os.remove("./ssh_tmp.out")
     
-    f = open("./validate.ssh", "rb")
+    f = open("./ref/ssh_validate_floats.ref", "rb")
     validfloats = array.array("f")
     validfloats.fromfile(f, 100 * 100 * 100)
     f.close()
