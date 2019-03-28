@@ -22,7 +22,6 @@ int test_grid_tool_1d()
   
   sprintf(infile, "%s/inputs/%s", currentdir, "test-grid.in");
   sprintf(outfile, "%s/%s", currentdir, "test-grid-ucvm_query-1d.out");
-//  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-ucvm_query-1d.ref");
   sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-lib-1d.ref");
   
   if (test_assert_int(run_ucvm_query(".", 
@@ -39,7 +38,7 @@ int test_grid_tool_1d()
     return(1);
   }
   
-//  unlink(outfile);
+  unlink(outfile);
 
   printf("PASS\n");
   return(0);
