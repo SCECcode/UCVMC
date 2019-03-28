@@ -168,7 +168,7 @@ int suite_grid(const char *xmldir)
 
   /* Setup test suite */
   strcpy(suite.suite_name, "suite_grid");
-  suite.num_tests = 1;
+  suite.num_tests = 2;
   suite.tests = malloc(suite.num_tests * sizeof(test_info_t));
   if (suite.tests == NULL) {
     fprintf(stderr, "Failed to alloc test structure\n");
