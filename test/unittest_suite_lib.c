@@ -389,6 +389,106 @@ int test_lib_add_model_cvmsi()
   return(0);
 }
 
+int test_lib_add_model_cvms5()
+{
+  printf("Test: UCVM lib add model CVMS5\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_CVMS5) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_CVMS5);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
+int test_lib_add_model_cca()
+{
+  printf("Test: UCVM lib add model CCA\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_CCA) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_CCA);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
+int test_lib_add_model_cs173()
+{
+  printf("Test: UCVM lib add model CS173\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_CS173) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_CS173);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
+int test_lib_add_model_cca()
+{
+  printf("Test: UCVM lib add model CS173H\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_CS173H) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_CS173H);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
 int suite_lib(const char *xmldir)
 {
   int numfixed;
@@ -412,6 +512,19 @@ int suite_lib(const char *xmldir)
 #ifdef _UCVM_ENABLE_CVMSI
   suite.num_tests++;
 #endif
+#ifdef _UCVM_ENABLE_CVMS5
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_CCA
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_CS173
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_CS173H
+  suite.num_tests++;
+#endif
+
   suite.tests = malloc(suite.num_tests * sizeof(test_info_t));
   if (suite.tests == NULL) {
     fprintf(stderr, "Failed to alloc test structure\n");
@@ -483,6 +596,38 @@ int suite_lib(const char *xmldir)
   strcpy(suite.tests[suite.num_tests].test_name, 
   	 "test_lib_add_model_cvmsi");
   suite.tests[suite.num_tests].test_func = &test_lib_add_model_cvmsi;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_CVMS5
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_cvms5");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_cvms5;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_CCA
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_cca");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_cca;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_CS173
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_cs173");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_cs173;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_CS173H
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_cs173h");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_cs173h;
   suite.tests[suite.num_tests].elapsed_time = 0.0;
   suite.num_tests++;
 #endif
