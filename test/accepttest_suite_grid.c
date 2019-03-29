@@ -167,7 +167,7 @@ int suite_grid(const char *xmldir)
 
   /* Setup test suite */
   strcpy(suite.suite_name, "suite_grid");
-  suite.num_tests = 2;
+  suite.num_tests = 1;
   suite.tests = malloc(suite.num_tests * sizeof(test_info_t));
   if (suite.tests == NULL) {
     fprintf(stderr, "Failed to alloc test structure\n");
@@ -180,9 +180,11 @@ int suite_grid(const char *xmldir)
   suite.tests[0].test_func = &test_grid_lib_1d;
   suite.tests[0].elapsed_time = 0.0;
 
+/*** this is being tested via accept_test.py
   strcpy(suite.tests[1].test_name, "test_grid_tool_1d");
   suite.tests[1].test_func = &test_grid_tool_1d;
   suite.tests[1].elapsed_time = 0.0;
+***/
 
   if (test_run_suite(&suite) != 0) {
     fprintf(stderr, "Failed to execute tests\n");
