@@ -43,7 +43,7 @@ void usage() {
 	  printf("\t--n2 Distributions along EW axis.\n");
 	  printf("\t--n3 Distributions along NS axis.\n\n");
 	  printf("\t--f float.in.\n\n");
-	  printf("\t--ff float_complex.in.\n\n");
+	  printf("\t--x float_complex.in.\n\n");
 	  printf("Version: %s\n\n", VERSION);
 
 	  return;
@@ -557,7 +557,7 @@ int main(int argc, char **argv) {
 			{ "n2", required_argument, 0, 'b'},
 			{ "n3", required_argument, 0, 'c'},
 			{ "f", optional_argument, 0, 'f'},
-			{ "ff", optional_argument, 0, 'ff'},
+			{ "xf", optional_argument, 0, 'x'},
 			{ "mesh", required_argument, 0, 'm'},
 			{ "help", no_argument, 0, 'h'},
 			{ 0, 0, 0, 0 }
@@ -610,7 +610,7 @@ int main(int argc, char **argv) {
 		case 'f':
 			sprintf(floats_file, "%s", optarg);
 			break;
-		case 'ff':
+		case 'x':
 			sprintf(floats_complex_file, "%s", optarg);
 			break;
 		case 'p':
