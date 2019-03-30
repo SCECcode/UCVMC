@@ -42,6 +42,8 @@ void usage() {
 	  printf("\t--n1 Distributions along vertical axis.\n");
 	  printf("\t--n2 Distributions along EW axis.\n");
 	  printf("\t--n3 Distributions along NS axis.\n\n");
+	  printf("\t--f float.in.\n\n");
+	  printf("\t--ff float_complex.in.\n\n");
 	  printf("Version: %s\n\n", VERSION);
 
 	  return;
@@ -404,16 +406,15 @@ int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger
 	float *randarray = malloc(totalsize * sizeof(float));
 	float *randarray2 = malloc(totalsize * sizeof(float));
 
-	fp = fopen("floats.in", "rb");
+	fp = fopen(floats_file, "rb");
 
 	if (fp != NULL) {
 		printf("Reading in random array of floats\n");
 
-		fp = fopen("floats.in", "rb");
 		fread(randarray, sizeof(float), totalsize, fp);
 		fclose(fp);
 
-		fp = fopen("floats_complex.in", "rb");
+		fp = fopen(floats_complex_file, "rb");
 		fread(randarray2, sizeof(float), totalsize, fp);
 		fclose(fp);
 	} else {
@@ -516,6 +517,8 @@ int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger
 int main(int argc, char **argv) {
 
 	char mesh_file[1024];				// Mesh file to output these ssh's
+	char floats_file[1024];				// floats.in --   
+	char floats_complex_file[1024];			// floats_complex.in -- 
 	double d1 = 16;						// Sample distance (default 16m)
 	double hurst = 0.05;				// Hurst value (default 0.05)
 	double l1 = 50;						// Correlation length (default 50m)
@@ -553,6 +556,8 @@ int main(int argc, char **argv) {
 			{ "n1", required_argument, 0, 'a'},
 			{ "n2", required_argument, 0, 'b'},
 			{ "n3", required_argument, 0, 'c'},
+			{ "f", optional_argument, 0, 'f'},
+			{ "ff", optional_argument, 0, 'ff'},
 			{ "mesh", required_argument, 0, 'm'},
 			{ "help", no_argument, 0, 'h'},
 			{ 0, 0, 0, 0 }
@@ -561,6 +566,8 @@ int main(int argc, char **argv) {
 	// Define the option index and next option character.
 	int option_index = 0;
 	int nextopt = 0;
+	strcpy(floats_file, "floats.in");
+	strcpy(floats_complex_file, "floats_complex.in");
 
 	// Loop through the available options and set variables.
 	while (1) {
@@ -599,6 +606,12 @@ int main(int argc, char **argv) {
 			break;
 		case 'c':
 			n3 = atof(optarg);
+			break;
+		case 'f':
+			sprintf(floats_file, "%s", optarg);
+			break;
+		case 'ff':
+			sprintf(floats_complex_file, "%s", optarg);
 			break;
 		case 'p':
 			display = 1;

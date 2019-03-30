@@ -78,8 +78,8 @@ install:
 	cp -R ref ${prefix}/tests
 	cp $(bin_PROGRAMS) ${prefix}/tests
 	cp *.py ${prefix}/tests/.
-        ln -s ${prefix}/tests/input/floats.in ${prefix}/tests/input
-        ln -s ${prefix}/tests/input/floats_completx.in ${prefix}/tests/input
+	ln -s ${prefix}/tests/input/floats.in ${prefix}/tests/input
+	ln -s ${prefix}/tests/input/floats_completx.in ${prefix}/tests/input
 
 check: unittest accepttest
 	cd ${prefix}/tests
