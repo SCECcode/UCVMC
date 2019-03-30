@@ -33,7 +33,9 @@ def test_ssh_generate(dir):
     # writes result to install/tests directory
     os.chdir(dir)
     proc = Popen(["../bin/ssh_generate", "-u", "0.1", "-d", "20", "-l", "50", \
-                  "-s", "5", "-a", "100", "-b", "100", "-c", "100", "-m", "ssh_generate.out"], \
+                  "-s", "5", "-a", "100", "-b", "100", "-c", "100", \
+                  "-f", "'inputs/floats.in'", "-x", "'inputs/floats_complex.in'", \
+                  "-m", "ssh_generate.out"], \
                   stdout=PIPE, stdin=PIPE, stderr=STDOUT)    
     output = proc.communicate()
     

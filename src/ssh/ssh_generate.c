@@ -330,7 +330,7 @@ int interpft(fftw_complex **inarray, int m, int n, int ny, int dim, fftw_complex
  * This function is primarily responsible for calculating the ssh mesh.
  */
 int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger, double n2iso_bigger,
-			double n3iso_bigger, fftw_complex *result) {
+			double n3iso_bigger, fftw_complex *result, char *floats_file, char *floats_complex_file) {
 	// Seed the random number generator.
 	srand(seed);
 
@@ -407,6 +407,7 @@ int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger
 	float *randarray2 = malloc(totalsize * sizeof(float));
 
 	fp = fopen(floats_file, "rb");
+         
 
 	if (fp != NULL) {
 		printf("Reading in random array of floats\n");
@@ -556,7 +557,7 @@ int main(int argc, char **argv) {
 			{ "n1", required_argument, 0, 'a'},
 			{ "n2", required_argument, 0, 'b'},
 			{ "n3", required_argument, 0, 'c'},
-			{ "f", optional_argument, 0, 'f'},
+			{ "ff", optional_argument, 0, 'f'},
 			{ "xf", optional_argument, 0, 'x'},
 			{ "mesh", required_argument, 0, 'm'},
 			{ "help", no_argument, 0, 'h'},
@@ -566,12 +567,13 @@ int main(int argc, char **argv) {
 	// Define the option index and next option character.
 	int option_index = 0;
 	int nextopt = 0;
-	strcpy(floats_file, "floats.in");
-	strcpy(floats_complex_file, "floats_complex.in");
+        mesh_file[0]='\0';
+        floats_file[0]='\0';
+        floats_complex_file[0]='\0';
 
 	// Loop through the available options and set variables.
 	while (1) {
-		nextopt = getopt_long(argc, argv, "m:u:d:hl:s:e:a:b:c:pi", long_options, &option_index);
+		nextopt = getopt_long(argc, argv, "f:x:m:u:d:hl:s:e:a:b:c:pi", long_options, &option_index);
 		if (nextopt == -1) break;
 
 		switch (nextopt) {
@@ -625,6 +627,12 @@ int main(int argc, char **argv) {
 	if (strcmp(mesh_file, "") == 0) {
 		sprintf(mesh_file, "./ssh.out");
 	}
+	if (strcmp(floats_file, "") == 0) {
+		sprintf(floats_file, "./floats.in");
+	}
+	if (strcmp(floats_complex_file, "") == 0) {
+		sprintf(floats_complex_file, "./floats_complex.in");
+	}
 
 	// Let the user know we're starting to build the mesh with these properties.
 	printf("Beginning generation of small-scale heterogeneities mesh.\n\n");
@@ -664,7 +672,7 @@ int main(int argc, char **argv) {
 	sim3d = malloc(totalsize * sizeof(fftw_complex));
 
 	printf("Starting pow3iso\n");
-	retVal = pow3iso(d1, hurst, l1, seed, n1iso_bigger, n2iso_bigger, n3iso_bigger, sim3d);
+	retVal = pow3iso(d1, hurst, l1, seed, n1iso_bigger, n2iso_bigger, n3iso_bigger, sim3d, floats_file, floats_complex_file);
 	printf("Finished pow3iso\n");
 
 	for (iz = 0; iz < n1; iz++) {
