@@ -205,5 +205,5 @@ print "Retrieving data. Please wait..."
 d = ElevationProfile(Point(lon1, lat1, elevation=starting_elevation),
          ending_elevation, vertical_spacing, cvm_selected, threshold=vs_threshold)
 
-d.plot(data_type, filename=outfile, meta=meta)
+d.plot(data_type, meta=meta)
 
