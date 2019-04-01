@@ -102,7 +102,7 @@ ret_val = get_user_opts({ "s,startingpoint":"lat1,lon1", \
 			"d,datatype":"data_type", \
 			"v,vertical":"vertical_spacing", \
 			"g,gating":"vs_threshold", \
-			"f,datafgile":"datafile", \
+			"f,datafile":"datafile", \
 			"o,outfile":"outfile"})
 
 # Create a new UCVM object.
