@@ -110,7 +110,7 @@ class CrossSection:
 #        print("total lat..", len(lat_list))
 #        print("total lat..", len(depth_list))
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
         if (datafile != None) :
@@ -162,7 +162,8 @@ class CrossSection:
     #  @param color_scale The color scale to use. Optional.
     #  @param scale_gate The gate to use to create customized listed colormap. Optional.
     #  @param meta The meta data used to create the cross plot 
-    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
+    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}, install_dir= None, config_file = None):
+
         
         if self.startingpoint.description == None:
             location_text = ""

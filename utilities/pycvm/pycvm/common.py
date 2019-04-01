@@ -54,6 +54,7 @@ UCVM_CVMS = {"1d":"1D", \
              "cvmsi":"CVM-S4.26.M01", \
              "cca":"CCA 06", \
              "cs173":"CyperShake 17.3", \
+             "cs173h":"CyperShake 17.3 with San Joaquin and Santa Maria Basins data", \
              "cvmh":"CVM-H 15.1.0", \
              "cencal":"USGS Bay Area Model"}
 

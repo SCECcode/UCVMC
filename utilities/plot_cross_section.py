@@ -108,7 +108,9 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			"a,scale": "color", \
 			"g,gate": "gate", \
 			"f,datafile":"datafile", \
-			"o,outfile":"outfile"})
+			"o,outfile":"outfile", \
+                        "i,installdir":"install_dir", \
+                        "n,configfile":"config_file"})
 
 # Create a new UCVM object.
 u = UCVM()
@@ -147,6 +149,8 @@ else:
     lat2 = ask_number("Enter the destination latitude where the plot should end: ")
 
     starting_depth = -1
+    install_dir = None
+    config_file = None
     print ""
 
     while starting_depth < 0:
@@ -236,4 +240,4 @@ print "Retrieving data. Please wait..."
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
 
-d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta)
+d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta, install_dir=installdir, config_file=configfile)
