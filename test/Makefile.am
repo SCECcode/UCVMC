@@ -74,7 +74,10 @@ accepttest: accepttest.o test_defs.o accepttest_suite_grid.o
 
 install:
 	mkdir -p ${prefix}/tests
-	cp -R ./* ${prefix}/tests/.
+	cp -R inputs ${prefix}/tests
+	cp -R ref ${prefix}/tests
+	cp $(bin_PROGRAMS) ${prefix}/tests
+	cp *.py ${prefix}/tests/.
 
 check: unittest accepttest
 	cd ${prefix}/tests

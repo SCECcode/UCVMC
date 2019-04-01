@@ -116,7 +116,7 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 
 #ifdef _UCVM_AM_STATIC
 #ifdef _UCVM_ENABLE_CVMS5
-        if (strcmp(conf->label, "cvms5") == 0) {
+        if (strcmp(conf->label, UCVM_MODEL_CVMS5) == 0) {
                 pptr->model_init = &cvms5_init;
                 pptr->model_query = &cvms5_query;
                 pptr->model_finalize = &cvms5_finalize;
@@ -128,7 +128,7 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
         }
 #endif
 #ifdef _UCVM_ENABLE_CCA
-        if (strcmp(conf->label, "cca") == 0) {
+        if (strcmp(conf->label, UCVM_MODEL_CCA) == 0) {
                 pptr->model_init = &cca_init;
                 pptr->model_query = &cca_query;
                 pptr->model_finalize = &cca_finalize;
@@ -140,7 +140,7 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
         }
 #endif
 #ifdef _UCVM_ENABLE_CS173
-        if (strcmp(conf->label, "cs173") == 0) {
+        if (strcmp(conf->label, UCVM_MODEL_CS173) == 0) {
                 pptr->model_init = &cs173_init;
                 pptr->model_query = &cs173_query;
                 pptr->model_finalize = &cs173_finalize;
@@ -152,7 +152,7 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
         }
 #endif
 #ifdef _UCVM_ENABLE_CS173H
-        if (strcmp(conf->label, "cs173h") == 0) {
+        if (strcmp(conf->label, UCVM_MODEL_CS173H) == 0) {
                 pptr->model_init = &cs173h_init;
                 pptr->model_query = &cs173h_query;
                 pptr->model_finalize = &cs173h_finalize;

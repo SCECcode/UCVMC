@@ -71,7 +71,7 @@ class CrossSection:
 
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self, property='vs', datafile = None):
+    def getplotvals(self, property='vs', datafile = None, install_dir=None, config_file=None):
 
         point_list = []
         lon_list = []
@@ -110,7 +110,7 @@ class CrossSection:
 #        print("total lat..", len(lat_list))
 #        print("total lat..", len(depth_list))
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
         if (datafile != None) :
@@ -162,7 +162,8 @@ class CrossSection:
     #  @param color_scale The color scale to use. Optional.
     #  @param scale_gate The gate to use to create customized listed colormap. Optional.
     #  @param meta The meta data used to create the cross plot 
-    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
+    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}, install_dir= None, config_file = None):
+
         
         if self.startingpoint.description == None:
             location_text = ""
@@ -179,7 +180,7 @@ class CrossSection:
             title = "%s%s Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
-        self.getplotvals(property=property, datafile = datafile)
+        self.getplotvals(property=property, datafile = datafile, install_dir=install_dir, config_file=config_file)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)
@@ -239,7 +240,7 @@ class CrossSection:
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
