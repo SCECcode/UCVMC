@@ -737,7 +737,7 @@ class UCVM:
         if( k != -1) : 
             metafile = metafile[:k] + "_meta.json"
         fh = open(metafile, 'w+') 
-        json.dump(meta, indent=2, sort_keys=False, fh)
+        json.dump(meta, fh)
         fh.close()
 
 #  import binary material properties in JSON form from an external file 
