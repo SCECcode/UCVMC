@@ -357,7 +357,10 @@ class UCVM:
             ## Location of the UCVM configuration file.
             self.config = config_file
         else:
-            self.config = "../conf/ucvm.conf"
+            if install_dir != None:
+               self.config = install_dir + "/conf/ucvm.conf"
+            else:
+               self.config = "../conf/ucvm.conf"
         
         if install_dir != None:
             ## List of all the installed CVMs.

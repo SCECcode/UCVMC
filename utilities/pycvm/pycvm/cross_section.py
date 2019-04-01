@@ -71,7 +71,7 @@ class CrossSection:
 
     ## 
     #  Generates the depth profile in a format that is ready to plot.
-    def getplotvals(self, property='vs', datafile = None):
+    def getplotvals(self, property='vs', datafile = None, install_dir=None, config_file=None):
 
         point_list = []
         lon_list = []
@@ -180,7 +180,7 @@ class CrossSection:
             title = "%s%s Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
-        self.getplotvals(property=property, datafile = datafile)
+        self.getplotvals(property=property, datafile = datafile, install_dir=install_dir, config_file=config_file)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)
@@ -240,7 +240,7 @@ class CrossSection:
             for x in xrange(0, self.num_x):   
                 datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)

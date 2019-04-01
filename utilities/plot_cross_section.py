@@ -30,6 +30,7 @@ def usage():
     print "\t-u, --destination: destination latitude, longitude to end plot (e.g. 35,-117)"
     print "\t-f, --datafile: optional input filename"
     print "\t-o, --outfile: optional png output filename"
+    print "\t-i, --installdir: optional UCVM install directory"
     print "UCVM %s\n" % VERSION
 
 ## Makes sure the response is a number.
@@ -91,6 +92,10 @@ def get_user_opts(options):
                 if l == "g" :
                   opts_opt.append(l)
                   ret_val["gate"] = 2.5
+                else:
+                  if l == "i" :
+                    opts_opt.append(l)
+                    ret_val["install_dir"] = None
     
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
@@ -109,11 +114,7 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			"g,gate": "gate", \
 			"f,datafile":"datafile", \
 			"o,outfile":"outfile", \
-                        "i,installdir":"install_dir", \
-                        "n,configfile":"config_file"})
-
-# Create a new UCVM object.
-u = UCVM()
+                        "i,installdir":"install_dir" })
 
 meta = {}
 
@@ -150,7 +151,6 @@ else:
 
     starting_depth = -1
     install_dir = None
-    config_file = None
     print ""
 
     while starting_depth < 0:
@@ -200,6 +200,9 @@ else:
     counter = 1
     corresponding_cvm = []
 
+    # Create a new UCVM object.
+    u = UCVM(install_dir=install_dir)
+
     for cvm in u.models:
         cvmtoprint = cvm
         if cvm in UCVM_CVMS:
@@ -240,4 +243,4 @@ print "Retrieving data. Please wait..."
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
 
-d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta, install_dir=installdir, config_file=configfile)
+d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta, install_dir=install_dir)

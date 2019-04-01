@@ -42,8 +42,8 @@ void usage() {
 	  printf("\t--n1 Distributions along vertical axis.\n");
 	  printf("\t--n2 Distributions along EW axis.\n");
 	  printf("\t--n3 Distributions along NS axis.\n\n");
-	  printf("\t--f float.in.\n\n");
-	  printf("\t--x float_complex.in.\n\n");
+	  printf("\t--ff predefined random array of floats.\n\n");
+	  printf("\t--xf predefined random array of complex floats.\n\n");
 	  printf("Version: %s\n\n", VERSION);
 
 	  return;
