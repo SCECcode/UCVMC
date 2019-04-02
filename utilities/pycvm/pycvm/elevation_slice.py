@@ -38,7 +38,7 @@ class ElevationSlice(HorizontalSlice):
     
     ##
     #  Retrieves the values for this Vs30 slice and stores them in the class.
-    def getplotvals(self, datafile = None):
+    def getplotvals(self, property=None, datafile = None):
         
         #  How many y and x values will we need?
         
