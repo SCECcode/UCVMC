@@ -4,9 +4,9 @@
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
-#  Gets a horizontal slice of the Vs30 data which can be used in the exact 
-#  same way, and plotted in the same way, as a
-#  @link horizontal_slice.HorizontalSlice HorizontalSlice @endlink.
+#  Gets a horizontal slice of the model data with complete material
+#  properties 
+#
 
 #  Imports
 from horizontal_slice import HorizontalSlice
@@ -17,7 +17,7 @@ from common import Point, MaterialProperties, UCVM, UCVM_CVMS, \
 #  @class MapGridHorizontalSlice
 #  @brief Gets a horizontal slice of cvm data.
 #
-#  Retrieves a horizontal slice of Vs30 values for a given CVM.
+#  Retrieves a horizontal slice of values for a given CVM.
 class MapGridHorizontalSlice(HorizontalSlice):
     
     ##
@@ -58,7 +58,7 @@ class MapGridHorizontalSlice(HorizontalSlice):
         else :
            self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
-        ## The 2D array of retrieved Vs30 values.
+        ## The 2D array of retrieved material properties
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
         u = UCVM()
@@ -74,12 +74,10 @@ class MapGridHorizontalSlice(HorizontalSlice):
         self.ucvm_query_results = u.map_grid(ucvmpoints, self.cvm)
  
     ##
-    #  Plots the Vs30 data as a horizontal slice. This code is very similar to the
-    #  HorizontalSlice routine.
+    #  Save the horizontal slice grid_pts into a txt file
     #
-    #  @param filename The location to which the plot should be saved. Optional.
-    #  @param title The title of the plot to use. Optional.
-    #  @param color_scale The color scale to use for the plot. Optional.
+    #  @param filename The location to which the grid_pts should be saved. Optional.
+    #
     def plot(self, filename = None, meta={}):
         self.getplotvals(self)
         if filename != None:
