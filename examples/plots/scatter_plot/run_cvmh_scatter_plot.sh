@@ -13,6 +13,6 @@ MODEL=cvmh
 cd ${UCVM_INSTALL_PATH}/utilities
 
 # 0 depth
-./plot_map_grid.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -s ${SPACING} -e ${DEPTH} -c ${MODEL}  -o ${CWD}/${LABEL}_map_grid.txt
+./make_map_grid.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -s ${SPACING} -e ${DEPTH} -c ${MODEL}  -o ${CWD}/${LABEL}_map_grid.txt
 
 ./plot_scatter_plot.py -i ${CWD}/${LABEL}_map_grid.txt  -e ${DEPTH} -o ${CWD}/${LABEL}.png -n "CVMH Vp Density Scatter Plot 0k"
