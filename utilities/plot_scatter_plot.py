@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys,getopt
@@ -13,6 +15,8 @@ def usage():
   print "./plot_scatter_plot.py -i map_pts.txt -e 0.0 -n Density(CCA)(X) Density(Algo)(Y)"
   sys.exit(2)
 
+#
+#
 def main(argv):
   inputfile = ''
   outputfile = ''
@@ -38,6 +42,7 @@ def main(argv):
   if (len(inputfile)<1):
     usage()
 
+  print "\n"
   print "Input CVM file is: ", inputfile
   print "Output Image file is: ", outputfile
   print "Slide Depth:",depth
