@@ -9,6 +9,9 @@
 #  Plots a scatter plot that compares two binary datasets
 #  for similarity using matplotlib/numpy
 
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 import sys,getopt
