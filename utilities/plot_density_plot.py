@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+#
+#  plot_density_plot.py
+#
+#  create a scatter plot of densities from an
+#  map_pts text file generated from ucvm_query calls
+#
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -44,7 +51,7 @@ def main(argv):
   print "\n"
   print "Input CVM file is: ", inputfile
   print "Output Image file is: ", outputfile
-  print "Slide Depth:",depth
+  print "Slice Depth:",depth
   print "Description:",descript
 
   list_of_datafiles = inputfile
@@ -65,8 +72,8 @@ def main(argv):
   y = []
   parts = []
 
-  ## Load vp in x and density in y. Extract them from
-  # Columns 14 and 16 in the ucvm return lines
+  ## Load rho in x and nafe_drake density in y. Extract them from
+  # Columns 16 and 15 in the ucvm return lines
   for oneline in dlines:
     parts = oneline.split()
     x.append(float(parts[16]))
