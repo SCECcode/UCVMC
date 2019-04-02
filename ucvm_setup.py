@@ -362,13 +362,13 @@ for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data[
         continue
 
     if config_data["models"][model]["Ask"] != "no":
-        print "\nWould you like to download and install " + model + "?"
+        print "\nWould you like to install " + model + "?"
         dlinstmodel = raw_input("Enter yes or no: ")
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
             
-print "\nYou have indicated that you would like to download and install"
+print "\nYou have indicated that you would like to install"
 printPretty(modelsToInstall)
 
 for library in config_data["libraries"]:
@@ -386,7 +386,7 @@ for library in config_data["libraries"]:
             print "WARNING: " + library + " is unsupported and we cannot guarantee that UCVMC"
             print "will install correctly on your system if you install it with this library included."
             
-        print "\nWould you like to download and install support for " + library + "?"
+        print "\nWould you like to install support for " + library + "?"
         dlinstlibrary = raw_input("Enter yes or no: ")
                  
         if dlinstlibrary.strip() != "" and dlinstlibrary.strip().lower()[0] == "y":
@@ -394,7 +394,7 @@ for library in config_data["libraries"]:
     elif the_library["Required"] == "yes":
         librariesToInstall.append(library)
 
-print "\nYou have indicated that you would like to download and install"
+print "\nYou have indicated that you would like to install"
 printPretty(librariesToInstall)
 
 # Check if we can make the work directory.
