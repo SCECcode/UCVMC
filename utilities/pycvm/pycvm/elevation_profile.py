@@ -14,6 +14,7 @@ from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
 import scipy.interpolate as interpolate
 import numpy as np
 import pdb
+import json
 
 ##
 #  @class ElevationProfile
@@ -67,9 +68,17 @@ class ElevationProfile:
     
     ## 
     #  Generates the elevation profile in a format that is ready to plot.
-    def getplotvals(self, properties=None, datafile = None):
+    def getplotvals(self, properties=None, meta = {}):
         
         point_list = []
+
+        datafile = None
+        if 'datafile' in meta :
+            datafile = meta['datafile']
+
+        filename = None
+        if 'outfile' in meta :
+           filename = meta['outfile']
         
         # Generate the list of points.
  
@@ -87,18 +96,24 @@ class ElevationProfile:
 ###MEI
         if (datafile != None) :
             print "\nUsing --> "+datafile
-            print "expecting x ",self.num_x," y ",self.num_y
-            data = u.import_binary(datafile, self.num_x, self.num_y)
+            data = u.import_matprops(datafile)
         else:
             data = u.query(point_list, self.cvm, elevation=1)
         
+        tmp = []
+        for matprop in data:
+            self.vplist.append(matprop.vp)
+            self.vslist.append(matprop.vs)
+            self.rholist.append(matprop.density)
+## create the blob
+            if(datafile == None) : ## save an external copy of matprops 
+              b= { 'vp':float(matprop.vp), 'vs':float(matprop.vs), 'density':float(matprop.density) }
+              tmp.append(b)
+
         if(datafile == None) :
-            for matprop in data:
-                self.vplist.append(float(matprop.vp) / 1000)
-                self.vslist.append(float(matprop.vs) / 1000)
-                self.rholist.append(float(matprop.density) / 1000)
-        else:  ## only read in 1 set at a time
-            pass
+              blob = json.dumps({ 'matprops' : tmp })
+              u.export_matprops(blob,filename)
+              u.export_metadata(meta,filename)
     
     ##
     #  Adds the elevation profile to a pre-existing plot.
@@ -107,14 +122,14 @@ class ElevationProfile:
     #  @param properties An array of properties to plot. Can be vs, vp, or density.
     #  @param colors The colors that the properties should be plotted as. Optional.
     #  @param customlabels An associated array of labels to put for the legend. Optional.
-    def addtoplot(self, plot, properties, colors = None, customlabels = None, datafile = None):
+    def addtoplot(self, plot, properties, colors = None, customlabels = None, meta = {}):
         
         # Check that plot is a Plot
         if not isinstance(plot, Plot):
             raise TypeError("Plot must be an instance of the class Plot.")
         
         # Get the material properties.
-        self.getplotvals(properties = properties, datafile = datafile)
+        self.getplotvals(properties = properties, meta = meta)
         
         max_x = 0
         yvals = []
@@ -159,11 +174,16 @@ class ElevationProfile:
             densitycolor = "g"                
         
         if "vp" in properties:
-            max_x = max(max_x, max(self.vplist))
-            plot.addsubplot().plot(self.vplist, yvals, "-", color=vpcolor, label=vplabel)
+            myInt=1000
+            newvplist=np.array(self.vplist)/myInt
+            max_x = max(max_x, max(newvplist))
+            plot.addsubplot().plot(newvplist, yvals, "-", color=vpcolor, label=vplabel)
+
         if "vs" in properties:
-            max_x = max(max_x, max(self.vslist))
-            plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+            myInt=1000
+            newvslist=np.array(self.vslist)/myInt
+            max_x = max(max_x, max(newvslist))
+            plot.addsubplot().plot(newvslist, yvals, "-", color=vscolor, label=vslabel)
 
 ## attempted to draw a smoothed line, not good
 ##            xs=np.array(self.vslist)
@@ -184,8 +204,10 @@ class ElevationProfile:
         self.elevationlist=yvals
 
         if "density" in properties:
-            max_x = max(max_x, max(self.rholist))
-            plot.addsubplot().plot(self.rholist, yvals, "-", color=densitycolor, label=densitylabel) 
+            myInt=1000
+            newrholist=np.array(self.rholist)/myInt
+            max_x = max(max_x, max(newrholist))
+            plot.addsubplot().plot(newrholist, yvals, "-", color=densitycolor, label=densitylabel) 
         
         plt.legend(loc="lower left")
                 
@@ -202,7 +224,7 @@ class ElevationProfile:
     #
     #  @param properties An array of material properties. Can be one or more of vp, vs, and/or density.
     #  @param filename If this is set, the plot will not be shown but rather saved to this location.
-    def plot(self, properties, filename = None, meta = {}, datafile=None):
+    def plot(self, properties, meta = {}):
 
         if self.startingpoint.description == None:
             location_text = ""
@@ -220,21 +242,11 @@ class ElevationProfile:
                  "Units (see legend)", "Elevation (m)", None, 7, 10)
 
         # Add to plot.
-        self.addtoplot(p, properties)
+        self.addtoplot(p, properties, meta=meta)
 
-        # only output these if there is no datafile
-        if (datafile == None) :
-          meta['elevation_list'] = self.elevationlist
-          u = UCVM()
-          if filename:
-              u.export_metadata(meta,filename)
-              u.export_velocity(filename,self.vslist, self.vplist, self.rholist)
-          else:
-#https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
-              rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
-              f = "elevation_profile"+rnd
-              u.export_metadata(meta,f)
-              u.export_velocity(f,self.vslist, self.vplist, self.rholist)
+        filename = None
+        if 'outfile' in meta :
+           filename = meta['outfile']
 
         if filename == None:
             plt.show()

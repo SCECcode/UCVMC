@@ -91,7 +91,7 @@ class BasinSlice(HorizontalSlice):
 
         i = 0
         j = 0
-        
+
         for matprop in data:
             self.materialproperties[i][j].vs = matprop
 

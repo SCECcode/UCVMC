@@ -1,5 +1,4 @@
 #!/usr/bin/sh  
-#LongBeach4, 33.7,-118.21,33.90,-118.22, 0.0,1000,100,-900
 LABEL=cvmh_cross_section_vs
 LAT1=33.7
 LON1=-118.21
