@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys,getopt
@@ -39,6 +41,7 @@ def main(argv):
   if (len(inputfile)<1):
     usage()
 
+  print "\n"
   print "Input CVM file is: ", inputfile
   print "Output Image file is: ", outputfile
   print "Slide Depth:",depth
