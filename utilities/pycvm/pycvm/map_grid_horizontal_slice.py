@@ -4,8 +4,8 @@
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
-#  Gets a horizontal slice of the Vs30 data which can be used in the exact 
-#  same way, and plotted in the same way, as a
+#  Gets a horizontal slice which contains the complete set of
+#  material properties
 #  @link horizontal_slice.HorizontalSlice HorizontalSlice @endlink.
 
 #  Imports
