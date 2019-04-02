@@ -15,5 +15,3 @@ cd ${UCVM_INSTALL_PATH}/utilities
 ./plot_horizontal_slice.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -e ${DEPTH} -d vs -c ${MODEL} -a s -s ${SPACING} -o ${CWD}/${LABEL}.png
 
 ./plot_horizontal_slice.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -e ${DEPTH} -d vs -c ${MODEL} -a d -s ${SPACING} -f ${CWD}/${LABEL}_data.bin -o ${CWD}/${LABEL}_d.png
-
-./plot_horizontal_slice.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -e ${DEPTH} -d vs -c ${MODEL} -a s -s ${SPACING} -f ${CWD}/${LABEL}_data.bin -o ${CWD}/${LABEL}_dd.png
