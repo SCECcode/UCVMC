@@ -30,6 +30,7 @@ def usage():
     print "\t-u, --destination: destination latitude, longitude to end plot (e.g. 35,-117)"
     print "\t-f, --datafile: optional input filename"
     print "\t-o, --outfile: optional png output filename"
+    print "\t-i, --installdir: optional UCVM install directory"
     print "UCVM %s\n" % VERSION
 
 ## Makes sure the response is a number.
@@ -91,6 +92,10 @@ def get_user_opts(options):
                 if l == "g" :
                   opts_opt.append(l)
                   ret_val["gate"] = 2.5
+                else:
+                  if l == "i" :
+                    opts_opt.append(l)
+                    ret_val["installdir"] = None
     
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
@@ -108,10 +113,8 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			"a,scale": "color", \
 			"g,gate": "gate", \
 			"f,datafile":"datafile", \
-			"o,outfile":"outfile"})
-
-# Create a new UCVM object.
-u = UCVM()
+                        "o,outfile":"outfile", \
+                        "i,installdir":"installdir" })
 
 meta = {}
 
@@ -147,6 +150,7 @@ else:
     lat2 = ask_number("Enter the destination latitude where the plot should end: ")
 
     starting_elevation = 0 
+    installdir = None
     print ""
 
     starting_elevation = ask_number("Please enter the elevation, in meters, at which you would like \n" + \
@@ -189,6 +193,9 @@ else:
 
     counter = 1
     corresponding_cvm = []
+
+    # Create a new UCVM object.
+    u = UCVM(install_dir=installdir)
 
     for cvm in u.models:
         cvmtoprint = cvm

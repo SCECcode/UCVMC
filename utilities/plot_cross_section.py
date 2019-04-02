@@ -95,7 +95,7 @@ def get_user_opts(options):
                 else:
                   if l == "i" :
                     opts_opt.append(l)
-                    ret_val["install_dir"] = None
+                    ret_val["installdir"] = None
     
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
@@ -114,7 +114,7 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			"g,gate": "gate", \
 			"f,datafile":"datafile", \
 			"o,outfile":"outfile", \
-                        "i,installdir":"install_dir" })
+                        "i,installdir":"installdir" })
 
 meta = {}
 
@@ -150,7 +150,7 @@ else:
     lat2 = ask_number("Enter the destination latitude where the plot should end: ")
 
     starting_depth = -1
-    install_dir = None
+    installdir = None
     print ""
 
     while starting_depth < 0:
@@ -201,7 +201,7 @@ else:
     corresponding_cvm = []
 
     # Create a new UCVM object.
-    u = UCVM(install_dir=install_dir)
+    u = UCVM(install_dir=installdir)
 
     for cvm in u.models:
         cvmtoprint = cvm
@@ -243,4 +243,4 @@ print "Retrieving data. Please wait..."
 d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
                  ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
 
-d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta, install_dir=install_dir)
+d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta)

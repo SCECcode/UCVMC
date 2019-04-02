@@ -128,7 +128,7 @@ class CrossSection:
 
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):   
-                    tmp=datapoints[y][x] *1000
+                    tmp=datapoints[y][x]
                     if(property == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
                     if(property == 'rho'):
@@ -162,8 +162,15 @@ class CrossSection:
     #  @param color_scale The color scale to use. Optional.
     #  @param scale_gate The gate to use to create customized listed colormap. Optional.
     #  @param meta The meta data used to create the cross plot 
-    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}, install_dir= None, config_file = None):
+    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
 
+        install_dir = None
+        if 'installdir' in meta :
+           install_dir = meta['installdir']
+
+        config_file = None
+        if 'configfile' in meta :
+           config_file = meta['configfile']
         
         if self.startingpoint.description == None:
             location_text = ""
@@ -238,13 +245,16 @@ class CrossSection:
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   
-                datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
+                datapoints[y][x] = self.materialproperties[y][x].getProperty(property) 
 
         u = UCVM(install_dir=install_dir, config_file=config_file)
 
-        self.max_val=np.nanmax(datapoints)
-        self.min_val=np.nanmin(datapoints)
-        self.mean_val=np.mean(datapoints)
+        myInt=1000
+        newdatapoints=datapoints/myInt
+
+        self.max_val=np.nanmax(newdatapoints)
+        self.min_val=np.nanmin(newdatapoints)
+        self.mean_val=np.mean(newdatapoints)
 
         BOUNDS = u.makebounds()
         TICKS = u.maketicks()
@@ -318,7 +328,8 @@ class CrossSection:
               u.export_metadata(meta,f)
               u.export_binary(datapoints,f)
 
-        img = plt.imshow(datapoints, cmap=colormap, norm=norm)
+
+        img = plt.imshow(newdatapoints, cmap=colormap, norm=norm)
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.3f" % self.startingpoint.longitude, \
                                                  "%.3f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
                                                  "[E] %.3f" % self.endingpoint.longitude])

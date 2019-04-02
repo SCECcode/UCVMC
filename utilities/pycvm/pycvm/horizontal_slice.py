@@ -115,8 +115,6 @@ class HorizontalSlice:
         if (datafile != None) :
             isfloat = 1
         for matprop in data:
-            if(datafile != None) :
-                matprop=matprop * 1000.0
             if isfloat:
                 self.materialproperties[i][j].setProperty(property,matprop)
             else:
@@ -201,7 +199,7 @@ class HorizontalSlice:
 ##                            zerocnt=zerocnt+1
 ##
                     else:
-                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property) / 1000
+                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
                         if (datapoints[i][j] == 0) :
 # KEEP 0 as 0                           datapoints[i][j]=np.nan
                            zerocnt=zerocnt+1
@@ -218,6 +216,13 @@ class HorizontalSlice:
 #        print (" total number of zerocnt is ", zerocnt)
 #        print (" total number of negcnt is ", negcnt)
 
+        myInt=1000
+        newdatapoints=datapoints/myInt 
+
+        newmax_val=np.nanmax(newdatapoints)
+        newmin_val=np.nanmin(newdatapoints)
+        newmean_val=np.mean(newdatapoints)
+
         self.max_val=np.nanmax(datapoints)
         self.min_val=np.nanmin(datapoints)
         self.mean_val=np.mean(datapoints)
@@ -229,10 +234,10 @@ class HorizontalSlice:
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
-            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
+            BOUNDS= u.makebounds(newmin_val, newmax_val, 5, self.mean_val, substep=5)
             colormap = basemap.cm.GMT_globe
-            TICKS = u.maketicks(self.min_val, self.max_val, 5)
-            norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)
+            TICKS = u.maketicks(newmin_val, newmax_val, 5)
+            norm = mcolors.Normalize(vmin=newmin_val,vmax=newmax_val)
         elif color_scale == "b":
             C = []
             for bound in BOUNDS :
@@ -249,8 +254,8 @@ class HorizontalSlice:
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis_r, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         elif color_scale == 'dd':
-            BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5,all=True)
-            TICKS = u.maketicks(self.min_val, self.max_val, 5)
+            BOUNDS= u.makebounds(newmin_val, newmax_val, 5, newmean_val, substep=5,all=True)
+            TICKS = u.maketicks(newmin_val, newmax_val, 5)
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         else:
@@ -269,7 +274,10 @@ class HorizontalSlice:
               u.export_metadata(meta,filename)
               u.export_binary(datapoints,filename)
                     
-        t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
+
+        ## reduce the datapoints before passing in..
+
+        t = m.transform_scalar(newdatapoints, lons, lats, len(lons), len(lats))
         img = m.imshow(t, cmap=colormap, norm=norm)
 
        

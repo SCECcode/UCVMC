@@ -98,9 +98,9 @@ class DepthProfile:
         
         tmp = []
         for matprop in data:
-            self.vplist.append(float(matprop.vp) / 1000)
-            self.vslist.append(float(matprop.vs) / 1000)
-            self.rholist.append(float(matprop.density) / 1000)
+            self.vplist.append(matprop.vp)
+            self.vslist.append(matprop.vs)
+            self.rholist.append(matprop.density)
 ## create the blob
             if(datafile == None) : ## save an external copy of matprops 
               b= { 'vp':float(matprop.vp), 'vs':float(matprop.vs), 'density':float(matprop.density) }
@@ -164,11 +164,16 @@ class DepthProfile:
             densitycolor = "g"                
         
         if "vp" in properties:
-            max_x = max(max_x, max(self.vplist))
-            plot.addsubplot().plot(self.vplist, yvals, "-", color=vpcolor, label=vplabel)
+            myInt=1000
+            newvplist=np.array(self.vplist)/myInt
+            max_x = max(max_x, max(newvplist))
+            plot.addsubplot().plot(newvplist, yvals, "-", color=vpcolor, label=vplabel)
+
         if "vs" in properties:
-            max_x = max(max_x, max(self.vslist))
-            plot.addsubplot().plot(self.vslist, yvals, "-", color=vscolor, label=vslabel)
+            myInt=1000
+            newvslist=np.array(self.vslist)/myInt
+            max_x = max(max_x, max(newvslist))
+            plot.addsubplot().plot(newvslist, yvals, "-", color=vscolor, label=vslabel)
 
 ## attempted to draw a smoothed line, not good
 ##            xs=np.array(self.vslist)
@@ -189,8 +194,10 @@ class DepthProfile:
         self.depthlist=yvals
 
         if "density" in properties:
-            max_x = max(max_x, max(self.rholist))
-            plot.addsubplot().plot(self.rholist, yvals, "-", color=densitycolor, label=densitylabel) 
+            myInt=1000
+            newrholist=np.array(self.rholist)/myInt
+            max_x = max(max_x, max(newrholist))
+            plot.addsubplot().plot(newrholist, yvals, "-", color=densitycolor, label=densitylabel) 
         
         plt.legend(loc="lower left")
                 

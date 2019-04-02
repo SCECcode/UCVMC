@@ -72,7 +72,7 @@ class ElevationCrossSection:
 
     ## 
     #  Generates the elevation profile in a format that is ready to plot.
-    def getplotvals(self, property='vs', datafile = None):
+    def getplotvals(self, property='vs', datafile = None, install_dir=None, config_file=None):
 
         point_list = []
         lon_list = []
@@ -110,7 +110,7 @@ class ElevationCrossSection:
         self.lat_list=lat_list
         self.elevation_list=elevation_list
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
         if (datafile != None) :
@@ -128,7 +128,7 @@ class ElevationCrossSection:
 
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):   
-                    tmp=datapoints[y][x] *1000
+                    tmp=datapoints[y][x]
                     if(property == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
                     if(property == 'rho'):
@@ -166,6 +166,14 @@ class ElevationCrossSection:
     #  @param scale_gate The gate to use to create customized listed colormap. Optional.
     #  @param meta The meta data used to create the cross plot 
     def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
+
+        install_dir = None
+        if 'installdir' in meta :
+           install_dir = meta['installdir']
+
+        config_file = None
+        if 'configfile' in meta :
+           config_file = meta['configfile']
         
         if self.startingpoint.description == None:
             location_text = ""
@@ -182,7 +190,7 @@ class ElevationCrossSection:
             title = "%s%s Elevation Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
             
-        self.getplotvals(property=property, datafile = datafile)
+        self.getplotvals(property=property, datafile = datafile, install_dir=install_dir, config_file=config_file)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)
@@ -240,13 +248,16 @@ class ElevationCrossSection:
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   
-                datapoints[y][x] = self.materialproperties[y][x].getProperty(property) / 1000          
+                datapoints[y][x] = self.materialproperties[y][x].getProperty(property) 
 
-        u = UCVM()
+        u = UCVM(install_dir=install_dir, config_file=config_file)
 
-        self.max_val=np.nanmax(datapoints)
-        self.min_val=np.nanmin(datapoints)
-        self.mean_val=np.mean(datapoints)
+        myInt=1000
+        newdatapoints=datapoints/myInt
+
+        self.max_val=np.nanmax(newdatapoints)
+        self.min_val=np.nanmin(newdatapoints)
+        self.mean_val=np.mean(newdatapoints)
 
 #        print "max_val ", self.max_val
 #        print "min_val ", self.min_val
@@ -323,7 +334,7 @@ class ElevationCrossSection:
               u.export_metadata(meta,f)
               u.export_binary(datapoints,f)
 
-        img = plt.imshow(datapoints, cmap=colormap, norm=norm)
+        img = plt.imshow(newdatapoints, cmap=colormap, norm=norm)
         plt.xticks([0,self.num_x/2,self.num_x], ["[S] %.3f" % self.startingpoint.longitude, \
                                                  "%.3f" % ((float(self.endingpoint.longitude) + float(self.startingpoint.longitude)) / 2), \
                                                  "[E] %.3f" % self.endingpoint.longitude])
