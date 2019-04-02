@@ -1,11 +1,18 @@
 #!/usr/bin/env python
+#
+#  plot_scatter_plot.py
+#
+#  create a scatter plot of vp vs density from an external
+#  map_pts text file generated from ucvm_query calls
+#
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys,getopt
-#
-#
+
+
 
 def usage():
   print "Usage: ./plot_scatter_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)"
