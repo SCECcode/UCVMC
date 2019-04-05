@@ -18,6 +18,7 @@
 #define DEFAULT_ZRANGE_MIN 0.0
 #define DEFAULT_ZRANGE_MAX 350.0
 #define DEFAULT_MAX_DEPTH 15000.0
+#define DEFAULT_NULL_DEPTH -1
 #define DEFAULT_Z_INTERVAL 20.0
 #define DEFAULT_VS_THRESH 1000.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf\n"
@@ -86,7 +87,7 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 	free(qprops);
 	free(qpnts);
 
-	depths[0] = max_depth;
+	depths[0] = DEFAUL_NULL_DEPTH;
 
 	return (0);
 }
