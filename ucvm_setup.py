@@ -548,7 +548,7 @@ elif dynamic_flag == True:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"
     print "\texport LD_LIBRARY_PATH"
     print ""
-    print "We recommend adding the above lines to the end of your ~/.bashrc file so that"
+    print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
     print "they are preserved for the next time you login."
     
 
