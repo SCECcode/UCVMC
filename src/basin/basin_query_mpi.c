@@ -87,7 +87,7 @@ int extract_basin_mpi(ucvm_point_t *pnt, double *depths, double max_depth, doubl
 	free(qprops);
 	free(qpnts);
 
-	depths[0] = DEFAUL_NULL_DEPTH;
+	depths[0] = DEFAULT_NULL_DEPTH;
 
 	return (0);
 }
