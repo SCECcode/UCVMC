@@ -44,7 +44,7 @@ format=etree
 # UCVM parameters
 ucvmstr=cvmh
 ucvm_interp_zrange=0.0,350.0 
-ucvmconf=${UCVM_CONF}/ucvm.conf
+ucvmconf=${CONF_DIR}/ucvm.conf
 
 # Scratch
 scratch=./scratch
