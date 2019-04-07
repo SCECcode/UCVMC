@@ -18,13 +18,13 @@ y0=33.85173
 z0=0.0
 
 # Number of cells along each dim
-nx=120
-ny=120
-nz=50
+nx=1400
+ny=1400
+nz=600
 
 # Partitioning of grid among processors
-px=2
-py=2
+px=25
+py=25
 pz=10
 
 # Vs/Vp minimum
