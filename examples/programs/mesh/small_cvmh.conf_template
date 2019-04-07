@@ -1,0 +1,45 @@
+
+#List of CVMs to query
+ucvmlist=cvmh
+
+# UCVM conf file
+ucvmconf=${CONF_DIR}/ucvm.conf
+
+# Gridding cell centered or vertex
+gridtype=CENTER
+
+# Spacing of cells
+spacing=10.0
+
+## 32 to 37 latitude degrees and -121 to -115 longitude degrees. 
+## for every 10km depth from 0-110km.
+
+# Projection
+proj=+proj=utm +datum=WGS84 +zone=11
+rot=-39.9
+x0=-121
+y0=32
+z0=0.0
+
+# Number of cells along each dim
+nx=6
+ny=5
+nz=11
+
+# Partitioning of grid among processors
+px=2
+py=1
+pz=1
+
+# Vs/Vp minimum
+vp_min=0
+vs_min=0
+
+# Mesh and grid files, format
+meshfile=./hpc_cvmh_mesh.mesh
+gridfile=./hpc_cvmh_mesh.grid
+meshtype=IJK-12
+
+# Location of scratch dir
+scratch=${SCRATCH}
+
