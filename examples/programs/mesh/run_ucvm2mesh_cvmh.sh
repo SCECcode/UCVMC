@@ -5,6 +5,6 @@ SCRATCH=./scratch
 
 sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmh.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmh.conf
 
-#${BIN_DIR}/ucvm2mesh -f small_cvmh.conf_template
+${BIN_DIR}/ucvm2mesh -f small_cvmh.conf
 
 
