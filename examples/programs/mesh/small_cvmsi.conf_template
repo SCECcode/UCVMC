@@ -1,8 +1,8 @@
-# List of CVMs to query
+#List of CVMs to query
 ucvmlist=cvmsi
 
 # UCVM conf file
-ucvmconf=ucvmconf=${CONF_DIR}/ucvm.conf
+ucvmconf=${CONF_DIR}/ucvm.conf
 
 # Gridding cell centered or vertex
 gridtype=CENTER
@@ -18,23 +18,25 @@ y0=33.85173
 z0=0.0
 
 # Number of cells along each dim
-nx=1400
-ny=1400
-nz=600
+nx=140
+ny=140
+nz=60
 
 # Partitioning of grid among processors
-px=25
-py=25
-pz=10
+px=2
+py=2
+pz=2
 
 # Vs/Vp minimum
 vp_min=0
 vs_min=0
 
 # Mesh and grid files, format
-meshfile=la_habra_cvmsi.media
-gridfile=la_habra_cvmsi.grid
+meshfile=small_cvmsi.media
+gridfile=small_cvmsi.grid
 meshtype=IJK-12
 
 # Location of scratch dir
 scratch=${SCRATCH}
+
+

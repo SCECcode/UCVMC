@@ -36,8 +36,8 @@ vp_min=0
 vs_min=0
 
 # Mesh and grid files, format
-meshfile=./hpc_cvmh_mesh.mesh
-gridfile=./hpc_cvmh_mesh.grid
+meshfile=./small_cvmh.mesh
+gridfile=./small_cvmh.grid
 meshtype=IJK-12
 
 # Location of scratch dir
