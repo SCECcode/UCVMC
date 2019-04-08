@@ -1,8 +1,4 @@
 #!/usr/bin/sh
-## 
-## example of running on usc/hpc cluster
-##
-
 
 if [ -z "$UCVM_INSTALL_PATH" ]; then
   echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
@@ -14,9 +10,10 @@ source /usr/usc/openmpi/default/setup.sh
 
 BIN_DIR=${UCVM_INSTALL_PATH}/bin
 CONF_DIR=${UCVM_INSTALL_PATH}/conf
+SCRATCH=./scratch
 
-salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -v --mpi=pmi2 ${BIN_DIR}/basin_query_mpi -b hpc_cvms5_z2.5.simple -f ${CONF_DIR}/ucvm.conf -m cvms5 -i 20 -v 2500 -l 35.0,-122.5 -s 0.1 -x 16 -y 11
+sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmsi.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmsi.conf
 
-
+salloc -N 4 --ntasks=8 --time=00:30:00 srun --ntasks=8 -v --mpi=pmi2 ${BIN_DIR}/ucvm2mesh-mpi -f small_cvmsi.conf
 
 
