@@ -15,14 +15,17 @@ UCVM_Version = "19.4"
 ucvmc_largefile_repository = "http://hypocenter.usc.edu/research/ucvmc/V19_4"
 
 #
-optional_large_model_list = ["cvms5",
+optional_large_model_list = ["cvmh-15.1.0",
+                    "cvms5",
+                    "cvmh-15.1.0"]
                     "cca",
                     "cs173",
                     "cs173h",
                     "cvms4",
                     "cvms426",
                     "cencal080"]
-optional_large_model_size = { 'cvms5':'1.2G',
+optional_large_model_size = { 'cvmh-15.1.0':'XG',
+                              'cvms5':'1.2G',
                               'cca':'9.2G',
                               'cs173':'72G',
                               'cs173h':'72G',
@@ -32,7 +35,7 @@ optional_large_model_size = { 'cvms5':'1.2G',
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
-target_large_model_list = ["cvmh-15.1.0.tar.gz"]
+target_large_model_list = []
 target_large_etree_list = ["ucvm.e"]
 target_large_ref_list = ["test-grid-lib-1d.ref"]
 
