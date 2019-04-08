@@ -1,4 +1,10 @@
 #!/usr/bin/sh  
+
+if [ -z "$UCVM_INSTALL_PATH" ]; then
+  echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
+  exit
+fi
+
 CWD=`pwd`
 LABEL=cvmh_vs30_map
 LAT1=33.35

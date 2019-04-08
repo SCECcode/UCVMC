@@ -3,6 +3,12 @@
 ## example of running on usc/hpc cluster
 ##
 
+
+if [ -z "$UCVM_INSTALL_PATH" ]; then
+  echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
+  exit
+fi
+
 ## setup mpi environment
 source /usr/usc/openmpi/default/setup.sh
 

@@ -1,5 +1,11 @@
 #!/usr/bin/sh  
 ## comparing data input of two plots
+
+if [ -z "$UCVM_INSTALL_PATH" ]; then
+  echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
+  exit
+fi
+
 CWD=`pwd`
 LABEL=cvmh_compare_plot
 LAT1=33.35
