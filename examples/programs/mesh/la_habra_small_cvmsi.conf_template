@@ -2,7 +2,7 @@
 ucvmlist=cvmsi
 
 # UCVM conf file
-ucvmconf=ucvmconf=${CONF_DIR}/ucvm.conf
+ucvmconf=ucvmconf=./ucvm.conf
 
 # Gridding cell centered or vertex
 gridtype=CENTER
