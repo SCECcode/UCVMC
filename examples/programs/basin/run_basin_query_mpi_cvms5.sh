@@ -3,9 +3,13 @@
 ## example of running on usc/hpc cluster
 ##
 
-
 if [ -z "$UCVM_INSTALL_PATH" ]; then
   echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
+  exit
+fi
+
+if ! [ -f "/usr/usc/openmpi/default/setup.sh" ]; then
+  echo "Need to be on usc hpc cluster to run >" ${0##*/} 
   exit
 fi
 

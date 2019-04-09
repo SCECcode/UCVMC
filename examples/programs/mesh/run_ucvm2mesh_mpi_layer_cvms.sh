@@ -5,6 +5,11 @@ if [ -z "$UCVM_INSTALL_PATH" ]; then
   exit
 fi
 
+if ! [ -f "/usr/usc/openmpi/default/setup.sh" ]; then
+  echo "Need to be on usc hpc cluster to run >" ${0##*/} 
+  exit
+fi
+
 ## setup mpi environment
 source /usr/usc/openmpi/default/setup.sh
 
