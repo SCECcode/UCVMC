@@ -4,6 +4,8 @@
 * Added new plotting capability of using elevation in addition to depth 
 * Replace Proj4 with proj-5.0.0
 * Update Wills map with newer Wills 2015 map
+* Update CVMH-15.1.0 with misplaced scripts to enable standalone verification
+* Added examples directory to showcase plotting scripts and programs using UCVM
 
 2018-07-15  Mei-Hui Su <mei@usc.edu>
 
@@ -17,7 +19,7 @@
 *   newer models
 * Update CVMH-15.1.0 to remove compilation errors on Mac
 * Expanded processing result from basin_query_mpi to basin_query_mpi_complete
-* Expanded scalability of ucvm2mesh_mpi_layer 
+* Expanded scalability of ucvm2mesh_mpi with a new ucvm2mesh_mpi_layer program 
 * Expanded plotting scripts to preserve intermediate data product and 
 *   metadata
 
