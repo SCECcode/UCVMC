@@ -534,6 +534,8 @@ if platform.system() == "Darwin":
     if "CenCalVM" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$DYLD_LIBRARY_PATH"
     print "\texport DYLD_LIBRARY_PATH"
+    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
+    print "\texport UCVM_INSTALL_PATH"
                 
 elif dynamic_flag == True:
     print "Please export the following library paths (note this is in Bash format):"
@@ -547,6 +549,8 @@ elif dynamic_flag == True:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/netcdf/lib:$LD_LIBRARY_PATH"
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"
     print "\texport LD_LIBRARY_PATH"
+    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/")
+    print "\texport UCVM_INSTALL_PATH"
     print ""
     print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
     print "they are preserved for the next time you login."

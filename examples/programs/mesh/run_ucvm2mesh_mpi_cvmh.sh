@@ -8,13 +8,18 @@ fi
 ## setup mpi environment
 source /usr/usc/openmpi/default/setup.sh
 
+rm -rf ucvm2mesh-mpi ucvm.conf small_cvmh.conf
+
 BIN_DIR=${UCVM_INSTALL_PATH}/bin
 CONF_DIR=${UCVM_INSTALL_PATH}/conf
 SCRATCH=./scratch
 
-sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmh.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmh.conf
+cp ${BIN_DIR}/ucvm2mesh-mpi .
+cp ${CONF_DIR}/ucvm.conf .
 
-salloc -N 2 --ntasks=2 --time=00:10:00 srun --ntasks=2 -v --mpi=pmi2 ${BIN_DIR}/ucvm2mesh-mpi -f small_cvmh.conf
+sed 's ${SCRATCH} '$SCRATCH' ' small_cvmh.conf_template  > small_cvmh.conf
+
+salloc -N 2 --ntasks=2 --time=00:20:00 srun --ntasks=2 -v --mpi=pmi2 ./ucvm2mesh-mpi -f small_cvmh.conf
 
 
 

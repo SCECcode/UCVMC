@@ -1,9 +1,9 @@
 
 #List of CVMs to query
-ucvmlist=cvmh
+ucvmlist=cvmh,1d
 
 # UCVM conf file
-ucvmconf=${CONF_DIR}/ucvm.conf
+ucvmconf=./ucvm.conf
 
 # Gridding cell centered or vertex
 gridtype=CENTER
