@@ -29,11 +29,16 @@ Testing UCVMC on all possible combinations of operating sysetms and software sta
 *  GNU gcc/gfortran compilers version 4.8.5
 *  Python 2.7.11 (Anaconda 4.0.0 (64-bit))
 *  Autotools build software for Linux
+*  Automake, Autoconf build tools for Linux
+*  Git client
+
+External Libraries installed by UCVMC"
+
 *  Euclid Etree library: http://www.cs.cmu.edu/~euclid/ (provided during installation)
 *  Proj.5 projection library: http://trac.osgeo.org/proj/ (provided during installation)
 
 Optional Software for building MPI binaries:
-*  mpich 1.2.6
+
 *  openmpi 1.8.8
 
 ## Installation
