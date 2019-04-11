@@ -32,7 +32,7 @@ Testing UCVMC on all possible combinations of operating sysetms and software sta
 *  Automake, Autoconf build tools for Linux
 *  Git client
 
-External Libraries installed by UCVMC"
+External Libraries installed by UCVMC
 
 *  Euclid Etree library: http://www.cs.cmu.edu/~euclid/ (provided during installation)
 *  Proj.5 projection library: http://trac.osgeo.org/proj/ (provided during installation)
