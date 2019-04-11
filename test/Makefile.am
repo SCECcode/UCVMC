@@ -49,6 +49,20 @@ if UCVM_AM_ENABLE_TAPE
 AM_CFLAGS += -D_UCVM_ENABLE_TAPE
 endif
 
+# CCA06 includes
+if UCVM_AM_ENABLE_CCA
+AM_CFLAGS += -D_UCVM_ENABLE_CCA
+endif
+
+# CS173 includes
+if UCVM_AM_ENABLE_CS173
+AM_CFLAGS += -D_UCVM_ENABLE_CS173
+endif
+
+# CS173H includes
+if UCVM_AM_ENABLE_CS173H
+AM_CFLAGS += -D_UCVM_ENABLE_CS173H
+endif
 
 # Dist sources
 unittest_SOURCES = *.c *.h
