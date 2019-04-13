@@ -549,7 +549,7 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, false)   
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CVMS5, [test x"$enable_model_cvms5" = xyes])
 fi
 
 if test "x$enable_static" = xyes; then
@@ -566,7 +566,7 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, false)   
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CCA, [test x"$enable_model_cca" = xyes])
 fi
 
 if test "x$enable_static" = xyes; then
@@ -583,7 +583,7 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, false)   
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173, [test x"$enable_model_cs173" = xyes])
 fi
 
 if test "x$enable_static" = xyes; then
@@ -600,7 +600,7 @@ else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, false)   
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CS173H, [test x"$enable_model_cs173h" = xyes])
 fi
 
 # Check optional SCEC CVM-NCI installation
