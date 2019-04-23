@@ -35,7 +35,7 @@
 			"Version": "15.1.1",
                         "Abbreviation": "cvmh",
                         "Size": "1.6G",
-			"Path": "cvmh1510",
+			"Path": "cvmh1511",
 			"URL": "http://hypocenter.usc.edu/research/ucvmc/V19_4/cvmh-15.1.1.tar.gz",
 			"Flags": "--enable-model-cvmh --with-cvmh-include-path=include --with-cvmh-lib-path=lib --with-gctpc-lib-path=lib --with-cvmh-model-path=model",
 			"Ask": "yes",
