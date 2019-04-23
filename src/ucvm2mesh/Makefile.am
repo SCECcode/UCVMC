@@ -1,9 +1,9 @@
 # Autoconf/Automake binaries and headers
 
-bin_PROGRAMS = ucvm2mesh mesh-strip-ijk mesh-op mesh-check
+bin_PROGRAMS = ucvm2mesh mesh_strip-ijk mesh_op mesh_check
 
 if UCVM_HAVE_MPI
-bin_PROGRAMS += ucvm2mesh-mpi ucvm2mesh_mpi_layer
+bin_PROGRAMS += ucvm2mesh_mpi ucvm2mesh_mpi_layer
 endif
 
 if UCVM_HAVE_NETCDF
@@ -42,7 +42,7 @@ ucvm2mesh: ucvm2mesh.o um_config.o um_utils.o \
 		um_mesh.o um_stat.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
-ucvm2mesh-mpi: ucvm2mesh_mpi.o um_config.o um_mpi.o um_utils.o \
+ucvm2mesh_mpi: ucvm2mesh_mpi.o um_config.o um_mpi.o um_utils.o \
 		um_mesh.o um_stat.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
@@ -50,13 +50,13 @@ ucvm2mesh_mpi_layer: ucvm2mesh_mpi_layer.o um_config.o um_mpi.o um_utils.o \
 		um_mesh.o um_stat.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
-mesh-strip-ijk: mesh_strip_ijk.o um_mesh.o
+mesh_strip_ijk: mesh_strip_ijk.o um_mesh.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
-mesh-op: mesh_op.o um_mesh.o
+mesh_op: mesh_op.o um_mesh.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
-mesh-check: mesh_check.o um_mesh.o
+mesh_check: mesh_check.o um_mesh.o
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
 mesh2netcdf: mesh2netcdf.o um_mesh.o
