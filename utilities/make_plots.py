@@ -4,7 +4,7 @@ import os
 
 #
 #
-cmd="./plot_horizontal_slice.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -e 0.0 -d poisson -a s -c cs173 -o cs173_poisson_map.png"
+cmd="./plot_horizontal_slice.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -e 0.0 -d poisson -a s -c cs173h -o cs173h_poisson_map.png"
 os.system(cmd)
 
 #
