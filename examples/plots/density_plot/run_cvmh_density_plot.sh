@@ -10,8 +10,8 @@ LABEL=cvmh_rho_versus_vs_density_1km
 LAT1=30.5
 LON1=-126
 LAT2=42.5
-LON2=-12.51
-SPACING=0.1
+LON2=-120.51
+SPACING=0.01
 DEPTH=1000
 MODEL=cvmh
 
