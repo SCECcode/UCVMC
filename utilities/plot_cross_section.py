@@ -73,6 +73,7 @@ def get_user_opts(options):
         for key, value in options.iteritems():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
+                print key
                 if "," in value:
                     ret_val[value.split(",")[0]] = a.split(",")[0]
                     ret_val[value.split(",")[1]] = a.split(",")[1]
@@ -108,7 +109,7 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			"e,ending":"ending_depth", \
                         "d,datatype":"data_type", \
 			"c,cvm":"cvm_selected", \
-			"h,horizonatal":"horizontal_spacing", \
+			"h,horizontal":"horizontal_spacing", \
 			"v,vertical":"vertical_spacing", \
 			"a,scale": "color", \
 			"g,gate": "gate", \

@@ -138,6 +138,12 @@ class HorizontalSlice:
             location_text = ""
         else:
             location_text = self.upperleftpoint.description + " "
+        
+        if color_scale == "b":
+           scale_gate=2.5
+
+        if 'gate' in meta :
+           scale_gate = meta['gate']
 
         # Gets the better CVM description if it exists.
         try:
