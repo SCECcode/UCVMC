@@ -54,7 +54,9 @@ def get_user_opts(options):
     ret_val = {}
 
     for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0] + ":"
+        short_opt_string = short_opt_string + key.split(",")[0] 
+        if( value != "") :
+            short_opt_string = short_opt_string + ":"
         long_opts.append(key.split(",")[1])
         opts_left.append(key.split(",")[0])
 
@@ -69,6 +71,8 @@ def get_user_opts(options):
 
     for o, a in opts:
         for key, value in options.iteritems():
+            if value == "":  ##help case
+              continue
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
                 if "," in value:
@@ -76,30 +80,32 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
-    
 
     for l in opts_left :
-# data file is optional
-        if l == "f" :
-            opts_opt.append(l)
-            ret_val["datafile"] = None
-        else :
-            if l == "o" :
-              opts_opt.append(l)
-              ret_val["outfile"] = None
+        if l == "h" :
+          usage()
+          exit(0)
+        else:
+            if l == "f" : # data file is optional
+                opts_opt.append(l)
+                ret_val["datafile"] = None
             else :
-                if l == "e" :
+                if l == "o" :
                   opts_opt.append(l)
-                  ret_val["extra"] = None
+                  ret_val["outfile"] = None
                 else :
-                    if l == "x" :
+                    if l == "e" :
                       opts_opt.append(l)
-                      ret_val["nx"] = None
+                      ret_val["extra"] = None
                     else :
-                        if l == "y" :
+                        if l == "x" :
                           opts_opt.append(l)
-                          ret_val["ny"] = None
-    
+                          ret_val["nx"] = None
+                        else :
+                            if l == "y" :
+                              opts_opt.append(l)
+                              ret_val["ny"] = None
+        
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else: 
@@ -112,7 +118,7 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2",
                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
                         "f,datafile":"datafile", "o,outfile":"outfile", \
                         "x,nx":"nx", "y,ny":"ny", "a,scale": "color", \
-                        "e,extra":"extra"})
+                        "e,extra":"extra","h,help":"" })
 
 if ret_val == "bad":
     usage()
