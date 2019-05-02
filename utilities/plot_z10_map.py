@@ -27,6 +27,8 @@ def usage():
     print "\t-y, --y: optional y steps matching the datafile"
     print "\t-o, --outfile: optional png output filename"
     print "\t-e, --extra: optional extra note to be appended to the plot title"
+    print "\t-H, --help: display usage information"
+    print "\t-i, --installdir: optional UCVM install directory"
     print "UCVM %s\n" % VERSION
 
 
@@ -53,7 +55,9 @@ def get_user_opts(options):
     ret_val = {}
     
     for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0] + ":"
+        short_opt_string = short_opt_string + key.split(",")[0]
+        if value != "":
+           short_opt_string = short_opt_string + ":"
         long_opts.append(key.split(",")[1])
         opts_left.append(key.split(",")[0])
 
@@ -68,6 +72,8 @@ def get_user_opts(options):
     
     for o, a in opts:
         for key, value in options.iteritems():
+            if value == "": ##help case
+                continue
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
                 if "," in value:
@@ -78,41 +84,47 @@ def get_user_opts(options):
 
 # handle optional opts
     for l in opts_left :
-        if l == "f" :
+        if l == "H" :
+            usage()
+            exit(0) 
+        elif l == "f" :
             opts_opt.append(l)
             ret_val["datafile"] = None
-        else :
-            if l == "o" :
-              opts_opt.append(l)
-              ret_val["outfile"] = None
-            else :
-                if l == "e" :
-                  opts_opt.append(l)
-                  ret_val["extra"] = None
-                else :
-                    if l == "x" :
-                      opts_opt.append(l)
-                      ret_val["nx"] = None
-                    else :
-                        if l == "y" :
-                          opts_opt.append(l)
-                          ret_val["ny"] = None
+        elif l == "o" :
+            opts_opt.append(l)
+            ret_val["outfile"] = None
+        elif l == "e" :
+            opts_opt.append(l)
+            ret_val["extra"] = None
+        elif l == "x" :
+            opts_opt.append(l)
+            ret_val["nx"] = None
+        elif l == "y" :
+            opts_opt.append(l)
+            ret_val["ny"] = None
+        elif l == "i" :
+            opts_opt.append(l)
+            ret_val["installdir"] = None
 
     if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
         return ret_val
     else:
         return "bad"
 
-# Create a new UCVM object.
-u = UCVM()
-
 meta = {}
 
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "c,cvm":"cvm_selected", \
-                         "f,datafile":"datafile", "o,outfile":"outfile", \
-                         "x,nx":"nx", "y,ny":"ny", "a,scale": "color", \
-                         "e,extra":"extra"}) 
+ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
+                         "u,upperright":"lat2,lon2", \
+                         "s,spacing":"spacing", \
+                         "c,cvm":"cvm_selected", \
+                         "f,datafile":"datafile", \
+                         "o,outfile":"outfile", \
+                         "x,nx":"nx", \
+                         "y,ny":"ny", \
+                         "a,scale": "color", \
+                         "e,extra":"extra", \
+                         "H,help":""}, \
+                         "i,installdir":"installdir" })
 
 if ret_val == "bad":
     usage()
@@ -141,6 +153,8 @@ else:
     print "In order to create the plot, you must first specify the region."
     print ""
 
+    installdir = None
+
     lon1 = ask_number("Please enter the bottom-left longitude from which the Z1.0 values should come: ")
     lat1 = ask_number("Next, enter the bottom-left latitude from which the Z1.0 values should come: ")
     lon2 = ask_number("Enter the top-right longitude where the Z1.0 values should end: ")
@@ -168,6 +182,9 @@ else:
 
     counter = 1
     corresponding_cvm = []
+
+    # Create a new UCVM object.
+    u = UCVM(install_dir=installdir)
 
     for cvm in u.models:
         cvmtoprint = cvm
