@@ -123,7 +123,7 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "y,ny":"ny", \
                          "a,scale": "color", \
                          "e,extra":"extra", \
-                         "H,help":""}, \
+                         "H,help":"", \
                          "i,installdir":"installdir" })
 
 if ret_val == "bad":
