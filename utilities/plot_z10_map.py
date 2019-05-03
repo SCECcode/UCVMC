@@ -71,9 +71,10 @@ def get_user_opts(options):
         return {}
     
     for o, a in opts:
+        if o == "-H" or o == "--help" :
+            usage()
+            exit(0)
         for key, value in options.iteritems():
-            if value == "": ##help case
-                continue
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
                 if "," in value:
@@ -81,13 +82,14 @@ def get_user_opts(options):
                     ret_val[value.split(",")[1]] = a.split(",")[1]
                 else:
                     ret_val[value] = a
+                break
+                
 
 # handle optional opts
     for l in opts_left :
         if l == "H" :
-            usage()
-            exit(0) 
-        elif l == "f" :
+            opts_opt.append(l)
+        if l == "f" :
             opts_opt.append(l)
             ret_val["datafile"] = None
         elif l == "o" :
@@ -123,7 +125,7 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "y,ny":"ny", \
                          "a,scale": "color", \
                          "e,extra":"extra", \
-                         "H,help":""}, \
+                         "H,help":"", \
                          "i,installdir":"installdir" })
 
 if ret_val == "bad":
@@ -143,6 +145,7 @@ elif len(ret_val) > 0:
             else:
                 exec("%s = '%s'" % (key, value))
     useMPI = "n"
+
 else:      
     print ""
     print "Z1.0  - UCVM %s" % (VERSION)
