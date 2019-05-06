@@ -1,6 +1,7 @@
 from common import Plot, Point, UCVM, MaterialProperties, \
                    ALL_PROPERTIES, VP, VS, DENSITY, VERSION, \
-                   UCVM_CVMS
+                   UCVM_CVMS, get_user_opts, \
+                   ask_number, ask_path, ask_file
 
 from horizontal_slice import HorizontalSlice
 from cross_section import CrossSection

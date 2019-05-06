@@ -6,9 +6,9 @@
 #  @author David Gill - SCEC <davidgil@usc.edu>
 #  @version 14.7.0
 #
-#  Plots a Vs30 slice given a set of command-line parameters.
+#  Plots a Z1.0 slice given a set of command-line parameters.
 
-from pycvm import Z10Slice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import Z10Slice, UCVM, VERSION, UCVM_CVMS, Point, ask_number, ask_path, ask_file, get_user_opts
 import getopt, sys, os
 
 ## Prints usage of this utility.
@@ -26,107 +26,28 @@ def usage():
     print "\t-x, --x: optional x steps matching the datafile"
     print "\t-y, --y: optional y steps matching the datafile"
     print "\t-o, --outfile: optional png output filename"
-    print "\t-e, --extra: optional extra note to be appended to the plot title"
+    print "\t-t, --title: optional plot title"
     print "\t-H, --help: display usage information"
     print "\t-i, --installdir: optional UCVM install directory"
+    print "\t-g, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
-
-## Makes sure the response is a number.
-def ask_number(question):
-    temp_val = None
-    
-    while temp_val is None:
-        temp_val = raw_input(question)
-        try:
-            float(temp_val)
-            return float(temp_val)
-        except ValueError:
-            print temp_val + " is not a number. Please enter a number."
-            temp_val = None
-    
-## Gets the options and assigns them to the correct variables.
-def get_user_opts(options):
-    
-    short_opt_string = ""
-    long_opts = []
-    opts_left = []
-    opts_opt = []
-    ret_val = {}
-    
-    for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0]
-        if value != "":
-           short_opt_string = short_opt_string + ":"
-        long_opts.append(key.split(",")[1])
-        opts_left.append(key.split(",")[0])
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
-    except getopt.GetoptError as err:
-        print str(err)   
-        exit(1)
-
-    if len(opts) == 0 :
-        return {}
-    
-    for o, a in opts:
-        if o == "-H" or o == "--help" :
-            usage()
-            exit(0)
-        for key, value in options.iteritems():
-            if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
-                opts_left.remove(key.split(",")[0])
-                if "," in value:
-                    ret_val[value.split(",")[0]] = a.split(",")[0]
-                    ret_val[value.split(",")[1]] = a.split(",")[1]
-                else:
-                    ret_val[value] = a
-                break
-                
-
-# handle optional opts
-    for l in opts_left :
-        if l == "H" :
-            opts_opt.append(l)
-        if l == "f" :
-            opts_opt.append(l)
-            ret_val["datafile"] = None
-        elif l == "o" :
-            opts_opt.append(l)
-            ret_val["outfile"] = None
-        elif l == "e" :
-            opts_opt.append(l)
-            ret_val["extra"] = None
-        elif l == "x" :
-            opts_opt.append(l)
-            ret_val["nx"] = None
-        elif l == "y" :
-            opts_opt.append(l)
-            ret_val["ny"] = None
-        elif l == "i" :
-            opts_opt.append(l)
-            ret_val["installdir"] = None
-
-    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
-        return ret_val
-    else:
-        return "bad"
 
 meta = {}
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "u,upperright":"lat2,lon2", \
                          "s,spacing":"spacing", \
-                         "c,cvm":"cvm_selected", \
-                         "f,datafile":"datafile", \
-                         "o,outfile":"outfile", \
-                         "x,nx":"nx", \
-                         "y,ny":"ny", \
+                         "c,cvm":"cvm", \
+                         "f,datafile,o":"datafile", \
+                         "o,outfile,o":"outfile", \
+                         "x,nx,o":"nx", \
+                         "y,ny,o":"ny", \
                          "a,scale": "color", \
-                         "e,extra":"extra", \
-                         "H,help":"", \
-                         "i,installdir":"installdir" })
+                         "t,title,o":"title", \
+                         "H,help,o":"", \
+                         "i,installdir,o":"installdir", \
+                         "g,configfile,o":"configfile" })
 
 if ret_val == "bad":
     usage()
@@ -156,7 +77,6 @@ else:
     print "In order to create the plot, you must first specify the region."
     print ""
 
-    installdir = None
 
     lon1 = ask_number("Please enter the bottom-left longitude from which the Z1.0 values should come: ")
     lat1 = ask_number("Next, enter the bottom-left latitude from which the Z1.0 values should come: ")
@@ -169,25 +89,35 @@ else:
         print "and specify a valid region. The first point should be the lower-left corner, the"
         print "second point should be the upper-right corner."
         exit(1)
-    
-    spacing = -1
+    meta['lon1']=lon1
+    meta['lon2']=lon2
+    meta['lat1']=lat1
+    meta['lat2']=lat2
 
+    spacing = -1
     while spacing <= 0:
         spacing = ask_number("Which grid spacing (in decimal degree units) would you like (usually, this is 0.01): ")
     
         if spacing <= 0:
             print "Error: grid spacing must be a positive number."
-        
-    print ""
+    meta['spacing']=spacing
+
+    counter = 1
+    corresponding_cvm = []
+    installdir = None
+    configfile = None
+
+    # Ask if a different installdir should be  used
+    cwd = os.getcwd()
+    installdir = ask_path("Do you want to use different UCVM install directory", cwd+"/..")
+    # Ask if a different ucvm.conf should be  used
+    configfile = ask_file("Do you want to use different ucvm.conf file", cwd+"/../ucvm.conf")
 
     # Ask which CVMs to use.
     print "From which CVM would you like this data to come:"
 
-    counter = 1
-    corresponding_cvm = []
-
     # Create a new UCVM object.
-    u = UCVM(install_dir=installdir)
+    u = UCVM(install_dir=installdir, config_file=configfile)
 
     for cvm in u.models:
         cvmtoprint = cvm
@@ -206,9 +136,9 @@ else:
             print "Error: the number you selected must be between 1 and %d" % counter
 
     cvm_selected = corresponding_cvm[cvm_selected]
+    meta['cvm']=cvm_selected
 
     color = ""
-
     while color != "s" and color != "d" and data_type != "poisson":
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
@@ -217,7 +147,11 @@ else:
         if color != "s" and color != "d":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
             print "marks) for a smooth color scale."
+    meta['color']=color
 
-# Generate the horizontal slice.
-b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), spacing, cvm_selected, xsteps=nx, ysteps=ny)
-b.plot(datafile=datafile,filename=outfile, color_scale=color, note=extra, meta=meta)
+
+
+###################################################################################
+# Generate the Z10 horizontal slice.
+b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), meta)
+b.plot(meta=meta)

@@ -68,7 +68,125 @@ VP = ["vp"]
 DENSITY = ["density"]
 
 ## Version string.
-VERSION = "19.4.0"
+VERSION = "19.4."
+
+#  Class Definitions
+
+## Common Access Functions
+
+global ask_number
+## Makes sure the response is a number.
+def ask_number(question):
+    temp_val = None
+    
+    while temp_val is None:
+        temp_val = raw_input(question)
+        try:
+            float(temp_val)
+            return float(temp_val)
+        except ValueError:
+            print temp_val + " is not a number. Please enter a number."
+            temp_val = None
+
+    
+global ask_path
+## get optional answer
+def ask_path(question,target):
+    temp_val = raw_input(question + target+", Enter different path or blank :")
+
+    if temp_val.strip() == "":
+        temp_val = target
+        return temp_val
+
+    while temp_val is not "":
+    # Check to see that that path exists
+        if os.exists(temp_val) and os.isdir(tmp_val) :
+            return temp_val
+        else :
+            print "\n" + temp_val + " does not exist or not a directory"
+            temp_val= raw_input("Please enter a different path or blank to use the default path: ")
+    return target
+
+global ask_file
+## get optional answer
+def ask_file(question,target):
+    temp_val = raw_input(question + target+", Enter different file or blank :")
+
+    if temp_val.strip() == "":
+        temp_val = target
+        return temp_val
+
+    while temp_val is not "":
+    # Check to see that that file exists
+        if os.exists(temp_val) and os.isfile(tmp_val) :
+            return temp_val
+        else :
+            print "\n" + temp_val + " does not exist or not a file"
+            temp_val= raw_input("Please enter a different file or blank to use the default file: ")
+    return target
+
+
+## Gets the options and assigns them to the correct variables.
+#
+#"option short-form, optionlong-form, optional": "meta variable"
+#{"b,bottomleft":"lat1,lon1", \
+# "u,upperright":"lat2,lon2", \
+# ...
+# "t,title,o":"title", \
+# "H,help,o":"" })
+#
+global get_user_opts
+def get_user_opts(options):
+        
+    short_opt_string = ""
+    long_opts = []
+    opts_left = []
+    opts_opt = []
+    optional_opts = []
+    ret_val = {}
+
+    for key, value in options.iteritems():
+        items=key.split(",")
+        short_opt_string = short_opt_string + items[0] 
+        if value != "" :
+            short_opt_string = short_opt_string + ":"
+        long_opts.append(items[1])
+        opts_left.append(items[0])
+        if len(items) > 2 and items[2] != None  and items[2] =='o' :
+            optional_opts.append(key.split(",")[0])
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
+    except getopt.GetoptError as err:
+        print str(err)   
+        exit(1)
+
+    if len(opts) == 0 :
+        return {}
+
+    for o, a in opts:
+        if o == "-H" or o == "--help" :
+            usage()
+            exit(0)
+        for key, value in options.iteritems():
+            if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
+                opts_left.remove(key.split(",")[0])
+                if "," in value:
+                    ret_val[value.split(",")[0]] = a.split(",")[0]
+                    ret_val[value.split(",")[1]] = a.split(",")[1]
+                else:
+                    ret_val[value] = a
+                break
+
+    for l in opts_left :
+        if l in optional_opts :
+          opts_opt.append(l)
+
+    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
+        return ret_val
+    else: 
+        return "bad"
+
 
 #  Class Definitions
 
