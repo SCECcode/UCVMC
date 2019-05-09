@@ -34,10 +34,29 @@ class HorizontalSlice:
     #  @param spacing The spacing, in degrees, for this plot.
     #  @param cvm The community velocity model from which this data should come.
     #  
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps = None):
+    def __init__(self, upperleftpoint, bottomrightpoint, meta={}) :
+      
+        self.meta = meta
 
-        self.xsteps = xsteps
-        self.ysteps = ysteps
+        if 'nx' in self.meta :
+            self.xsteps = self.meta['nx']
+        else:
+            self.xsteps = None
+
+        if 'ny' in self.meta :
+            self.ysteps = self.meta['ny']
+        else:
+            self.ysteps = None
+
+        if 'datafile' in self.meta :
+            self.datafile = self.meta['datafile']
+        else:
+            self.datafile = None
+
+        if 'outfile' in self.meta:
+            self.filename = self.meta['outfile']
+        else:
+            self.filename = None
         
         if not isinstance(upperleftpoint, Point):
             raise TypeError("Parameter upperleftpoint must be of type Point.")
@@ -56,20 +75,40 @@ class HorizontalSlice:
            (self.upperleftpoint.latitude < self.bottomrightpoint.latitude):
             raise ValueError("The upper-left point must be higher than, and to the " + \
                              "left of, the bottom-right point.")
-            
+
+        if 'spacing' in self.meta:
+            self.spacing = self.meta['spacing']
         #  Check the spacing. If it's specified in meters, convert to degrees.
         try:
             ## The spacing for the plot, defined in degrees. If meters specified, it's converted to degrees.
-            self.spacing = float(spacing)
+            self.spacing = float(self.spacing)
         except Exception:
             print "TODO"
         
         ## The community velocity model from which the data should be retrieved.
-        self.cvm = cvm
+        if 'cvm' in self.meta:
+            self.cvm = self.meta['cvm']
+        else:
+            self.cvm = None
+
+        if 'installdir' in self.meta:
+            self.installdir = self.meta['installdir']
+        else:
+            self.installdir = None
+
+        if 'configfile' in self.meta:
+            self.configfile = self.meta['configfile']
+        else:
+            self.configfile = None
+
+        if 'title' in self.meta :
+           self.title =  self.meta['title']
+        else:
+           self.title = None;
     
     ##
     #  Retrieves the values for this horizontal slice and stores them in the class.
-    def getplotvals(self, property="vs",datafile = None):
+    def getplotvals(self, mproperty="vs"):
         
         #  How many y and x values will we need?
         
@@ -92,12 +131,12 @@ class HorizontalSlice:
         ## The 2D array of retrieved material properties.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
-        u = UCVM()
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
 ### MEI
-        if (datafile != None) :
-            data = u.import_binary(datafile, self.num_x, self.num_y)
-            print "\nUsing --> "+datafile 
+        if (self.datafile != None) :
+            data = u.import_binary(self.datafile, self.num_x, self.num_y)
+            print "\nUsing --> "+self.datafile 
             print "expecting x ",self.num_x," y ",self.num_y
 	else: 
             #  Generate a list of points to pass to UCVM.
@@ -112,11 +151,11 @@ class HorizontalSlice:
         i = 0
         j = 0
         isfloat = 0
-        if (datafile != None) :
+        if (self.datafile != None) :
             isfloat = 1
         for matprop in data:
             if isfloat:
-                self.materialproperties[i][j].setProperty(property,matprop)
+                self.materialproperties[i][j].setProperty(mproperty,matprop)
             else:
                 self.materialproperties[i][j]=matprop
             j = j + 1
@@ -127,23 +166,30 @@ class HorizontalSlice:
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
-    #  @param property The property either as a single item array or string.
-    #  @param filename The file name of the image if we're saving it. Optional.
-    #  @param title The title of the plot. Optional.
-    #  @param horizontal_label The horizontal label of the plot. Optional.
-    #  @param color_scale The color scale for the plot (d, discretized; s, smooth). Optional.
-    def plot(self, property, filename = None, title = None, horizontal_label = None, color_scale = "d", datafile = None, meta={}):
+    def plot(self):
+
+        horizontal_label = None
 
         if self.upperleftpoint.description == None:
             location_text = ""
         else:
             location_text = self.upperleftpoint.description + " "
-        
-        if color_scale == "b":
-           scale_gate=2.5
 
-        if 'gate' in meta :
-           scale_gate = meta['gate']
+        if 'mproperty' in self.meta :
+           mproperty = self.meta['mproperty']
+        else:
+           mproperty = "vs"
+
+        if 'color' in self.meta :
+           color_scale = self.meta['color']
+        else: 
+           scale_gate = None
+
+        if 'gate' in self.meta :
+           scale_gate = int(self.meta['gate'])
+        
+        if color_scale == "b" and scale_gate is None:
+           scale_gate=2.5
 
         # Gets the better CVM description if it exists.
         try:
@@ -151,20 +197,22 @@ class HorizontalSlice:
         except: 
             cvmdesc = self.cvm
 
-        if title == None:
+        if 'title' in self.meta :
+            title =  self.meta['title']
+        else:
             title = "%s%s Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
+            self.meta['title'] = title
 
-        self.getplotvals(property,datafile)
+        self.getplotvals(mproperty)
 
         # Call the plot object.
         p = Plot(title, "", "", None, 10, 10)
 
-        u = UCVM()
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         BOUNDS = u.makebounds()
         TICKS = u.maketicks()
        
-
         m = basemap.Basemap(projection='cyl', llcrnrlat=self.bottomrightpoint.latitude, \
                             urcrnrlat=self.upperleftpoint.latitude, \
                             llcrnrlon=self.upperleftpoint.longitude, \
@@ -193,9 +241,9 @@ class HorizontalSlice:
         print ("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
-                if property != "poisson":
+                if mproperty != "poisson":
                     if color_scale == "sd" or color_scale == "sd_r":
-                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
+                        datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
                         if(datapoints[i][j] == -1 ) :
                             datapoints[i][j]=np.nan
                             nancnt=nancnt+1
@@ -205,7 +253,7 @@ class HorizontalSlice:
 ##                            zerocnt=zerocnt+1
 ##
                     else:
-                        datapoints[i][j] = self.materialproperties[i][j].getProperty(property)
+                        datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
                         if (datapoints[i][j] == 0) :
 # KEEP 0 as 0                           datapoints[i][j]=np.nan
                            zerocnt=zerocnt+1
@@ -269,18 +317,18 @@ class HorizontalSlice:
         else:
             print "ERROR: unknown option for colorscale."
 
-        if( datafile == None ):
-          meta['num_x'] = self.num_x
-          meta['num_y'] = self.num_y
-          meta['datapoints'] = datapoints.size
-          meta['max'] = np.asscalar(self.max_val)
-          meta['min'] = np.asscalar(self.min_val)
-          meta['mean'] = np.asscalar(self.mean_val)
-          meta['lon_list']=lons.tolist()
-          meta['lat_list']=lats.tolist()
-          if filename:
-              u.export_metadata(meta,filename)
-              u.export_binary(datapoints,filename)
+        if( self.datafile == None ):
+          self.meta['num_x'] = self.num_x
+          self.meta['num_y'] = self.num_y
+          self.meta['datapoints'] = datapoints.size
+          self.meta['max'] = np.asscalar(self.max_val)
+          self.meta['min'] = np.asscalar(self.min_val)
+          self.meta['mean'] = np.asscalar(self.mean_val)
+          self.meta['lon_list']=lons.tolist()
+          self.meta['lat_list']=lats.tolist()
+          if self.filename:
+              u.export_metadata(self.meta,self.filename)
+              u.export_binary(datapoints,self.filename)
                     
 
         ## reduce the datapoints before passing in..
@@ -298,16 +346,16 @@ class HorizontalSlice:
     
         cax = plt.axes([0.125, 0.05, 0.775, 0.02])
         cbar = plt.colorbar(img, cax=cax, orientation='horizontal',spacing='proportional',ticks=TICKS)
-        if property != "poisson":
+        if mproperty != "poisson":
             if horizontal_label == None:
-                cbar.set_label(property.title() + " (km/s)")
+                cbar.set_label(mproperty.title() + " (km/s)")
             else:
                 cbar.set_label(horizontal_label)
         else:
             cbar.set_label("Vp/Vs")
             
-        if filename:
-            plt.savefig(filename)
+        if self.filename:
+            plt.savefig(self.filename)
 ## MEI, TODO p.savehtml("show.html")
         else:
             plt.show()

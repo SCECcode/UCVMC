@@ -8,7 +8,7 @@
 #
 #  Plots a cross section given a set of command-line parameters.
 
-from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import CrossSection, UCVM, VERSION, UCVM_CVMS, Point, ask_number, ask_path, ask_file, get_user_opts
 import getopt, sys, os
 import json
 import pdb
@@ -30,98 +30,37 @@ def usage():
     print "\t-u, --destination: destination latitude, longitude to end plot (e.g. 35,-117)"
     print "\t-f, --datafile: optional input filename"
     print "\t-o, --outfile: optional png output filename"
-    print "\t-i, --installdir: optional UCVM install directory"
+    print "\t-t, --title: optional plot title"
+    print "\t-H, --help: optional display usage information"
+    print "\t-i, --installdir: optional UCVM isntall directory"
+    print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
-## Makes sure the response is a number.
-def ask_number(question):
-    temp_val = None
-    
-    while temp_val is None:
-        temp_val = raw_input(question)
-        try:
-            float(temp_val)
-            return float(temp_val)
-        except ValueError:
-            print temp_val + " is not a number. Please enter a number."
-            temp_val = None
-    
-## Gets the options and assigns them to the correct variables.
-def get_user_opts(options):
-    
-    short_opt_string = ""
-    long_opts = []
-    opts_left = []
-    opts_opt = []
-    ret_val = {}
-    
-    for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0] + ":"
-        long_opts.append(key.split(",")[1])
-        opts_left.append(key.split(",")[0])
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
-    except getopt.GetoptError as err:
-        print str(err)   
-        exit(1)
-    
-    if len(opts) == 0 :
-        return {}
-
-    for o, a in opts:
-        for key, value in options.iteritems():
-            if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
-                opts_left.remove(key.split(",")[0])
-                print key
-                if "," in value:
-                    ret_val[value.split(",")[0]] = a.split(",")[0]
-                    ret_val[value.split(",")[1]] = a.split(",")[1]
-                else:
-                    ret_val[value] = a
-
-# handle optional opts
-    for l in opts_left :
-        if l == "o" :
-          opts_opt.append(l)
-          ret_val["outfile"] = None
-        else :
-            if l == "f" :
-              opts_opt.append(l)
-              ret_val["datafile"] = None
-            else :
-                if l == "g" :
-                  opts_opt.append(l)
-                  ret_val["gate"] = 2.5
-                else:
-                  if l == "i" :
-                    opts_opt.append(l)
-                    ret_val["installdir"] = None
-    
-    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
-        return ret_val
-    else:
-        return "bad"
-
 ret_val = get_user_opts({"b,origin":"lat1,lon1", \
-			"u,destination":"lat2,lon2", \
-                        "s,starting":"starting_depth", \
-			"e,ending":"ending_depth", \
-                        "d,datatype":"data_type", \
-			"c,cvm":"cvm_selected", \
-			"h,horizontal":"horizontal_spacing", \
-			"v,vertical":"vertical_spacing", \
-			"a,scale": "color", \
-			"g,gate": "gate", \
-			"f,datafile":"datafile", \
-			"o,outfile":"outfile", \
-                        "i,installdir":"installdir" })
+			 "u,destination":"lat2,lon2", \
+                         "s,starting":"starting_depth", \
+			 "e,ending":"ending_depth", \
+                         "d,datatype":"data_type", \
+			 "c,cvm":"cvm", \
+			 "h,horizontal":"horizontal_spacing", \
+			 "v,vertical":"vertical_spacing", \
+			 "a,scale": "color", \
+			 "g,gate,o": "gate", \
+			 "f,datafile,o":"datafile", \
+			 "o,outfile,o":"outfile", \
+                         "t,title,o":"title", \
+                         "H,help,o":"", \
+                         "i,installdir,o":"installdir", \
+                         "n,configfile,o":"configfile" })
 
 meta = {}
 
 if ret_val == "bad":
     usage()
     exit(1)
+elif ret_val == "help":
+    usage()
+    exit(0)
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
@@ -149,6 +88,10 @@ else:
     lat1 = ask_number("Next, enter the origin latitude from which the plot should start: ")
     lon2 = ask_number("Enter the destination longitude where the plot should end: ")
     lat2 = ask_number("Enter the destination latitude where the plot should end: ")
+    meta['lon1']=lon1
+    meta['lon2']=lon2
+    meta['lat1']=lat1
+    meta['lat2']=lat2
 
     starting_depth = -1
     installdir = None
@@ -159,6 +102,7 @@ else:
                                     "this cross-section to start: ")
         if starting_depth < 0:
             print "Error: the depth must be a positive number."
+    meta['starting_depth']=starting_depth
 
     ending_depth = -1
     while ending_depth < 0:
@@ -169,23 +113,24 @@ else:
 
     if ending_depth <= starting_depth:
         print "Error: the bottom, ending depth must be greater than the starting depth."
+    meta['ending_depth']=ending_depth
  
     horizontal_spacing = -1
     print ""
-
     while horizontal_spacing < 0:
         horizontal_spacing = ask_number("Please enter the horizontal spacing, in meters, for the plot: ")
         if horizontal_spacing < 0:
             print "Error: the spacing must be a positive number."
+    meta['horizontal_spacing']=horizontal_spacing
 
     vertical_spacing = -1
     while vertical_spacing < 0:
         vertical_spacing = ask_number("Please enter the vertical spacing, in meters, for the plot: ")
         if vertical_spacing < 0:
             print "Error: the spacing must be a positive number."   
+    meta['vertical_spacing']=vertical_spacing
 
     print ""
-
     data_type = ""
 
     while data_type != "vs" and data_type != "vp" and data_type != "density":
@@ -194,6 +139,7 @@ else:
     
         if data_type != "vs" and data_type != "vp" and data_type != "density":
             print "Error: you must select either 'vp', 'vs', 'density' (without quotation marks)."
+    meta['mproperty']=data_type
 
     # Ask which CVMs to use.
     print "\nFrom which CVM would you like this data to come:"
@@ -201,8 +147,13 @@ else:
     counter = 1
     corresponding_cvm = []
 
+    # Ask if a different installdir should be  used
+    installdir = ask_string("Do you want to use UCVM install directory at ", os.getcwd()+"/..")
+    # Ask if a different ucvm.conf should be  used
+    configfile = ask_string("Do you want to use ucvm.conf file at ", os.getcwd()+"/../ucvm.conf")
+
     # Create a new UCVM object.
-    u = UCVM(install_dir=installdir)
+    u = UCVM(install_dir=installdir, config_file=configfile)
 
     for cvm in u.models:
         cvmtoprint = cvm
@@ -212,8 +163,7 @@ else:
         print "\t%d) %s" % (counter, cvmtoprint)
         counter += 1
     
-        cvm_selected = -1
-
+    cvm_selected = -1
     while cvm_selected < 0 or cvm_selected > counter:
         cvm_selected = int(ask_number("\nSelect the CVM: ")) - 1
     
@@ -221,6 +171,7 @@ else:
             print "Error: the number you selected must be between 1 and %d" % counter
 
     cvm_selected = corresponding_cvm[cvm_selected]
+    meta['cvm']=cvm_selected
 
     # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
     gate = 2.5
@@ -234,14 +185,14 @@ else:
         if color != "s" and color != "d" and color != "b":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
             print "marks) for a smooth color scale and 'b' (without quotation marks) for bi-color scale."
+    meta['scale_gate']=gate
+    meta['color_scale']=color
 
 # Now we have all the information so we can actually plot the data.
 print ""
 print "Retrieving data. Please wait..."
-
+ 
+###################################################################################
 # Generate the horizontal slice.
-
-d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth), \
-                 ending_depth, horizontal_spacing, vertical_spacing, cvm_selected)
-
-d.plot(data_type,filename=outfile, datafile=datafile, color_scale=color,scale_gate=gate, meta=meta)
+d = CrossSection(Point(lon1, lat1, starting_depth), Point(lon2, lat2, starting_depth),meta)
+d.plot()

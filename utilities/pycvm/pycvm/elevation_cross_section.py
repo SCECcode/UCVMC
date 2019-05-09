@@ -39,7 +39,10 @@ class ElevationCrossSection:
     #  @param hspacing The discretization interval in meters, horizontally.
     #  @param vspacing The discretization interval in meters, vertically.
     #  @param cvm The CVM from which to retrieve these material properties.
-    def __init__(self, startingpoint, endingpoint, toelevation, hspacing, vspacing, cvm):
+    def __init__(self, startingpoint, endingpoint, meta={}):
+
+        self.meta=meta
+
         if not isinstance(startingpoint, Point):
             raise TypeError("The starting point must be an instance of Point.")
         else:
@@ -51,28 +54,51 @@ class ElevationCrossSection:
         else:
             ## Defines the @link common.Point ending point @endlink for the cross section.
             self.endingpoint = endingpoint
-        
-        if (toelevation - self.startingpoint.elevation) % vspacing != 0:
+
+        ## The discretization of the plot, in meters.
+        if 'vertical_spacing' in self.meta :
+            self.vspacing = float(self.meta['vertical_spacing'])
+        else:
+            self.vspacing = 0 
+
+        if 'horizontal_spacing' in self.meta :
+            self.hspacing = float(self.meta['horizontal_spacing'])
+        else:
+            self.hspacing = 0 
+
+        if 'ending_elevation' in self.meta :
+            self.toelevation = float(self.meta['ending_elevation'])
+        else:
+            self.toelevation = -15000  ## max, -15000
+
+        if (self.toelevation - self.startingpoint.elevation) % self.vspacing != 0:
             raise ValueError("%s\n%s\n%s" % ("The spacing value does not divide evenly into the requested elevation. ", \
-                          "Please make sure that the elevation (%.2f - %.2f) divided by the spacing " % (toelevation, startingpoint.elevation), \
-                          "%.2f has no remainder" % (vspacing)))
+                          "Please make sure that the elevation (%.2f - %.2f) divided by the spacing " % (self.toelevation, startingpoint.elevation), \
+                          "%.2f has no remainder" % (self.vspacing)))
         else:
             ## Defines the elevation to which the plot should go in meters.
-            self.toelevation = toelevation
             self.startelevation = self.startingpoint.elevation
             
-        ## The vertical discretization of the plot, in meters.
-        self.vspacing = vspacing
-        
-        ## The horizontal discretization of the plot, in meters.
-        self.hspacing = hspacing
-        
         ## The CVM to use (must be installed with UCVM).
-        self.cvm = cvm
+
+        if 'cvm' in self.meta :
+            self.cvm = self.meta['cvm']
+        else:
+            self.cvm = None 
+
+        if 'datafile' in self.meta :
+            self.datafile = self.meta['datafile']
+        else:
+            self.datafile = None
+
+        if 'outfile' in self.meta:
+            self.filename = self.meta['outfile']
+        else:
+            self.filename = None
 
     ## 
     #  Generates the elevation profile in a format that is ready to plot.
-    def getplotvals(self, property='vs', datafile = None, install_dir=None, config_file=None):
+    def getplotvals(self, mproperty='vs') :
 
         point_list = []
         lon_list = []
@@ -110,17 +136,17 @@ class ElevationCrossSection:
         self.lat_list=lat_list
         self.elevation_list=elevation_list
 
-        u = UCVM(install_dir=install_dir, config_file=config_file)
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
-        if (datafile != None) :
+        if (self.datafile != None) :
             ## Private number of x points.
             self.num_x = num_prof +1
             ## Private number of y points.
             self.num_y = abs((int(self.toelevation) - int(self.startelevation)) / int(self.vspacing)) +1
-            print "\nUsing -->"+datafile
+            print "\nUsing -->"+self.datafile
             print "expecting x ",self.num_x," y ",self.num_y
-            data = u.import_binary(datafile, self.num_x, self.num_y)
+            data = u.import_binary(self.datafile, self.num_x, self.num_y)
 ## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
         ## The 2D array of retrieved material properties.
             self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
@@ -129,13 +155,13 @@ class ElevationCrossSection:
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):   
                     tmp=datapoints[y][x]
-                    if(property == 'vp'):
+                    if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
-                    if(property == 'rho'):
+                    if(mproperty == 'rho'):
                       self.materialproperties[y][x].setProperty('Rho',tmp)
-                    if(property == 'poisson'):
+                    if(mproperty == 'poisson'):
                       self.materialproperties[y][x].setProperty('Poisson',tmp)
-                    if(property == 'vs'):
+                    if(mproperty == 'vs'):
                       self.materialproperties[y][x].setProperty('Vs',tmp)
         else:
             data = u.query(point_list, self.cvm, elevation=1)
@@ -159,26 +185,36 @@ class ElevationCrossSection:
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
-    #  @param property The property either as a single item array or string.
-    #  @param filename The file name of the image if we're saving it. Optional.
-    #  @param title The title for the plot. Optional.
-    #  @param color_scale The color scale to use. Optional.
-    #  @param scale_gate The gate to use to create customized listed colormap. Optional.
-    #  @param meta The meta data used to create the cross plot 
-    def plot(self, property, filename = None, title = None, color_scale = "d", scale_gate=2.5, datafile = None, meta = {}):
+    def plot(self) :
 
-        install_dir = None
-        if 'installdir' in meta :
-           install_dir = meta['installdir']
+        self.installdir = None
+        if 'installdir' in self.meta :
+           self.installdir = self.meta['installdir']
 
-        config_file = None
-        if 'configfile' in meta :
-           config_file = meta['configfile']
+        self.configfile = None
+        if 'configfile' in self.meta :
+           self.configfile = self.meta['configfile']
+
+        if 'color' in self.meta :
+           color_scale = self.meta['color']
+
+        if 'gate' in self.meta :
+           scale_gate = int(self.meta['gate'])
+        else:
+           scale_gate = None
+
+        if color_scale == "b" and scale_gate is None:
+           scale_gate=2.5
         
         if self.startingpoint.description == None:
             location_text = ""
         else:
             location_text = self.startingpoint.description + " "
+
+        if 'mproperty' in self.meta :
+           mproperty = self.meta['mproperty']
+        else:
+           mproperty = "vs"
 
         # Gets the better CVM description if it exists.
         try:
@@ -186,11 +222,14 @@ class ElevationCrossSection:
         except: 
             cvmdesc = self.cvm
 
-        if title == None:
+        if 'title' in self.meta :
+            title = self.meta['title']
+        else:
             title = "%s%s Elevation Cross Section from (%.2f, %.2f) to (%.2f, %.2f)" % (location_text, cvmdesc, self.startingpoint.longitude, \
                         self.startingpoint.latitude, self.endingpoint.longitude, self.endingpoint.latitude)
+            self.meta['title']=title
             
-        self.getplotvals(property=property, datafile = datafile, install_dir=install_dir, config_file=config_file)
+        self.getplotvals(mproperty)
         
         # Call the plot object.
         p = Plot(None, None, None, None, 10, 10)
@@ -248,9 +287,8 @@ class ElevationCrossSection:
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   
-                datapoints[y][x] = self.materialproperties[y][x].getProperty(property) 
-
-        u = UCVM(install_dir=install_dir, config_file=config_file)
+                datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty) 
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         myInt=1000
         newdatapoints=datapoints/myInt
@@ -314,24 +352,24 @@ class ElevationCrossSection:
 
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file
-        if( datafile == None ):
-          meta['num_x'] = self.num_x
-          meta['num_y'] = self.num_y
-          meta['datapoints'] = datapoints.size
-          meta['max'] = np.asscalar(self.max_val)
-          meta['min'] = np.asscalar(self.min_val)
-          meta['mean'] = np.asscalar(self.mean_val)
-          meta['lon_list'] = self.lon_list
-          meta['lat_list'] = self.lat_list
-          meta['elevation_list'] = self.elevation_list
-          if filename:
-              u.export_metadata(meta,filename)
-              u.export_binary(datapoints,filename)
+        if( self.datafile == None ):
+          self.meta['num_x'] = self.num_x
+          self.meta['num_y'] = self.num_y
+          self.meta['datapoints'] = datapoints.size
+          self.meta['max'] = np.asscalar(self.max_val)
+          self.meta['min'] = np.asscalar(self.min_val)
+          self.meta['mean'] = np.asscalar(self.mean_val)
+          self.meta['lon_list'] = self.lon_list
+          self.meta['lat_list'] = self.lat_list
+          self.meta['elevation_list'] = self.elevation_list
+          if self.filename:
+              u.eZxport_metadata(self.meta,self.filename)
+              u.export_binary(datapoints,self.filename)
           else:
 #https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
               rnd=''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(6))
               f = "cross_section"+rnd
-              u.export_metadata(meta,f)
+              u.export_metadata(self.meta,f)
               u.export_binary(datapoints,f)
 
         img = plt.imshow(newdatapoints, cmap=colormap, norm=norm)
@@ -346,12 +384,12 @@ class ElevationCrossSection:
 
         cax = plt.axes([0.1, 0.1, 0.8, 0.02])
         cbar = plt.colorbar(img, cax=cax, orientation='horizontal',ticks=TICKS,spacing='regular')
-        if property != "poisson":
-            cbar.set_label(property.title() + " (km/s)")
+        if mproperty != "poisson":
+            cbar.set_label(mproperty.title() + " (km/s)")
         else:
             cbar.set_label("Vp/Vs")
        
-        if filename:
-            plt.savefig(filename)
+        if self.filename:
+            plt.savefig(self.filename)
         else:
             plt.show() 

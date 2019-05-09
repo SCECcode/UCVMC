@@ -165,9 +165,10 @@ def get_user_opts(options):
         return {}
 
     for o, a in opts:
+## special case
         if o == "-H" or o == "--help" :
-            usage()
-            exit(0)
+            return "help"
+## regular case
         for key, value in options.iteritems():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
@@ -839,7 +840,7 @@ class UCVM:
         fh.close()
 
 #  { 'num_x' : xval, 'num_y' : yval, 'total' : total }
-#  import ascii meta jsoin data to an external file 
+#  import ascii meta jsoin data from an external file 
     def import_metadata(self, fname):
         metafile=fname
         k = metafile.rfind(".png")
@@ -862,22 +863,21 @@ class UCVM:
         json.dump(meta, fh, indent=2, sort_keys=False)
         fh.close()
 
-#  import binary material properties in JSON form from an external file 
+#  import material properties in JSON form from an external file 
 #  { matprops: [ 
 #          { 'vp': pval, 'vs': sval, 'density': dval },
 #          ...
 #          { 'vp': pval, 'vs': sval, 'density': dval } ] }
     def import_matprops(self, fname):
         properties=[]
-        blob=self.import_json(fname)
-        jblob=json.loads(blob)
+        jblob=self.import_json(fname)
         mlist= jblob["matprops"]
         for item in mlist :
            mp=MaterialProperties.fromJSONOutput(item)
            properties.append(mp)
         return properties
 
-#  export binary material properties in JSON form to an external file 
+#  export material properties in JSON form to an external file 
     def export_matprops(self,blob,fname):
         matpropsfile=fname
         if matpropsfile is None :
@@ -886,11 +886,12 @@ class UCVM:
         if( k != -1) : 
             matpropsfile = matpropsfile[:k] + "_matprops.json"
         fh = open(matpropsfile, 'w+') 
-        json.dump(blob, fh)
+        json.dump(blob, fh, indent=2, sort_keys=False)
         fh.close()
 
 
 
+#  export material properties in JSON form to an external file 
     def export_velocity(self,filename,vslist,vplist,rholist):
         k = filename.rfind(".png")
         rawfile=filename
@@ -898,7 +899,7 @@ class UCVM:
             rawfile= filename[:k] + "_data.json"
         fh = open(rawfile, 'w+')
         raw={"vs":vslist, "vp":vplist, "rho":rholist};
-        json.dump(raw, fh)
+        json.dump(raw, fh, indent=2, sort_keys=False)
         fh.close()
 
     #  make the proper bounds for colormap

@@ -8,7 +8,7 @@
 #
 #  Plots a horizontal slice given a set of command-line parameters.
 
-from pycvm import HorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import HorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point, ask_number, ask_path, ask_file, get_user_opts
 import getopt, sys, os
 
 ## Prints usage of this utility.
@@ -25,83 +25,35 @@ def usage():
     print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
     print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
+    print "\t-t, --title: optional plot title"
+    print "\t-H, --help: optional display usage information"
+    print "\t-i, --installdir: optional UCVM isntall directory"
+    print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
-## Makes sure the response is a number.
-def ask_number(question):
-    temp_val = None
-    
-    while temp_val is None:
-        temp_val = raw_input(question)
-        try:
-            float(temp_val)
-            return float(temp_val)
-        except ValueError:
-            print temp_val + " is not a number. Please enter a number."
-            temp_val = None
-    
-## Gets the options and assigns them to the correct variables.
-def get_user_opts(options):
-    
-    short_opt_string = ""
-    long_opts = []
-    opts_left = []
-    opts_opt = []
-    ret_val = {}
-    
-    for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0] + ":"
-        long_opts.append(key.split(",")[1])
-        opts_left.append(key.split(",")[0])
+ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
+                         "u,upperright":"lat2,lon2", \
+                         "s,spacing":"spacing", \
+                         "e,depth":"depth", \
+                         "d,datatype":"data_type", \
+                         "c,cvm":"cvm", \
+                         "a,scale": "color", \
+                         "f,datafile,o":"datafile",
+                         "o,outfile,o":"outfile", \
+                         "t,title,o":"title", \
+                         "H,help,o":"", \
+                         "i,installdir,o":"installdir", \
+                         "n,configfile,o":"configfile" })
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
-    except getopt.GetoptError as err:
-        print str(err)   
-        exit(1)
-
-    if len(opts) == 0 :
-        return {}
-    
-    for o, a in opts:
-        for key, value in options.iteritems():
-            if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
-                opts_left.remove(key.split(",")[0])
-                if "," in value:
-                    ret_val[value.split(",")[0]] = a.split(",")[0]
-                    ret_val[value.split(",")[1]] = a.split(",")[1]
-                else:
-                    ret_val[value] = a
-    
-    for l in opts_left :
-# data file is optional
-        if l == "f" :
-            opts_opt.append(l)
-            ret_val["datafile"] = None
-        else :
-            if l == "o" :
-              opts_opt.append(l)
-              ret_val["outfile"] = None
-
-    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
-        return ret_val
-    else:
-        return "bad"
-
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "e,depth":"depth", \
-                         "d,datatype":"data_type", "c,cvm":"cvm_selected", "a,scale": "color", \
-                         "f,datafile":"datafile", "o,outfile":"outfile"})
-
-
-# Create a new UCVM object.
-u = UCVM()
 
 meta = {}
 
 if ret_val == "bad":
     usage()
     exit(1)
+elif ret_val == "help":
+    usage()
+    exit(0)
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
@@ -136,39 +88,53 @@ else:
         print "and specify a valid region. The first point should be the lower-left corner, the"
         print "second point should be the upper-right corner."
         exit(1)
+    meta['lon1']=lon1
+    meta['lon2']=lon2
+    meta['lat1']=lat1
+    meta['lat2']=lat2
 
     spacing = -1
-
     while spacing <= 0:
         spacing = ask_number("Which grid spacing (in decimal degree units) would you like (usually, this is 0.01): ")
     
         if spacing <= 0:
             print "Error: grid spacing must be a positive number."
+    meta['spacing']=spacing
 
     depth = -1
     print ""
-
     while depth < 0:
         depth = ask_number("Please enter the depth, in meters, at which you would like this plot: ")
         if depth < 0:
             print "Error: the depth must be a positive number."
+    meta['depth']=depth
 
     print ""
-
     data_type = ""
-
     while data_type != "vs" and data_type != "vp" and data_type != "density" and data_type != "poisson":
         data_type = raw_input("What would you like to plot (either vp, vs, density, or poisson): ")
         data_type = data_type.lower().strip()
     
         if data_type != "vs" and data_type != "vp" and data_type != "density"  and data_type != "poisson":
             print "Error: you must select either 'vp', 'vs', 'density', 'poisson' (without quotation marks)."
+    meta['mproperty']=data_type
+
+    counter = 1
+    corresponding_cvm = []
+    installdir = None
+    configfile = None
+
+    # Ask if a different installdir should be  used
+    cwd = os.getcwd()
+    installdir = ask_path("Do you want to use different UCVM install directory", cwd+"/..")
+    # Ask if a different ucvm.conf should be  used
+    configfile = ask_file("Do you want to use different ucvm.conf file", cwd+"/../ucvm.conf")
 
     # Ask which CVMs to use.
     print "\nFrom which CVM would you like this data to come:"
 
-    counter = 1
-    corresponding_cvm = []
+    # Create a new UCVM object.
+    u = UCVM(install_dir=installdir, config_file=configfile)
 
     for cvm in u.models:
         cvmtoprint = cvm
@@ -178,8 +144,7 @@ else:
         print "\t%d) %s" % (counter, cvmtoprint)
         counter += 1
     
-        cvm_selected = -1
-
+    cvm_selected = -1
     while cvm_selected < 0 or cvm_selected > counter:
         cvm_selected = int(ask_number("\nSelect the CVM: ")) - 1
     
@@ -187,10 +152,10 @@ else:
             print "Error: the number you selected must be between 1 and %d" % counter
 
     cvm_selected = corresponding_cvm[cvm_selected]
+    meta['cvm']=cvm_selected
 
     # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
     color = ""
-
     while color != "s" and color != "d" and data_type != "poisson":
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
@@ -199,12 +164,14 @@ else:
         if color != "s" and color != "d":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
             print "marks) for a smooth color scale."
+    meta['color']=color
 
-# Now that we have all the requisite data, we can actually make the plot now.
+
+# Now we have all the information so we can actually plot the data.
 print ""
 print "Retrieving data. Please wait..."
-
+ 
+###################################################################################
 # Generate the horizontal slice.
-h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
-
-h.plot(data_type,datafile=datafile, filename=outfile, color_scale=color, meta=meta)
+h = HorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), meta)
+h.plot()

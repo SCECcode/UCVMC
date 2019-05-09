@@ -15,8 +15,14 @@ SPACING=0.01
 MODEL=cvmh 
 
 
+## outside of installdir
+${UCVM_INSTALL_PATH}/utilities/plot_vs30_map.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -c ${MODEL} -a s -s ${SPACING} -o ${CWD}/${LABEL}_o.png -i ${UCVM_INSTALL_PATH}
+
+
 cd ${UCVM_INSTALL_PATH}/utilities
 
 ./plot_vs30_map.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -c ${MODEL} -a s -s ${SPACING} -o ${CWD}/${LABEL}.png
 
 ./plot_vs30_map.py -b ${LAT1},${LON1} -u ${LAT2},${LON2} -c ${MODEL} -a d -s ${SPACING} -f ${CWD}/${LABEL}_data.bin -o ${CWD}/${LABEL}_d.png
+
+./plot_vs30_map.py -H

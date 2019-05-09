@@ -31,20 +31,15 @@ class BasinSlice(HorizontalSlice):
     #                 To specify meters, give this parameter like "100m" instead of "0.01" degrees.
     #  @param cvm The community velocity model from which this data should come.
     #  @param vs_threshold The Vs value to check for at each depth.
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, vs_threshold, xsteps=None, ysteps=None):
-
-        self.xsteps = xsteps
-        self.ysteps = ysteps
-    
+    def __init__(self, upperleftpoint, bottomrightpoint, vs_threshold, meta):
         ## The Vs value to check for.
         self.vs_threshold = vs_threshold
 
         #  Initializes the base class which is a horizontal slice.
-        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=xsteps, ysteps=ysteps)
-        
+        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, meta)
     ##
     #  Retrieves the values for this basin slice and stores them in the class.
-    def getplotvals(self, property=None, datafile = None):
+    def getplotvals(self, mproperty="vs"):
         
         #  How many y and x values will we need?
         
@@ -71,12 +66,11 @@ class BasinSlice(HorizontalSlice):
         ## The 2D array of retrieved Vs30 values.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
-        u = UCVM()
-
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 ### MEI
-        if (datafile != None) :
+        if (self.datafile != None) :
 #            print "\nUsing --> "+datafile
-            data = u.import_binary(datafile, self.num_x, self.num_y)
+            data = u.import_binary(self.datafile, self.num_x, self.num_y)
 #            print "Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y
         else:
             #  Generate a list of points to pass to UCVM.
@@ -107,12 +101,8 @@ class BasinSlice(HorizontalSlice):
     #  Plots the basin depth data as a horizontal slice. This code is very similar to the
     #  HorizontalSlice routine.
     #
-    #  @param filename The location to which the plot should be saved. Optional.
-    #  @param title The title of the plot. Optional.
-    #  @param horizontal_label The horizontal label of the plot. Optional.
-    #  @param filename The file name to which the plot should be saved. Optional.
-    def plot(self, title = None, horizontal_label = "Depth (m)", datafile = None,  filename = None, meta={}, color_scale="sd"):
- 
+    def plot(self) :
+
         if self.upperleftpoint.description == None:
             location_text = ""
         else:
@@ -124,12 +114,13 @@ class BasinSlice(HorizontalSlice):
         except: 
             cvmdesc = self.cvm
 
-        if title == None:
-            title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
-        
-        meta['title'] = title
-        HorizontalSlice.plot(self, property="vs", horizontal_label=horizontal_label, title=title, datafile=datafile, filename=filename, \
-                             color_scale=color_scale, meta=meta)
+        if 'title' not in self.meta:
+            self.title = "%sBasin Depth Map For %s" % (location_text, cvmdesc)
+            self.meta['title'] = self.title;
+ 
+        self.meta['mproperty']="vs"
+
+        HorizontalSlice.plot(self)
         
 ##
 #  @class Z10Slice
@@ -146,22 +137,20 @@ class Z10Slice(BasinSlice):
     #  @param spacing The spacing, in degrees by default, or meters (if "m" appended), for this plot. 
     #                 To specify meters, give this parameter like "100m" instead of "0.01" degrees.
     #  @param cvm The community velocity model from which this data should come.
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps=None):
+    def __init__(self, upperleftpoint, bottomrightpoint, meta={}) :
 
         #  Initializes the base class which is a horizontal slice.
-        BasinSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, 1000, xsteps=xsteps, ysteps=ysteps)
+        BasinSlice.__init__(self, upperleftpoint, bottomrightpoint, 1000, meta)
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self, property=None,  datafile = None):
-        BasinSlice.getplotvals(self, property, datafile)
+    def getplotvals(self, mproperty):
+        BasinSlice.getplotvals(self, mproperty)
     
     ##
     #  Plots the Z1.0 slice.
     #
-    #  @param title The title of the plot. Optional.
-    #  @param filename The name of the file of the plot. Optional.
-    def plot(self, title = None, datafile = None, filename = None, note = None, color_scale="sd", meta={}):
+    def plot(self) :
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -174,14 +163,13 @@ class Z10Slice(BasinSlice):
         except: 
             cvmdesc = self.cvm
         
-        if title == None:
-            title = "%sZ1.0 Map For %s" % (location_text, cvmdesc)
-
-        if note != None:
-            title = title + " " + note
-        
-        meta['title'] = title
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale=color_scale)    
+        if 'title' in self.meta :
+            self.title = self.meta['title']
+        else:
+            self.title = "%sZ1.0 Map For %s" % (location_text, cvmdesc)
+            self.meta['title'] = self.title
+  
+        BasinSlice.plot(self)
         
 ##
 #  @class Z25Slice
@@ -198,22 +186,22 @@ class Z25Slice(BasinSlice):
     #  @param spacing The spacing, in degrees by default, or meters (if "m" appended), for this plot. 
     #                 To specify meters, give this parameter like "100m" instead of "0.01" degrees.
     #  @param cvm The community velocity model from which this data should come.
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps=None):
+    def __init__(self, upperleftpoint, bottomrightpoint, meta={}):
 
         #  Initializes the base class which is a horizontal slice.
-        BasinSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, 2500, xsteps=xsteps, ysteps=ysteps)
+        BasinSlice.__init__(self, upperleftpoint, bottomrightpoint, 2500, meta)
     
     ##
     #  Gets the depths for the plot in meters.
-    def getplotvals(self, property=None, datafile = None):
-        BasinSlice.getplotvals(self, property, datafile)
+    def getplotvals(self, mproperty):
+        BasinSlice.getplotvals(self, mproperty)
     
     ##
     #  Generates the Z2.5 slice plot.
     #
     #  @param title The title for the plot. Optional.
     #  @param filename The file to which the plot should be saved. Optional.
-    def plot(self, title = None, datafile = None, filename = None, note = None, color_scale="sd", meta={}):
+    def plot(self):
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -226,12 +214,9 @@ class Z25Slice(BasinSlice):
         except: 
             cvmdesc = self.cvm
         
-        if title == None:
+        if 'title' not in self.meta :
             title = "%sZ2.5 Map For %s" % (location_text, cvmdesc)
-
-        if note != None:
-            title = title + " " + note
-        
-        meta['title'] = title
-        BasinSlice.plot(self, title=title, datafile=datafile, filename=filename, meta=meta,color_scale=color_scale)           
+            self.meta['title'] = title
+  
+        BasinSlice.plot(self)
      

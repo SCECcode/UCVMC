@@ -27,9 +27,9 @@ def usage():
     print "\t-y, --y: optional y steps matching the datafile"
     print "\t-o, --outfile: optional png output filename"
     print "\t-t, --title: optional plot title"
-    print "\t-H, --help: display usage information"
+    print "\t-H, --help: optional display usage information"
     print "\t-i, --installdir: optional UCVM install directory"
-    print "\t-g, --configfile: optional UCVM configfile"
+    print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
 
@@ -47,11 +47,14 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "t,title,o":"title", \
                          "H,help,o":"", \
                          "i,installdir,o":"installdir", \
-                         "g,configfile,o":"configfile" })
+                         "n,configfile,o":"configfile" })
 
 if ret_val == "bad":
     usage()
     exit(1)
+elif ret_val == "help":
+    usage()
+    exit(0)
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
@@ -65,7 +68,6 @@ elif len(ret_val) > 0:
                 exec("%s = %s" % (key, value))
             else:
                 exec("%s = '%s'" % (key, value))
-    useMPI = "n"
 
 else:      
     print ""
@@ -127,8 +129,7 @@ else:
         print "\t%d) %s" % (counter, cvmtoprint)
         counter += 1
     
-        cvm_selected = -1
-
+    cvm_selected = -1
     while cvm_selected < 0 or cvm_selected > counter:
         cvm_selected = int(ask_number("\nSelect the CVM: ")) - 1
     
@@ -150,8 +151,11 @@ else:
     meta['color']=color
 
 
-
+# Now we have all the information so we can actually plot the data.
+print ""
+print "Retrieving data. Please wait..."
+ 
 ###################################################################################
 # Generate the Z10 horizontal slice.
 b = Z10Slice(Point(lon1, lat2, 0), Point(lon2, lat1, 0), meta)
-b.plot(meta=meta)
+b.plot()

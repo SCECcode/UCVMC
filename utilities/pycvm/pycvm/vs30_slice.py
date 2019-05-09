@@ -28,17 +28,14 @@ class Vs30Slice(HorizontalSlice):
     #  @param spacing The spacing, in degrees, for this plot. 
     #  @param cvm The community velocity model from which this data should come.
     #  
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps=None):
-    
-        self.xsteps = xsteps
-        self.ysteps = ysteps
+    def __init__(self, upperleftpoint, bottomrightpoint, meta={}):
 
         #  Initializes the base class which is a horizontal slice.
-        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=xsteps, ysteps=ysteps)
+        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, meta)
     
     ##
     #  Retrieves the values for this Vs30 slice and stores them in the class.
-    def getplotvals(self, property="vs", datafile = None):
+    def getplotvals(self, mproperty="vs"):
         
         #  How many y and x values will we need?
         
@@ -60,13 +57,13 @@ class Vs30Slice(HorizontalSlice):
         ## The 2D array of retrieved Vs30 values.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
-        u = UCVM()
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         ###MEI
-        if (datafile != None) :
-            print "\nUsing --> "+datafile
+        if (self.datafile != None) :
+            print "\nUsing --> "+self.datafile
             # print "expecting x ",self.num_x," y ",self.num_y
-            data = u.import_binary(datafile, self.num_x, self.num_y)
+            data = u.import_binary(self.datafile, self.num_x, self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
@@ -94,7 +91,7 @@ class Vs30Slice(HorizontalSlice):
     #  @param filename The location to which the plot should be saved. Optional.
     #  @param title The title of the plot to use. Optional.
     #  @param color_scale The color scale to use for the plot. Optional.
-    def plot(self, title = None, datafile = None, filename = None, color_scale = "d",meta={}):
+    def plot(self):
  
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -106,8 +103,11 @@ class Vs30Slice(HorizontalSlice):
             cvmdesc = UCVM_CVMS[self.cvm]
         except: 
             cvmdesc = self.cvm
+
+        if 'title' not in self.meta:
+            title= "%sVs30 Data For %s" % (location_text, cvmdesc)
+            self.meta['title'] = title
+
+        self.meta['mproperty']="vs"
         
-        if title == None:
-            title = "%sVs30 Data For %s" % (location_text, cvmdesc)
-        
-        HorizontalSlice.plot(self, property="vs", title=title, datafile=datafile, filename=filename, color_scale=color_scale,meta=meta)
+        HorizontalSlice.plot(self)
