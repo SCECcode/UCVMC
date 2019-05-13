@@ -324,7 +324,7 @@ class ElevationCrossSection:
             norm = mcolors.Normalize(vmin=0,vmax=umax)
         elif color_scale == "sd":
             BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
-            colormap = basemap.cm.GMT_globe
+#            colormap = basemap.cm.GMT_globe
             TICKS = u.maketicks(self.min_val, self.max_val, 5)
             norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)
         elif color_scale == "b":
@@ -345,7 +345,8 @@ class ElevationCrossSection:
         elif color_scale == 'dd':
             BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5, all=True)
             TICKS = u.maketicks(self.min_val, self.max_val, 5)
-            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
+#            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
+            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         else:
             print "ERROR: unknown option for colorscale."

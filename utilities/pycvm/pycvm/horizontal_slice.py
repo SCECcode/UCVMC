@@ -290,7 +290,7 @@ class HorizontalSlice:
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
             BOUNDS= u.makebounds(newmin_val, newmax_val, 5, self.mean_val, substep=5)
-            colormap = basemap.cm.GMT_globe
+#            colormap = basemap.cm.GMT_globe
             TICKS = u.maketicks(newmin_val, newmax_val, 5)
             norm = mcolors.Normalize(vmin=newmin_val,vmax=newmax_val)
         elif color_scale == "b":
