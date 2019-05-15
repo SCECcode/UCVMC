@@ -22,7 +22,7 @@ fftw_complex **mallocHelperFFTW(int rows, int cols);
 fftw_complex **squeeze(int zIndex, int nz, int ny, int nx, int ty, int tx, fftw_complex *array);
 int nicefft(double num, double *nice_n_bigger, double *nice_n_smaller);
 int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger, double n2iso_bigger,
-			double n3iso_bigger, fftw_complex *result);
+	double n3iso_bigger, fftw_complex *result, char *floats_file, char *floats_complext_file);
 int permute(fftw_complex **inarray, fftw_complex **outarray, int *permuteArray, int rows, int permuteLength);
 int interpft(fftw_complex **inarray, int m, int n, int ny, int dim, fftw_complex **outarray);
 

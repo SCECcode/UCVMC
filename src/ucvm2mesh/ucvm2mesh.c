@@ -62,7 +62,7 @@ void usage(char *arg)
 int init_app(const char *cfgfile, mesh_config_t *cfg)
 {
   /* Read in config */
-  if (read_config(0, -1, cfgfile, cfg) != 0) {
+  if (read_config(0, -1, cfgfile, cfg, 1 /* old-style */) != 0) {
     return(1);
   }
   

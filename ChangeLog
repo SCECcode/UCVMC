@@ -1,6 +1,33 @@
+
+2019-04-15  Mei-Hui Su <mei@usc.edu>
+
+* Added new plotting capability of using elevation in addition to depth 
+* Replace Proj4 with Proj-5.0.0
+* Update Wills map with newer Wills 2015 map
+* Update CVMH-15.1.0 with misplaced scripts to enable standalone verification
+* Added examples directory to showcase plotting scripts and programs using UCVM
+
+2018-07-15  Mei-Hui Su <mei@usc.edu>
+
+* Support for CCA06(optional GTL), Central California Velocity Model
+* Support for CS17.3(optional GTL), 
+*   Cypershake study 17.3 Central California Velocity Model 
+* Support for CS17.3-H(optional GTL), 
+*   Cypershake study 17.3 Central California Velocity Model with San Joaquin
+*   and Santa Maria Basins data from Havard's group
+* Fixed the proper tiling of models 
+* Fixed the implmenation of plugin schema for the dynamic loading of
+*   newer models
+* Update to CVMH-15.1.1 to remove compilation errors on Mac
+* Expanded processing result from basin_query_mpi to basin_query_mpi_complete
+* Expanded scalability of ucvm2mesh_mpi with a new ucvm2mesh_mpi_layer program 
+* Expanded plotting scripts to preserve intermediate data product and 
+*   metadata
+
 2017-01-30 Philip Maechling <maechlin@usc.edu>
 
-* Moved distrbituion to github repository
+* Janurary 2017 release
+* Moved distribution to github repository
 * Renamed codebase to UCVMC as C-language version of UCVM
 * Removed unsupported models and features
 * Updated installation scripts including get_largefiles.py, 
@@ -10,6 +37,10 @@
 * Changed default UCVMC/conf/ucvm.conf to remove unused models
 * Changed default CVM-H setting to no background model, and no GTL
 * Changed default CVM-S5 to no GTL, and no background model
+
+2015-10-01 David Gill <davidgil@usc.edu>
+
+* Sept 2015 release
 
 2014-07-28 David Gill <davidgil@usc.edu>
 

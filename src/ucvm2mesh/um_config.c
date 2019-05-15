@@ -17,7 +17,7 @@
 
 
 /* Read config file*/
-int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
+int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg, int old_style)
 {
   ucvm_config_t *chead;
   ucvm_config_t *cptr;
@@ -276,11 +276,24 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 	return(1);
       }
       
+      int tproc= cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+      int rem = tproc % nproc;
+      if (old_style && rem != 0) {
+	fprintf(stderr, "[%d] Proc space does not equal or match MPI core count\n", 
+		myid);
+	fprintf(stderr, "[%d]   expected %d(processes) divisible by %d(core count)\n",myid,tproc,nproc);
+	return(1);
+      }
+
+/* ...no need to be restrictive about this
       if (nproc != cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2]) {
 	fprintf(stderr, "[%d] Proc space does not equal MPI core count\n", 
 		myid);
+        int tproc= cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+	fprintf(stderr, "[%d]   expected %d but got %d\n",myid,tproc,nproc);
 	return(1);
       }
+*/
     }
 #endif
   }
@@ -392,6 +405,23 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
   return(0);
 }
 
+/* Return total number of ranks */
+int get_nrank(mesh_config_t *cfg) {
+  int t=cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1]*cfg->proc_dims.dim[2];
+  return t;
+}
+
+/* Return number of ranks in a layer */
+int get_nrank_layer(mesh_config_t *cfg) {
+  int t=cfg->proc_dims.dim[0]*cfg->proc_dims.dim[1];
+  return t;
+}
+
+/* return number of layers in */
+int get_nlayer(mesh_config_t *cfg) {
+  int t=cfg->proc_dims.dim[2];
+  return t;
+}
 
 /* Dump config to stdout */
 int disp_config(mesh_config_t *cfg) {

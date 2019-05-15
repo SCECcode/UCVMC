@@ -186,13 +186,15 @@ int mpi_file_write_at(MPI_File *fh, MPI_Offset offset,
   if (MPI_File_write_at(*fh, offset, buf, count, *dt, 
   			&status) != MPI_SUCCESS) {
     fprintf(stderr, "Error writing to file\n");
-    return(1);
+    mpi_exit(3);
+//MEI,    return(1);
   }
 #else
   if (MPI_File_write_at_all(*fh, offset, buf, count, *dt, 
   			    &status) != MPI_SUCCESS) {
     fprintf(stderr, "Error writing to file\n");
-    return(1);
+    mpi_exit(3);
+//MEI,    return(1);
   }
 #endif
   
@@ -207,7 +209,8 @@ int mpi_file_write_at(MPI_File *fh, MPI_Offset offset,
 }
 
 
-int mesh_open_mpi(int myid, int nproc, 
+// myrank, nrank
+int mesh_open_mpi(int myrank, int nrank, 
 		     ucvm_dim_t *mesh_dims, ucvm_dim_t *proc_dims,
 		     char *output, mesh_format_t mtype, int bufsize)
 {
@@ -219,7 +222,7 @@ int mesh_open_mpi(int myid, int nproc,
   size_t part_size;
 
   errstrlen = 256;
-  writer_id = myid;
+  writer_id = myrank;
 
   if (writer_id == 0) {
 #ifndef UCVM_ENABLE_MPI_COLL_IO
@@ -282,7 +285,7 @@ int mesh_open_mpi(int myid, int nproc,
   }
 
   /* Create file view data type */
-  retval = MPI_Type_create_darray(nproc, myid, 3, mdim, 
+  retval = MPI_Type_create_darray(nrank, myrank, 3, mdim, 
 				  distribs, dargs, pdim, MPI_ORDER_C,
 				  MPI_MESH_T, &MPI_MESH_FILE_T);
   if (retval != MPI_SUCCESS) {
@@ -295,9 +298,9 @@ int mesh_open_mpi(int myid, int nproc,
   MPI_Type_commit(&MPI_MESH_FILE_T);
 
   MPI_Type_size(MPI_MESH_FILE_T, &retval);
-  if (myid == 0) {
+  if (myrank == 0) {
     fprintf(stdout, "[%d] Partition file type size: %d bytes\n", 
-	    myid, retval);
+	    myrank, retval);
   }
 
   cur_offset = 0;
@@ -404,6 +407,8 @@ int mesh_write_mpi(mesh_ijk32_t *nodes, int node_count)
       ptr1_ijk12[i].vs = nodes[i].vs;
       ptr1_ijk12[i].rho = nodes[i].rho;
     }
+//fprintf(stdout,"file_write_at, offset %d (node_count %d)\n", (int) cur_offset, node_count);
+//fflush(stdout);
     if (mpi_file_write_at(&fh1, cur_offset, 
 			  node_buf1, node_count, 
 			  num_fields_mesh, &MPI_MESH_T) != 0) {
@@ -515,6 +520,11 @@ int mesh_close_mpi()
   node_buf3 = NULL;
   meshtype = MESH_FORMAT_UNKNOWN;
   writer_init_flag = 0;
+  cur_offset = 0;
+  node_buf_size = 0;
+  meshrecsize = 0;
+  MPI_Type_free(&MPI_MESH_FILE_T);
+  MPI_Type_free(&MPI_MESH_T);
 
   return(0);
 }

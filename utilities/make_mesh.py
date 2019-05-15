@@ -79,3 +79,14 @@ os.system(cmd)
 end = time.time()
 print "Mesh extraction for model %s : %d seconds"%(model_string,(end-start))
 sys.exit(0)
+#
+# model cca
+#
+start = time.time()
+model_string = "cca"
+cmd="../bin/ucvm_query -f ../conf/ucvm.conf -m %s < ../utilities/out.grd > mesh_%s.out"%(model_string,model_string)
+print cmd
+os.system(cmd)
+end = time.time()
+print "Mesh extraction for model %s : %d seconds"%(model_string,(end-start))
+sys.exit(0)

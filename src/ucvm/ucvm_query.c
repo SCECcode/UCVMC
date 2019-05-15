@@ -143,8 +143,10 @@ int main(int argc, char **argv)
     case 'c':
       if (strcmp(optarg, "gd") == 0) {
 	cmode = UCVM_COORD_GEO_DEPTH;
+        fprintf(stderr, "Using Geo Depth coordinates as z mode.\n");
       } else if (strcmp(optarg, "ge") == 0) {
 	cmode = UCVM_COORD_GEO_ELEV;
+        fprintf(stderr, "Using Geo Elevation coordinates as z mode.\n");
       } else {
 	fprintf(stderr, "Invalid z mode %s.\n", optarg);
 	usage();
@@ -262,7 +264,6 @@ int main(int argc, char **argv)
                &(pnts[numread].coord[0]),
 	       &(pnts[numread].coord[1]),
 	       &(pnts[numread].coord[2])) == 3) {
-
       /* Check for scan failure */
       if ((pnts[numread].coord[0] == 0.0) || 
 	  (pnts[numread].coord[1] == 0.0)) {

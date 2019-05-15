@@ -1,11 +1,13 @@
 # GNU Automake config
 
-EXTRA_DIST = ucvm*
+EXTRA_DIST = ucvm* model*
 
 all:
 
 install:
 	mkdir -p ${prefix}/model/ucvm
-	cp ucvm* ${prefix}/model/ucvm
+	if ! test . -ef ${prefix}/model/ucvm; then \
+                cp ucvm* ${prefix}/model/ucvm; \
+        fi
 
 clean:

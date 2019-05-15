@@ -10,7 +10,7 @@ import sys
 import getopt
 import urllib2
 from subprocess import call, Popen, PIPE
-import simplejson as json
+import json
 import platform
 import socket
 import shlex
@@ -18,12 +18,14 @@ import shlex
 # Variables
 
 # Set the version number for the installation script.
-VERSION = "17.1.0"
+VERSION = "19.4.0"
 
 # User defined variables.
 all_flag = False
 dynamic_flag = True
 use_iobuf = False
+## control adding of explicit dynamic linker flag
+user_dynamic_flag = False
 
 # Should we abort after testing system conditions?
 error_out = False
@@ -36,18 +38,20 @@ shell_script = ""
 
 # Print usage.
 def usage():
-    print "Automatically sets up UCVM and alerts the user to potential complications.\n"
+    print "Automatically sets up UCVMC and alerts the user to potential complications.\n"
     print "\t-s  --static       Use static linking."
+    print "\t-d  --dynamic      Use dynamic linking."
+    print "\t-a  --all          Use all available models."
     print ""
-    print "UCVM %s\n" % VERSION
+    print "UCVMC %s\n" % VERSION
     
 # Stands for "error gracefully". Prints out a message for the error and asks to contact software@scec.org.
 def eG(err, step):
     print "\nERROR:"
-    print "An error occurred while trying to setup UCVM. Specifically, the error was:\n"
+    print "An error occurred while trying to setup UCVMC. Specifically, the error was:\n"
     print str(err)
     print "\nAt step: %s\n" % step
-    print "Please contact software@scec.org for assistance setting up UCVM. In your message,"
+    print "Please contact software@scec.org for assistance setting up UCVMC. In your message,"
     print "please let us know the operating system on which you are running and some"
     print "specifications about your computer.\n"
     exit(1)
@@ -63,6 +67,7 @@ def which(file):
 # Records the command to the global shell script variable.
 def callAndRecord(command, nocall = False):
     global shell_script
+    print '  ==> command used.. '+'_'.join(command)
     if nocall == False:
         retVal = call(command)
         if not retVal == 0:
@@ -86,14 +91,23 @@ def printPretty(list):
             buffer += " and "
     print buffer
 
+# create matching install directory from the build directory
+# base on configure's prefix
+def createInstallTargetPath( targetpath ):
+  print 'ADDING '+targetpath
+  if not os.path.exists(targetpath):
+    call(["mkdir", "-p", targetpath])
+
 # Install with the configure, make, make install paradigm.
 #
 # This makes three assumptions
 # (1) All required tar files are in the current_working_directory/work directory, and are gzipped
 # (2) All installs of type "model" go to ucvmpath/model
 # (3) All installs of type "library" go to ucvmpath/lib
+
 #
 def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
+
     print "\nInstalling " + type + " " + tarname
     pathname = "lib"
     if type == "model":
@@ -103,7 +117,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     
     strip_level = "2"
     if config_data["Path"] == "fftw" or \
-	    config_data["Path"] == "proj-4" or \
+	    config_data["Path"] == "proj-5" or \
             config_data["Path"] == "euclid3" or \
             config_data["Path"] == "netcdf" or \
             config_data["Path"] == "hdf5" or \
@@ -113,13 +127,12 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     # 
     # We need to un-tar the file.
     # The strip level determines how much of the path found in the tar file are removed.
-    # strip=1 will remove the proj-4.8.0/configure and output only configure.in 
-    # This enables us to untar into drictories with static names like proj-4
+    # strip=1 will remove the proj-5.0.0/configure and output only configure.in 
+    # This enables us to untar into drictories with static names like proj-5
     #
     print "Decompressing " + type
-    callAndRecord(["gunzip", workpath + "/" + tarname])
     callAndRecord(["mkdir", "-p", workpath + "/" + config_data["Path"]])
-    callAndRecord(["tar", "xvf", (workpath  + "/" + tarname).replace(".gz", ""), "-C", workpath + "/" + config_data["Path"], \
+    callAndRecord(["tar", "zxvf", workpath  + "/" + tarname, "-C", workpath + "/" + config_data["Path"], \
                      "--strip", strip_level])
 
     savedPath = os.getcwd()
@@ -127,9 +140,9 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     callAndRecord(["cd", workpath + "/" + config_data["Path"]], True)
 
     #
-    # proj-4 library is an exception. It does not require use of aclocal, only ./configure
+    # proj-5 library is an exception. It does not require use of aclocal, only ./configure
     #
-    if not config_data["Path"] == "proj-4":
+    if not config_data["Path"] == "proj-5":
         print "\nRunning aclocal"
         aclocal_array = ["aclocal"]
         if os.path.exists("./m4"):
@@ -145,15 +158,31 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     print "\nRunning ./configure"
     
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
+    createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
     if config_data["Path"] == "cvms5":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
-        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
+    elif config_data["Path"] == "cca":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
+    elif config_data["Path"] == "cs173h":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
+    elif config_data["Path"] == "cs173":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cencal":
-        configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/euclid3/lib -L" + ucvmpath + "/lib/proj-4/lib")
-        configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/euclid3/include -I" + ucvmpath + "/lib/proj-4/include")
+        configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/euclid3/lib -L" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/euclid3/include -I" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "netcdf":
         configure_array.append("LDFLAGS=-L" + ucvmpath + "/lib/hdf5/lib")
         configure_array.append("CPPFLAGS=-I" + ucvmpath + "/lib/hdf5/include")
@@ -182,6 +211,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
         callAndRecord(["mv", "./model/USGSBayAreaVM-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
         callAndRecord(["mv", "./model/USGSBayAreaVMExt-08.3.0.etree", ucvmpath + "/model/" + config_data["Path"] + "/model/"])
     
+    config_data["Install"]="true"
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
 #
@@ -189,7 +219,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ash", ["all", "static", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
@@ -202,6 +232,9 @@ for o, a in opts:
     elif o in ('-s', '--static'):
         dynamic_flag = False
         print "static Flag: True"
+    elif o in ('-d', '--dynamic'):
+        user_dynamic_flag = True 
+        print "dynamic Flag: True"
     elif o in ('-h', '--help'):
         usage()
         exit(0)
@@ -213,13 +246,13 @@ for o, a in opts:
             exit(1)
 
 print ""
-print "UCVM %s Installation" % VERSION
+print "UCVMC %s Installation" % VERSION
 print "Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0])
 
 print "Using local setup.list and system.list ...."
     
 try:
-    f = open("./system.list", "r")
+    f = open("./setup/system.list", "r")
     json_string = f.read()
     f.close()
     system_data = json.loads(json_string)
@@ -269,17 +302,17 @@ print "Using local setup.list file"
     
 try:
     # We now have our list. Parse it.
-    f = open("./setup.list", "r")
+    f = open("./setup/setup.list", "r")
     json_string = f.read()
     f.close()
     config_data = json.loads(json_string)
 except StandardError, e:
     eG(e, "Parsing available model list.")
 
-print "\nPlease answer the following questions to install UCVM.\n"
+print "\nPlease answer the following questions to install UCVMC.\n"
 print "Note that this install and build process may take up to an hour depending on your"
 print "computer speed."
-print "Where would you like UCVM to be installed?"
+print "Where would you like UCVMC to be installed?"
 
 try:
     if ucvmpath[0] == "$":
@@ -307,18 +340,35 @@ while enteredpath is not "":
     else:
         break
     
-# Copy final selected path back to the UCVM path variable.
+# Copy final selected path back to the UCVMC path variable.
 ucvmpath = enteredpath
+
+# Create necessary directories
+if not os.path.exists(ucvmpath):
+  call(["mkdir", "-p", ucvmpath])
+  call(["mkdir", "-p", ucvmpath+'/work'])
+  call(["mkdir", "-p", ucvmpath+'/lib'])
     
 for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
-    if config_data["models"][model]["Ask"] != "no" or all_flag == True:
-        print "\nWould you like to download and install " + model + "?"
+
+    the_model = config_data["models"][model]
+    tarname = the_model["URL"].split("/")[-1]
+    ltarname = "./work/model/" + tarname
+## continue only if the model is in work_model_dir 
+    if not os.path.isfile(ltarname):
+        continue
+    if all_flag == True:
+        modelsToInstall.append(model)
+        continue
+
+    if config_data["models"][model]["Ask"] != "no":
+        print "\nWould you like to install " + model + "?"
         dlinstmodel = raw_input("Enter yes or no: ")
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
             
-print "\nYou have indicated that you would like to download and install"
+print "\nYou have indicated that you would like to install"
 printPretty(modelsToInstall)
 
 for library in config_data["libraries"]:
@@ -326,17 +376,17 @@ for library in config_data["libraries"]:
     if the_library["Ask"] == "yes" or library.lower() in unsupported_features:
         if the_library["Prerequisites"] != "":
             if "Dynamic" in the_library["Prerequisites"] and dynamic_flag == False:
-                print library + " requires UCVM to be linked dynamically. If you would like " + library
+                print library + " requires UCVMC to be linked dynamically. If you would like " + library
                 print "to be included, please re-run ucvm_setup.py with the '-d' flag."
             if "Static" in the_library["Prerequisites"] and dynamic_flag == True:
-                print library + " requires UCVM to be linked statically. If you would like " + library
+                print library + " requires UCVMC to be linked statically. If you would like " + library
                 print "to be included, please re-run ucvm_setup.py without the '-d' flag."            
         
         if library.lower() in unsupported_features:
-            print "WARNING: " + library + " is unsupported and we cannot guarantee that UCVM"
+            print "WARNING: " + library + " is unsupported and we cannot guarantee that UCVMC"
             print "will install correctly on your system if you install it with this library included."
             
-        print "\nWould you like to download and install support for " + library + "?"
+        print "\nWould you like to install support for " + library + "?"
         dlinstlibrary = raw_input("Enter yes or no: ")
                  
         if dlinstlibrary.strip() != "" and dlinstlibrary.strip().lower()[0] == "y":
@@ -344,7 +394,7 @@ for library in config_data["libraries"]:
     elif the_library["Required"] == "yes":
         librariesToInstall.append(library)
 
-print "\nYou have indicated that you would like to download and install"
+print "\nYou have indicated that you would like to install"
 printPretty(librariesToInstall)
 
 # Check if we can make the work directory.
@@ -360,7 +410,7 @@ try:
 except StandardError, e:
     eG(e, "Could not create ./work directory.")
 
-print "\nNow setting up the required UCVM libraries..."
+print "\nNow setting up the required UCVMC libraries..."
 
 for library in config_data["libraries"]:
     the_library = config_data["libraries"][library]
@@ -408,8 +458,8 @@ for model in config_data["models"]:
         except StandardError, e:
             eG(e, "Error installing model " + model + ".")
 
-# Now that the models are installed, we can finally install UCVM!
-print "\nInstalling UCVM software..."
+# Now that the models are installed, we can finally install UCVMC!
+print "\nInstalling UCVMC software..."
 
 print "\nRunning aclocal"
 callAndRecord(["aclocal", "-I", "./m4"])
@@ -418,12 +468,12 @@ callAndRecord(["automake", "--add-missing", "--force-missing"])
 print "\nRunning autoconf"
 callAndRecord(["autoconf"])
  
-print "\nRunning ./configure for UCVM"
+print "\nRunning ./configure for UCVMC"
  
 ucvm_conf_command = ["./configure", "--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include", \
                      "--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib", \
-                     "--with-proj4-include-path=" + ucvmpath + "/lib/proj-4/include", \
-                     "--with-proj4-lib-path=" + ucvmpath + "/lib/proj-4/lib", \
+                     "--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include", \
+                     "--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib", \
                      "--with-fftw-include-path=" + ucvmpath + "/lib/fftw/include", \
                      "--with-fftw-lib-path=" + ucvmpath + "/lib/fftw/lib"]
 
@@ -450,6 +500,8 @@ ucvm_conf_command.append("--prefix=" + ucvmpath)
 
 if dynamic_flag == False:
     ucvm_conf_command.append("--enable-static")
+if user_dynamic_flag == True:
+    ucvm_conf_command.append("--enable-dynamic")
 if use_iobuf == True:
     ucvm_conf_command.append("--enable-iobuf")
  
@@ -461,32 +513,36 @@ if "NetCDF" in librariesToInstall:
     
 callAndRecord(ucvm_conf_command)
 
-print "\nMaking UCVM"
+print "\nMaking UCVMC"
 callAndRecord(["make", "clean"])
 callAndRecord(["make"])
-print "\nInstalling UCVM"
+print "\nInstalling UCVMC"
 callAndRecord(["make", "install"])
 
-print "\nDone installing UCVM!"
+print "\nDone installing UCVMC!"
 
-sys.stdout.write("\nThank you for installing UCVM. ")
+sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
 
 if platform.system() == "Darwin":
-    print "To try out UCVM, please edit your ~/.bash_profile to include"
+    print "To try out UCVMC, please edit your ~/.bash_profile to include"
     print "the following lines:"
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
-    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-4/lib:$DYLD_LIBRARY_PATH"
+    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$DYLD_LIBRARY_PATH"
     if "CVM-S4.26" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$DYLD_LIBRARY_PATH"
     if "CenCalVM" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$DYLD_LIBRARY_PATH"
     print "\texport DYLD_LIBRARY_PATH"
+    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
+    print "\texport UCVM_INSTALL_PATH"
+    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\texport PYTHONPATH"
                 
 elif dynamic_flag == True:
     print "Please export the following library paths (note this is in Bash format):"
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
-    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-4/lib:$LD_LIBRARY_PATH"
+    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
     if "CVM-S4.26" in modelsToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$LD_LIBRARY_PATH"    
     if "CenCalVM" in modelsToInstall:
@@ -495,8 +551,12 @@ elif dynamic_flag == True:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/netcdf/lib:$LD_LIBRARY_PATH"
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"
     print "\texport LD_LIBRARY_PATH"
+    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/")
+    print "\texport UCVM_INSTALL_PATH"
+    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\texport PYTHONPATH"
     print ""
-    print "We recommend adding the above lines to the end of your ~/.bashrc file so that"
+    print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
     print "they are preserved for the next time you login."
     
 
@@ -505,7 +565,7 @@ print "make check"
 print "This will run the UCVMC unite and acceptance tests. If all tests pass. UCVMC is correctly installed"
 print "and ready to use on your computer."
 print "\nTo try out ucvm, once the tests pass, move to the UCVMC installation directory, and run an example query."
-print "\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/test_latlons.txt"
+print "\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/inputs/test_latlons.txt"
 print "You will then see the following output:\nUsing Geo Depth coordinates as default mode."
 print " -118.0000    34.0000      0.000    280.896    390.000       cvms    696.491    213.000   1974.976       none      0.000      0.000      0.000      crust    696.491    213.000   1974.976"
 print " -118.0000    34.0000     50.000    280.896    390.000       cvms   1669.540    548.000   2128.620       none      0.000      0.000      0.000      crust   1669.540    548.000   2128.620"
@@ -520,5 +580,13 @@ try:
     f.close()
 except StandardError, e:
     eG(e, "Saving setup_log.sh.")
-    
+
+# Write out a installation json file (expanded from setup.list)
+try:
+    f = open('./setup_install.list', 'w')
+    f.write(json.dumps(config_data,indent=2,sort_keys=True))
+    f.close()
+except StandardError, e:
+    eG(e, "Saving setup_install.list.")
+
 print "\nInstallation complete. Installation log file saved at ./setup_log.sh\n"

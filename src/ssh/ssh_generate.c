@@ -42,6 +42,8 @@ void usage() {
 	  printf("\t--n1 Distributions along vertical axis.\n");
 	  printf("\t--n2 Distributions along EW axis.\n");
 	  printf("\t--n3 Distributions along NS axis.\n\n");
+	  printf("\t--ff predefined random array of floats.\n\n");
+	  printf("\t--xf predefined random array of complex floats.\n\n");
 	  printf("Version: %s\n\n", VERSION);
 
 	  return;
@@ -328,7 +330,7 @@ int interpft(fftw_complex **inarray, int m, int n, int ny, int dim, fftw_complex
  * This function is primarily responsible for calculating the ssh mesh.
  */
 int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger, double n2iso_bigger,
-			double n3iso_bigger, fftw_complex *result) {
+			double n3iso_bigger, fftw_complex *result, char *floats_file, char *floats_complex_file) {
 	// Seed the random number generator.
 	srand(seed);
 
@@ -404,16 +406,16 @@ int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger
 	float *randarray = malloc(totalsize * sizeof(float));
 	float *randarray2 = malloc(totalsize * sizeof(float));
 
-	fp = fopen("floats.in", "rb");
+	fp = fopen(floats_file, "rb");
+         
 
 	if (fp != NULL) {
 		printf("Reading in random array of floats\n");
 
-		fp = fopen("floats.in", "rb");
 		fread(randarray, sizeof(float), totalsize, fp);
 		fclose(fp);
 
-		fp = fopen("floats_complex.in", "rb");
+		fp = fopen(floats_complex_file, "rb");
 		fread(randarray2, sizeof(float), totalsize, fp);
 		fclose(fp);
 	} else {
@@ -516,6 +518,8 @@ int pow3iso(double dx, double hurst, double l1, double seed, double n1iso_bigger
 int main(int argc, char **argv) {
 
 	char mesh_file[1024];				// Mesh file to output these ssh's
+	char floats_file[1024];				// floats.in --   
+	char floats_complex_file[1024];			// floats_complex.in -- 
 	double d1 = 16;						// Sample distance (default 16m)
 	double hurst = 0.05;				// Hurst value (default 0.05)
 	double l1 = 50;						// Correlation length (default 50m)
@@ -553,6 +557,8 @@ int main(int argc, char **argv) {
 			{ "n1", required_argument, 0, 'a'},
 			{ "n2", required_argument, 0, 'b'},
 			{ "n3", required_argument, 0, 'c'},
+			{ "ff", optional_argument, 0, 'f'},
+			{ "xf", optional_argument, 0, 'x'},
 			{ "mesh", required_argument, 0, 'm'},
 			{ "help", no_argument, 0, 'h'},
 			{ 0, 0, 0, 0 }
@@ -561,10 +567,13 @@ int main(int argc, char **argv) {
 	// Define the option index and next option character.
 	int option_index = 0;
 	int nextopt = 0;
+        mesh_file[0]='\0';
+        floats_file[0]='\0';
+        floats_complex_file[0]='\0';
 
 	// Loop through the available options and set variables.
 	while (1) {
-		nextopt = getopt_long(argc, argv, "m:u:d:hl:s:e:a:b:c:pi", long_options, &option_index);
+		nextopt = getopt_long(argc, argv, "f:x:m:u:d:hl:s:e:a:b:c:pi", long_options, &option_index);
 		if (nextopt == -1) break;
 
 		switch (nextopt) {
@@ -600,6 +609,12 @@ int main(int argc, char **argv) {
 		case 'c':
 			n3 = atof(optarg);
 			break;
+		case 'f':
+			sprintf(floats_file, "%s", optarg);
+			break;
+		case 'x':
+			sprintf(floats_complex_file, "%s", optarg);
+			break;
 		case 'p':
 			display = 1;
 			break;
@@ -611,6 +626,12 @@ int main(int argc, char **argv) {
 
 	if (strcmp(mesh_file, "") == 0) {
 		sprintf(mesh_file, "./ssh.out");
+	}
+	if (strcmp(floats_file, "") == 0) {
+		sprintf(floats_file, "./floats.in");
+	}
+	if (strcmp(floats_complex_file, "") == 0) {
+		sprintf(floats_complex_file, "./floats_complex.in");
 	}
 
 	// Let the user know we're starting to build the mesh with these properties.
@@ -651,7 +672,7 @@ int main(int argc, char **argv) {
 	sim3d = malloc(totalsize * sizeof(fftw_complex));
 
 	printf("Starting pow3iso\n");
-	retVal = pow3iso(d1, hurst, l1, seed, n1iso_bigger, n2iso_bigger, n3iso_bigger, sim3d);
+	retVal = pow3iso(d1, hurst, l1, seed, n1iso_bigger, n2iso_bigger, n3iso_bigger, sim3d, floats_file, floats_complex_file);
 	printf("Finished pow3iso\n");
 
 	for (iz = 0; iz < n1; iz++) {

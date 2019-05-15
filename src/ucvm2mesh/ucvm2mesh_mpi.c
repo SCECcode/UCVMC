@@ -65,7 +65,7 @@ void usage(char *arg)
 int init_app(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg)
 {
   /* Read in config */
-  if (read_config(myid, nproc, cfgfile, cfg) != 0) {
+  if (read_config(myid, nproc, cfgfile, cfg, 1) != 0) {
     fprintf(stderr, "[%d] Failed to parse config file %s\n", myid, cfgfile);
     return(1);
   }

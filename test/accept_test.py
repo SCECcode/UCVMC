@@ -19,7 +19,7 @@ def test_vs30_query(dir):
                   "-i", "0.1"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
     output = proc.communicate(input="-118 34\n-117 35")[0]
     
-    expected_output =  " -118.0000    34.0000    769.462\n -117.0000    35.0000    769.462\n"
+    expected_output =  " -118.0000    34.0000    777.764\n -117.0000    35.0000    777.764\n"
     
     if not output == expected_output:
         print "Error: Vs30 expected output not equal to actual output.\n"
@@ -33,18 +33,20 @@ def test_ssh_generate(dir):
     # writes result to install/tests directory
     os.chdir(dir)
     proc = Popen(["../bin/ssh_generate", "-u", "0.1", "-d", "20", "-l", "50", \
-                  "-s", "5", "-a", "100", "-b", "100", "-c", "100", "-m", "ssh.out"], \
+                  "-s", "5", "-a", "100", "-b", "100", "-c", "100", \
+                  "-f", "inputs/floats.in", "-x", "inputs/floats_complex.in", \
+                  "-m", "ssh_generate.out"], \
                   stdout=PIPE, stdin=PIPE, stderr=STDOUT)    
     output = proc.communicate()
     
-    f = open("./ssh.out", "rb")
+    f = open("./ssh_generate.out", "rb")
     generatedfloats = array.array("f")
     generatedfloats.fromfile(f, 100 * 100 * 100)
     f.close()
     
-    os.remove("./ssh.out")
+    os.remove("./ssh_generate.out")
     
-    f = open("./validate.ssh", "rb")
+    f = open("./ref/ssh_generate_floats.ref", "rb")
     validfloats = array.array("f")
     validfloats.fromfile(f, 100 * 100 * 100)
     f.close()

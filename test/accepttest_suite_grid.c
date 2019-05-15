@@ -22,7 +22,7 @@ int test_grid_tool_1d()
   
   sprintf(infile, "%s/inputs/%s", currentdir, "test-grid.in");
   sprintf(outfile, "%s/%s", currentdir, "test-grid-ucvm_query-1d.out");
-  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-ucvm_query-1d.ref");
+  sprintf(reffile, "%s/ref/%s", currentdir, "test-grid-lib-1d.ref");
   
   if (test_assert_int(run_ucvm_query(".", 
 				     "../conf/ucvm.conf", 
@@ -43,7 +43,6 @@ int test_grid_tool_1d()
   printf("PASS\n");
   return(0);
 }
-
 
 int test_grid_lib_1d()
 {
@@ -126,6 +125,15 @@ int test_grid_lib_1d()
     return(1);
   }
 
+  /* Write out new data -- optional
+  if (write_data(outfile, num_pnts, data, pnts, "1d","none","crust") != 0) {
+    fprintf(stderr, "FAIL: Failed to write points to grid file\n");
+    free(pnts);
+    free(data);
+    return(1);
+  }
+  */
+
   /* Compare query and reference data */
   for (i = 0; i < num_pnts; i++) {
     if ((test_assert_double(data[i].surf, refdata[i].surf) != 0) ||
@@ -168,13 +176,15 @@ int suite_grid(const char *xmldir)
   test_get_time(&suite.exec_time);
 
   /* Setup test cases */
-  //strcpy(suite.tests[0].test_name, "test_grid_tool_1d");
-  //suite.tests[0].test_func = &test_grid_tool_1d;
-  //suite.tests[0].elapsed_time = 0.0;
-
   strcpy(suite.tests[0].test_name, "test_grid_lib_1d");
   suite.tests[0].test_func = &test_grid_lib_1d;
   suite.tests[0].elapsed_time = 0.0;
+
+/*** this is being tested via accept_test.py
+  strcpy(suite.tests[1].test_name, "test_grid_tool_1d");
+  suite.tests[1].test_func = &test_grid_tool_1d;
+  suite.tests[1].elapsed_time = 0.0;
+***/
 
   if (test_run_suite(&suite) != 0) {
     fprintf(stderr, "Failed to execute tests\n");
