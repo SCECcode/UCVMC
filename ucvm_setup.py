@@ -525,6 +525,8 @@ sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
 
 if platform.system() == "Darwin":
+    print "XXX here..."
+    print modelsToInstall
     print "To try out UCVMC, please edit your ~/.bash_profile to include"
     print "the following lines:"
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
@@ -536,10 +538,17 @@ if platform.system() == "Darwin":
     print "\texport DYLD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
     print "\texport UCVM_INSTALL_PATH"
-    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tif [ $PYTHONPATH ] ; then"
+    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\telse"
+    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tfi"
     print "\texport PYTHONPATH"
+    print ""
                 
 elif dynamic_flag == True:
+    print "HERE 2..."
+    print modelsToInstall
     print "Please export the following library paths (note this is in Bash format):"
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
@@ -553,7 +562,11 @@ elif dynamic_flag == True:
     print "\texport LD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/")
     print "\texport UCVM_INSTALL_PATH"
-    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tif [ $PYTHONPATH ] ; then"
+    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\telse"
+    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tfi"
     print "\texport PYTHONPATH"
     print ""
     print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
