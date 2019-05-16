@@ -364,7 +364,7 @@ class ElevationCrossSection:
           self.meta['lat_list'] = self.lat_list
           self.meta['elevation_list'] = self.elevation_list
           if self.filename:
-              u.eZxport_metadata(self.meta,self.filename)
+              u.export_metadata(self.meta,self.filename)
               u.export_binary(datapoints,self.filename)
           else:
 #https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python

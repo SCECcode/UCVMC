@@ -490,6 +490,27 @@ class UCVM:
         self.models.remove("ucvm")
 
     ##
+    #  Given raw UCVM result
+    #   this function will throw an an error: missing model or invalid data etc
+    #   by checking if first 'item' is float or not
+    #
+    #  @param raw An array of output material properties
+    def checkUCVMoutput(self,idx,rawoutput):
+        output = rawoutput.split("\n")[idx:-1]
+        if len(output) > 1:
+            line = output[0]
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo" in line):
+                return output
+            p=line.split()[0]
+            try :
+                f=float(p)
+            except :
+                print "ERROR: ", line
+                exit(1)
+           
+        return output
+
+    ##
     #  Queries UCVM given a set of points and a CVM to query. If the CVM does not exist,
     #  this function will throw an error. The set of points must be an array of the 
     #  @link Point Point @endlink class. This function returns an array of @link MaterialProperties
@@ -527,8 +548,7 @@ class UCVM:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
 
         output = proc.communicate(input=text_points)[0]
-       
-        output = output.split("\n")[1:-1]
+        output = self.checkUCVMoutput(1,output)
 
         for line in output:
 # it is material properties.. line
@@ -567,13 +587,18 @@ class UCVM:
             text_points += "%.5f %.5f\n" % (point.longitude, point.latitude)
             
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[:-1]
+        output = self.checkUCVMoutput(0,output)
         
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
                  print "skipping text",line
             else:
-                 floats.append(float(line.split()[2]))
+                 try :
+                     p=float(line.split()[2])
+                 except :
+                     print "ERROR: should be a float."
+                     exit(1)
+                 floats.append(p)
         
         if len(floats) == 1:
             return floats[0]
@@ -606,10 +631,15 @@ class UCVM:
             text_points += "%.5f %.5f\n" % (point.longitude, point.latitude)
 
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[:-1]
+        output = self.checkUCVMoutput(0,output)
 
         for line in output:
-            floats.append(float(line.split()[2]))
+            try :
+                p=float(line.split()[2])
+            except :
+                print "ERROR: should be a float."
+                exit(1)
+            floats.append(p)
 
         if len(floats) == 1:
             return floats[0]
@@ -648,14 +678,19 @@ class UCVM:
             # print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
         
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[1:-1]
+        output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
                 print "skipping text",line
             else:
                 # Position 3 returned by ucvm_query is a elevation in the etree. Return this value
-                properties.append(float(line.split()[3]))
+                try:
+                    p=float(line.split()[3])
+                except:
+                    print "ERROR: should be a float value."
+                    exit(1)
+                properties.append(p)
 
         if len(properties) == 1:
             return properties[0]
@@ -694,7 +729,7 @@ class UCVM:
             #  print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
         
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[1:-1]
+        output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
@@ -741,7 +776,7 @@ class UCVM:
             # print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
         
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[1:-1]
+        output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
@@ -749,7 +784,12 @@ class UCVM:
             else:
                 #print "line:",line
                 # return position 4 from ucvm_query is the etree vs30 value. return that
-                properties.append(float(line.split()[4]))
+                try :
+                   p=float(line.split()[4])
+                except :
+                   print "ERROR: should be a float."
+                   exit(1)
+                properties.append(p)
 
         if len(properties) == 1:
             return properties[0]
@@ -768,13 +808,18 @@ class UCVM:
             text_points += "%.5f %.5f\n" % (point.longitude, point.latitude)
             
         output = proc.communicate(input=text_points)[0]
-        output = output.split("\n")[:-1]
+        output = self.checkUCVMoutput(0,output)
         
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line):
                  print "skipping text",line
             else:
-                 floats.append(float(line.split()[2]))
+                 try :
+                     p=float(line.split()[2])
+                 except :
+                     print "ERROR: should be a float."
+                     exit(1)
+                 floats.append(p)
         
         if len(floats) == 1:
             return floats[0]
@@ -788,7 +833,12 @@ class UCVM:
         k = rawfile.rfind(".json")
         if( k == -1) : 
             print "Supplied ",fname," did not have .json suffix\n"
-	fh = open(rawfile, 'r') 
+        try :
+	    fh = open(rawfile, 'r') 
+        except :
+            print "ERROR: json meta data does not exist."
+            exit(1)
+
 	data = json.load(fh)
 	fh.close()
 	return data
@@ -803,7 +853,12 @@ class UCVM:
         k = rawfile.rfind(".png")
         if( k != -1) : 
             rawfile = rawfile[:k] + "_data.bin"
-        fh = open(rawfile, 'r') 
+        try :
+            fh = open(rawfile, 'r') 
+        except:
+            print "ERROR: binary data does not exist."
+            exit(1)
+            
         floats = np.fromfile(fh, dtype=np.float32)
 
 ## special case, when floats are written out as float64 instead of float32
@@ -816,6 +871,7 @@ class UCVM:
         # sanity check,  
         if len(floats) != (num_x * num_y) :
             print "import_binary(), wrong size !!!", len(floats), " expecting ", (num_x * num_y)
+            exit(1)
 
         fh.close()
 
@@ -832,7 +888,11 @@ class UCVM:
         k = rawfile.rfind(".png")
         if( k != -1) : 
             rawfile = rawfile[:k] + "_data.bin"
-        fh = open(rawfile, 'w+') 
+        try :
+            fh = open(rawfile, 'w+') 
+        except:
+            print "ERROR: can not write out binary data."
+            exit(1)
         floats.tofile(fh)
 
         print "export_binary(), size=",floats.size
@@ -846,7 +906,11 @@ class UCVM:
         k = metafile.rfind(".png")
         if( k != -1) : 
             metafile = metafile[:k] + "_meta.json"
-        fh = open(metafile, 'r') 
+        try :
+            fh = open(metafile, 'r') 
+        except:
+            print "ERROR: can not find the meata data."
+            exit(1)
         meta = json.load(fh)
         fh.close()
         return meta
@@ -859,7 +923,11 @@ class UCVM:
         k = metafile.rfind(".png")
         if( k != -1) : 
             metafile = metafile[:k] + "_meta.json"
-        fh = open(metafile, 'w+') 
+        try :
+            fh = open(metafile, 'w+') 
+        except:
+            print "ERROR: can not write the meta data."
+            exit(1)
         json.dump(meta, fh, indent=2, sort_keys=False)
         fh.close()
 
@@ -885,7 +953,11 @@ class UCVM:
         k = matpropsfile.rfind(".png")
         if( k != -1) : 
             matpropsfile = matpropsfile[:k] + "_matprops.json"
-        fh = open(matpropsfile, 'w+') 
+        try :
+            fh = open(matpropsfile, 'w+') 
+        except:
+            print "ERROR: can not write the material property data."
+            exit(1)
         json.dump(blob, fh, indent=2, sort_keys=False)
         fh.close()
 
@@ -897,7 +969,11 @@ class UCVM:
         rawfile=filename
         if( k != -1) :
             rawfile= filename[:k] + "_data.json"
-        fh = open(rawfile, 'w+')
+        try :
+            fh = open(rawfile, 'w+')
+        except:
+            print "ERROR: can not write the material property data."
+            exit(1)
         raw={"vs":vslist, "vp":vplist, "rho":rholist};
         json.dump(raw, fh, indent=2, sort_keys=False)
         fh.close()

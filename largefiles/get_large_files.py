@@ -21,19 +21,22 @@ optional_large_model_list = [ "cvms5",
                     "cs173h",
                     "cvms4",
                     "cvms426",
-                    "cencal080"]
+                    "cencal080",
+                    "cvmh-15.1.1"]
 optional_large_model_size = { 'cvms5':'1.2G',
                               'cca':'9.2G',
                               'cs173':'72G',
                               'cs173h':'72G',
                               'cvms4':'326M',
                               'cvms426':'1.6G',
-                              'cencal080':'17M'}
+                              'cencal080':'17M',
+                              'cvmh-15.1.1':'1.6G'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
-## cvmh is 1.6G
-target_large_model_list = ["cvmh-15.1.1.tar.gz"]
+##
+## target_large_model_list = ["cvmh-15.1.1.tar.gz"]
+target_large_model_list = []
 target_large_etree_list = ["ucvm.e"]
 target_large_ref_list = ["test-grid-lib-1d.ref"]
 
