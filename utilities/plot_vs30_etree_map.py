@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 ##
 #  @file plot_vs30_etree_map.py
