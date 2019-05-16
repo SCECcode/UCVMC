@@ -241,7 +241,9 @@ class HorizontalSlice:
         print ("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
-                if mproperty != "poisson":
+                if (self.datafile != None) :
+                    datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
+                elif mproperty != "poisson":
                     if color_scale == "sd" or color_scale == "sd_r":
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
                         if(datapoints[i][j] == -1 ) :
