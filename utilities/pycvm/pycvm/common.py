@@ -68,7 +68,7 @@ VP = ["vp"]
 DENSITY = ["density"]
 
 ## Version string.
-VERSION = "19.4."
+VERSION = "19.4.0"
 
 #  Class Definitions
 

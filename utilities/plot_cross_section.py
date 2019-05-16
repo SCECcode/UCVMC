@@ -22,7 +22,7 @@ def usage():
     print "\t-e, --ending: ending depth for cross-section (meters)"
     print "\t-h, --horizontal: horizontal spacing for cross-section (meters)"
     print "\t-v, --vertical: vertical spacing for cross-section (meters)"
-    print "\t-d, --datatype: either 'vs', 'vp', 'rho', or 'poisson', without quotation marks"
+    print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
     print "\t-g, --gate: optional gate value for bi-color scale gate"
