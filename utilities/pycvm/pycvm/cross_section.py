@@ -156,8 +156,8 @@ class CrossSection:
                     tmp=datapoints[y][x]
                     if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
-                    if(mproperty == 'rho'):
-                      self.materialproperties[y][x].setProperty('Rho',tmp)
+                    if(mproperty == 'density'):
+                      self.materialproperties[y][x].setProperty('Density',tmp)
                     if(mproperty == 'poisson'):
                       self.materialproperties[y][x].setProperty('Poisson',tmp)
                     if(mproperty == 'vs'):

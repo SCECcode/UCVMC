@@ -157,8 +157,8 @@ class ElevationCrossSection:
                     tmp=datapoints[y][x]
                     if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
-                    if(mproperty == 'rho'):
-                      self.materialproperties[y][x].setProperty('Rho',tmp)
+                    if(mproperty == 'density'):
+                      self.materialproperties[y][x].setProperty('Density',tmp)
                     if(mproperty == 'poisson'):
                       self.materialproperties[y][x].setProperty('Poisson',tmp)
                     if(mproperty == 'vs'):
@@ -287,7 +287,13 @@ class ElevationCrossSection:
             
         for y in xrange(0, self.num_y):
             for x in xrange(0, self.num_x):   
-                datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty) 
+                if mproperty != "poisson":
+                   datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty) 
+                elif self.materialproperties[y][x].vp == 0 or self.materialproperties[y][x].vs == 0.0:
+                    datapoints[y][x] = 0.0
+                else:
+                    datapoints[y][x] = self.materialproperties[y][x].getProperty("vp") / self.materialproperties[y][x].getProperty("vs")
+
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         myInt=1000
