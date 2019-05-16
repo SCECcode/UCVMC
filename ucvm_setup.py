@@ -525,8 +525,6 @@ sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
 
 if platform.system() == "Darwin":
-    print "XXX here..."
-    print modelsToInstall
     print "To try out UCVMC, please edit your ~/.bash_profile to include"
     print "the following lines:"
     print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
@@ -535,6 +533,8 @@ if platform.system() == "Darwin":
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$DYLD_LIBRARY_PATH"
     if "CenCalVM" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$DYLD_LIBRARY_PATH"
+    if "CCA" in modelsToInstall:
+        print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$DYLD_LIBRARY_PATH"
     print "\texport DYLD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
     print "\texport UCVM_INSTALL_PATH"
@@ -547,8 +547,6 @@ if platform.system() == "Darwin":
     print ""
                 
 elif dynamic_flag == True:
-    print "HERE 2..."
-    print modelsToInstall
     print "Please export the following library paths (note this is in Bash format):"
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
@@ -556,6 +554,8 @@ elif dynamic_flag == True:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$LD_LIBRARY_PATH"    
     if "CenCalVM" in modelsToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$LD_LIBRARY_PATH"
+    if "CCA" in modelsToInstall:
+        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$LD_LIBRARY_PATH"
     if "NetCDF" in librariesToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/netcdf/lib:$LD_LIBRARY_PATH"
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"

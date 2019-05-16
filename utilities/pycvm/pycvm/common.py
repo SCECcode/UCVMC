@@ -506,7 +506,7 @@ class UCVM:
                 f=float(p)
             except :
                 print "ERROR: ", line
-            exit(1)
+                exit(1)
            
         return output
 
