@@ -207,8 +207,8 @@ class CrossSection:
         else:
             location_text = self.startingpoint.description + " "
 
-        if 'mproperty' in self.meta :
-           mproperty = self.meta['mproperty']
+        if 'data_type' in self.meta :
+           mproperty = self.meta['data_type']
         else:
            mproperty = "vs"
 

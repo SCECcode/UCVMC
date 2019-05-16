@@ -168,7 +168,7 @@ else:
     gate = 2.5
     color = ""
 
-    while color != "s" and color != "d" and color != "b" and data_type != "poisson":
+    while color != "s" and color != "d" and color != "b" :
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth, 'b' for bi-color): ")
         color = color.strip()

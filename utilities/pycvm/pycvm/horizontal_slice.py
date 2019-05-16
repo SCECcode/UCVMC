@@ -175,8 +175,8 @@ class HorizontalSlice:
         else:
             location_text = self.upperleftpoint.description + " "
 
-        if 'mproperty' in self.meta :
-           mproperty = self.meta['mproperty']
+        if 'data_type' in self.meta :
+           mproperty = self.meta['data_type']
         else:
            mproperty = "vs"
 

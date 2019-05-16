@@ -135,7 +135,7 @@ else:
     meta['cvm'] = cvm_selected
 
     color = ""
-    while color != "s" and color != "d" and data_type != "poisson":
+    while color != "s" and color != "d":
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
         color = color.strip()
