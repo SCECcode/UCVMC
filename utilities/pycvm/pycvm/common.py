@@ -998,13 +998,13 @@ class UCVM:
           s= step*i+minval
           if (i == l or all == True) :
             for j in range(nsubstep) :
-              bound= round(s+(j * nnstep),2)
+              bound= round(s+(j * nnstep),4)
               bounds.append(bound)
           
           else:
-            bounds.append(round(s,2))
+            bounds.append(round(s,4))
 
-        bounds.append(round((step * nstep + minval),2))
+        bounds.append(round((step * nstep + minval),4))
 #        print "bounds", bounds
         return bounds
 
@@ -1019,10 +1019,10 @@ class UCVM:
 
         step=(maxval - minval)/nstep
         for i in range(nstep) :
-            tick= round((step * i) + minval,2)
+            tick= round((step * i) + minval,4)
             ticks.append(tick)
 
-        ticks.append(round((step * nstep + minval),2))
+        ticks.append(round((step * nstep + minval),4))
 #        print "ticks ", ticks
         return ticks
 
