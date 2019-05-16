@@ -281,14 +281,18 @@ class CrossSection:
     
         datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
+
         for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):   
-                if mproperty != "poisson":
-                   datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
-                elif self.materialproperties[y][x].vp == 0 or self.materialproperties[y][x].vs == 0.0:
-                    datapoints[y][x] = 0.0
+            for x in xrange(0, self.num_x):
+                if self.datafile != None : 
+                    datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
+                elif mproperty != "poisson" :
+                    datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
                 else:
-                    datapoints[y][x] = self.materialproperties[y][x].getProperty("vp") / self.materialproperties[y][x].getProperty("vs")
+                    if self.materialproperties[y][x].vp == 0 or self.materialproperties[y][x].vs == 0.0:
+                        datapoints[y][x] = 0.0
+                    else:
+                        datapoints[y][x] = self.materialproperties[y][x].getProperty("vp") / self.materialproperties[y][x].getProperty("vs")
 
 
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)

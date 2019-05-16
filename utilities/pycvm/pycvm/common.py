@@ -332,9 +332,10 @@ class MaterialProperties:
     #  @param vp P-wave velocity in m/s. Must be a float.
     #  @param vs S-wave velocity in m/s. Must be a float.
     #  @param density Density in g/cm^3. Must be a float.
+    #  @param poisson Poisson as a calculated float. Optional.
     #  @param qp Qp as a float. Optional.
     #  @param qs Qs as a float. Optional.
-    def __init__(self, vp, vs, density, qp = None, qs = None):
+    def __init__(self, vp, vs, density, poisson = None, qp = None, qs = None):
        if pycvm_is_num(vp):
            ## P-wave velocity in m/s
            self.vp = float(vp)
@@ -352,6 +353,11 @@ class MaterialProperties:
            self.density = float(density)
        else:
            raise TypeError("Density must be a number.")
+
+       if poisson != None:
+           self.poisson = float(poisson)
+       else:
+           self.poisson = -1
        
        if qp != None:
            ## Qp
@@ -373,7 +379,7 @@ class MaterialProperties:
     #  @return The subtracted properties.
     def __sub__(own, other):
         return MaterialProperties(own.vp - other.vp, own.vs - other.vs, own.density - other.density, \
-                                  own.qp - other.qp, own.qs - other.qs)
+                                  own.poisson - other.poisson, own.qp - other.qp, own.qs - other.qs)
 
     ##
     #  Initializes the class from a UCVM output string line.
@@ -410,7 +416,7 @@ class MaterialProperties:
     ##
     #  Retrieves the corresponding property given the property as a string.
     # 
-    #  @param property The property name as a string ("vs", "vp", "density", "qp", or "qs").
+    #  @param property The property name as a string ("vs", "vp", "density", "poisson", "qp", or "qs").
     #  @return The property value.
     def getProperty(self, property):               
         if property.lower() == "vs":
@@ -419,6 +425,8 @@ class MaterialProperties:
             return self.vp
         elif property.lower() == "density":
             return self.density
+        elif property.lower() == "poisson":
+            return self.poisson
         elif property.lower() == "qp":
             return self.qp
         elif property.lower() == "qs":
@@ -437,6 +445,8 @@ class MaterialProperties:
             self.vp=val
         elif property.lower() == "density":
             self.density=val
+        elif property.lower() == "poisson":
+            self.poisson=val
         elif property.lower() == "qp":
             self.qp=val
         elif property.lower() == "qs":
