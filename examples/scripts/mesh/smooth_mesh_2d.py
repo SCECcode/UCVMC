@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 ##########################################################
 #
 # Script: smooth_mesh_2d.py

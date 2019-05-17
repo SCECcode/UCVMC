@@ -175,8 +175,8 @@ class HorizontalSlice:
         else:
             location_text = self.upperleftpoint.description + " "
 
-        if 'mproperty' in self.meta :
-           mproperty = self.meta['mproperty']
+        if 'data_type' in self.meta :
+           mproperty = self.meta['data_type']
         else:
            mproperty = "vs"
 
@@ -241,7 +241,9 @@ class HorizontalSlice:
         print ("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
-                if mproperty != "poisson":
+                if (self.datafile != None) :
+                    datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
+                elif mproperty != "poisson":
                     if color_scale == "sd" or color_scale == "sd_r":
                         datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
                         if(datapoints[i][j] == -1 ) :
@@ -289,10 +291,11 @@ class HorizontalSlice:
             colormap = basemap.cm.GMT_seis_r
             norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "sd":
-            BOUNDS= u.makebounds(newmin_val, newmax_val, 5, self.mean_val, substep=5)
+            BOUNDS= u.makebounds(newmin_val, newmax_val, 5, newmean_val, substep=5)
 #            colormap = basemap.cm.GMT_globe
+            colormap = basemap.cm.GMT_seis
             TICKS = u.maketicks(newmin_val, newmax_val, 5)
-            norm = mcolors.Normalize(vmin=newmin_val,vmax=newmax_val)
+            norm = mcolors.Normalize(vmin=BOUNDS[0],vmax=BOUNDS[len(BOUNDS) - 1])
         elif color_scale == "b":
             C = []
             for bound in BOUNDS :
