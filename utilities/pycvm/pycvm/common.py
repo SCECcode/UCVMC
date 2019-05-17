@@ -46,17 +46,17 @@ except StandardError, e:
 #  Constants
 
 ## Known CVMs that can be installed with UCVM.
-UCVM_CVMS = {"1d":"1D", \
-             "1dgtl":"1D w/ Vs30 GTL", \
-             "bbp1d":"Broadband Northridge Region 1D Model", \
-             "cvms":"CVM-S4", \
-             "cvms5":"CVM-S4.26", \
-             "cvmsi":"CVM-S4.26.M01", \
-             "cca":"CCA 06", \
-             "cs173":"CyperShake 17.3", \
-             "cs173h":"CyperShake 17.3 with San Joaquin and Santa Maria Basins data", \
-             "cvmh":"CVM-H 15.1.0", \
-             "cencal":"USGS Bay Area Model"}
+UCVM_CVMS = {"1d":"1D(1d)", \
+             "1dgtl":"1D w/ Vs30 GTL(1dgtl)", \
+             "bbp1d":"Broadband Northridge Region 1D Model(bbp1d)", \
+             "cvms":"CVM-S4(cvms)", \
+             "cvms5":"CVM-S4.26(cvms5)", \
+             "cvms426":"CVM-S4.26.M01(cvmsi)", \
+             "cca":"CCA 06(cca)", \
+             "cs173":"CyperShake 17.3(cs173)", \
+             "cs173h":"CyperShake 17.3 with San Joaquin and Santa Maria Basins data(cs173h)", \
+             "cvmh1511":"CVM-H 15.1.1(cvmh)", \
+             "cencal":"USGS Bay Area Model(cencal)"}
 
 ## Constant for all material properties.
 ALL_PROPERTIES = ["vp", "vs", "density"]
