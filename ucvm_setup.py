@@ -536,8 +536,13 @@ if platform.system() == "Darwin":
     print "\texport DYLD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
     print "\texport UCVM_INSTALL_PATH"
-    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tif [ $PYTHONPATH ] ; then"
+    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\telse"
+    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tfi"
     print "\texport PYTHONPATH"
+    print ""
                 
 elif dynamic_flag == True:
     print "Please export the following library paths (note this is in Bash format):"
@@ -553,7 +558,11 @@ elif dynamic_flag == True:
     print "\texport LD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/")
     print "\texport UCVM_INSTALL_PATH"
-    print "\tPYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tif [ $PYTHONPATH ] ; then"
+    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\telse"
+    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
+    print "\tfi"
     print "\texport PYTHONPATH"
     print ""
     print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
