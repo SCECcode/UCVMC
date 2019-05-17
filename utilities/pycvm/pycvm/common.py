@@ -581,11 +581,6 @@ class UCVM:
     #  @param vs 
     #  @param vp
     #  @return poisson value
-                elif self.materialproperties[i][j].vp == 0 or self.materialproperties[i][j].vs == 0.0:
-                    datapoints[i][j] = 0.0
-                else:
-                    datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
-
     def poisson(self, vs, vp) :
        val = 0 
        if vs == 0 :
