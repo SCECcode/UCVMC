@@ -587,7 +587,7 @@ class UCVM:
           return val
 
        b=(vp * vp) - (vs * vs)
-       t=((vp * vp) - 2(vs * vs))/2
+       t=((vp * vp) - 2*(vs * vs))/2
 
        if(b == 0) :
           return 0
