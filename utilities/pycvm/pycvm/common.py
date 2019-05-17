@@ -577,7 +577,6 @@ class UCVM:
     ##
     #  Gets the Poisson value for a given set of Vs, Vp pair
     #  https://www.glossary.oilfield.slb.com/en/Terms/p/poissons_ratio.aspx
-    #          σ = ½ (Vpsqr − 2Vssqr) / (Vpsqr − Vssqr)
     #  @param vs 
     #  @param vp
     #  @return poisson value
