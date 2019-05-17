@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 ##
 #  @file plot_horizontal_slice.py
@@ -156,7 +156,7 @@ else:
 
     # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
     color = ""
-    while color != "s" and color != "d" and data_type != "poisson":
+    while color != "s" and color != "d":
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
         color = color.strip()

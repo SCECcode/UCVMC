@@ -533,6 +533,8 @@ if platform.system() == "Darwin":
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$DYLD_LIBRARY_PATH"
     if "CenCalVM" in modelsToInstall:
         print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$DYLD_LIBRARY_PATH"
+    if "CCA" in modelsToInstall:
+        print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$DYLD_LIBRARY_PATH"
     print "\texport DYLD_LIBRARY_PATH"
     print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
     print "\texport UCVM_INSTALL_PATH"
@@ -552,6 +554,8 @@ elif dynamic_flag == True:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$LD_LIBRARY_PATH"    
     if "CenCalVM" in modelsToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$LD_LIBRARY_PATH"
+    if "CCA" in modelsToInstall:
+        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$LD_LIBRARY_PATH"
     if "NetCDF" in librariesToInstall:
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/netcdf/lib:$LD_LIBRARY_PATH"
         print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"

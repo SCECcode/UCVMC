@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # 
 # Script for downloading UCVM largefiles from remote repository site
 # into the UCVMC/largefiles subdirectory.
@@ -30,7 +30,7 @@ optional_large_model_size = { 'cvms5':'1.2G',
                               'cvms4':'326M',
                               'cvms426':'1.6G',
                               'cencal080':'17M',
-                              "cvmh-15.1.1':'1.6G'}
+                              'cvmh-15.1.1':'1.6G'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]

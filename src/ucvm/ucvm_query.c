@@ -86,6 +86,24 @@ void usage() {
   printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] < file.in\n\n");
   printf("Flags:\n");
   printf("\t-h This help message.\n");
+  printf("\t-H Detail help message.\n");
+  printf("\t-m Comma delimited list of crustal/GTL models to query in order\n");
+  printf("\t   of preference. GTL models may optionally be suffixed with ':ifunc'\n");
+  printf("\t   to specify interpolation function.\n");
+  printf("\t-c Z coordinate mode: geo-depth (gd, default), geo-elev (ge).\n");
+  printf("\t-f Configuration file. Default is ./ucvm.conf.\n");
+  printf("\t-p User-defined map to use for elevation and vs30 data.\n");
+  printf("\t-v Display model version information only.\n");
+  printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
+  exit (0);
+}
+
+/* Usage function */
+void usage_detail() {
+  printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] < file.in\n\n");
+  printf("Flags:\n");
+  printf("\t-h This help message.\n");
+  printf("\t-H Detail help message.\n");
   printf("\t-m Comma delimited list of crustal/GTL models to query in order\n");
   printf("\t   of preference. GTL models may optionally be suffixed with ':ifunc'\n");
   printf("\t   to specify interpolation function.\n");
@@ -138,7 +156,7 @@ int main(int argc, char **argv)
   zrange[1] = ZRANGE_MAX;
 
   /* Parse options */
-  while ((opt = getopt(argc, argv, "c:f:hm:p:vz:")) != -1) {
+  while ((opt = getopt(argc, argv, "c:f:Hhm:p:vz:")) != -1) {
     switch (opt) {
     case 'c':
       if (strcmp(optarg, "gd") == 0) {
@@ -165,6 +183,10 @@ int main(int argc, char **argv)
       break;
     case 'h':
       usage();
+      exit(0);
+      break;
+    case 'H':
+      usage_detail();
       exit(0);
       break;
     case 'm':

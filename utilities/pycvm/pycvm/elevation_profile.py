@@ -125,6 +125,9 @@ class ElevationProfile:
         if (self.datafile != None) :
             print "\nUsing --> "+self.datafile
             data = u.import_matprops(self.datafile)
+            if len(data) == 0 :
+                print "ERROR: no matprops plot data."
+                exit(1)
         else:
             data = u.query(point_list, self.cvm, elevation=1)
         

@@ -156,8 +156,8 @@ class CrossSection:
                     tmp=datapoints[y][x]
                     if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
-                    if(mproperty == 'rho'):
-                      self.materialproperties[y][x].setProperty('Rho',tmp)
+                    if(mproperty == 'density'):
+                      self.materialproperties[y][x].setProperty('Density',tmp)
                     if(mproperty == 'poisson'):
                       self.materialproperties[y][x].setProperty('Poisson',tmp)
                     if(mproperty == 'vs'):
@@ -207,8 +207,8 @@ class CrossSection:
         else:
             location_text = self.startingpoint.description + " "
 
-        if 'mproperty' in self.meta :
-           mproperty = self.meta['mproperty']
+        if 'data_type' in self.meta :
+           mproperty = self.meta['data_type']
         else:
            mproperty = "vs"
 
@@ -281,9 +281,19 @@ class CrossSection:
     
         datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
+
         for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):   
-                datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty) 
+            for x in xrange(0, self.num_x):
+                if self.datafile != None : 
+                    datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
+                elif mproperty != "poisson" :
+                    datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
+                else:
+                    if self.materialproperties[y][x].vp == 0 or self.materialproperties[y][x].vs == 0.0:
+                        datapoints[y][x] = 0.0
+                    else:
+                        datapoints[y][x] = self.materialproperties[y][x].getProperty("vp") / self.materialproperties[y][x].getProperty("vs")
+
 
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
@@ -318,7 +328,7 @@ class CrossSection:
             norm = mcolors.Normalize(vmin=0,vmax=umax)
         elif color_scale == "sd":
             BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
-#            colormap = basemap.cm.GMT_globe
+            colormap = basemap.cm.GMT_seis
             TICKS = u.maketicks(self.min_val, self.max_val, 5)
             norm = mcolors.Normalize(vmin=self.min_val,vmax=self.max_val)
         elif color_scale == "b":
@@ -339,7 +349,6 @@ class CrossSection:
         elif color_scale == 'dd':
             BOUNDS= u.makebounds(self.min_val, self.max_val, 5, self.mean_val, substep=5)
             TICKS = u.maketicks(self.min_val, self.max_val, 5)
-#            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         else: 

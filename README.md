@@ -43,7 +43,7 @@ Optional Software for building MPI binaries:
 
 ## Installation
 Once the target computer has the required software tools installed, the basic install of UCVMC is:
-*  git clone https://github.com/SCECcode/UCVMC.git -b dev
+*  git clone https://github.com/SCECcode/UCVMC.git
 *  cd UCVMC/largefiles
 *  ./get_large_files.py
 *  ./check_largefiles_md5.py
@@ -69,18 +69,18 @@ In most cases, the user does not need to edit the UCVMC/conf/ucvm.conf. However,
 ## Standard Models and Maps
 The following California velocity models packages are included as part of a standard UCVMC installation.  Each model is assigned an abbreviation, and these abbreviations are used to specify the models when making UCVM queries. The model abbreviations used by UCVM are defined in following tables:
 
-Model Name | Description | UCVM Abbreviation
------------|-------------|------------------
-CVM-H v15.1     | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh
-CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms
-CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical layer(Ely-Jordan GTL, default is off)| cvms5
-CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi
-CCA06 | Central California Velocity Model with optional geotechnical layer (Ely-Jordan GTL, default is off) | cca
-CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely-Jordan GTL, default is off) | cs173
-CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data from Havard's group and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h
-USGS Bay Area Velocity Model 0.8.3| USGS developed San Francisco and Central California velocity model | cencal
-Southern California 1D  | Modified Hadley Kanamori 1D model based on Hadley-Kanamori model | 1d
-Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d
+Model Name | Description | UCVM Abbreviation | Size
+-----------|-------------|-------------------|------
+CVM-H v15.1     | Southern California Velocity Model developed by Harvard Structural Geology Group with optional geotechnical layer | cvmh | 1.6G 
+CVM-S4     | Southern California Velocity Model developed by SCEC, Caltech, USGS Group with geotechnical layer | cvms | 326M
+CVM-S4.26  | Tomography improved version of CVM-S4 with optional geotechnical layer(Ely-Jordan GTL, default is off)| cvms5 | 1.2G
+CVM-S4.26.M01 | CVM-S4.26 with added geotechnical layer | cvmsi | 1.6G
+CCA06 | Central California Velocity Model with optional geotechnical layer (Ely-Jordan GTL, default is off) | cca | 9.2G
+CS17.3 | Cypershake study 17.3 Central California Velocity Model and optional geotechincal layer (Ely-Jordan GTL, default is off) | cs173 | 72G
+CS17.3-H | Cypershake study 17.3 Central California Velocity Model with San Joaquin and Santa Maria Basins data from Havard's group and optional geoptechnical layer (Ely-Jordan GTL, default is off) | cs173h |72G
+USGS Bay Area Velocity Model 0.8.3| USGS developed San Francisco and Central California velocity model | cencal | 17M
+Southern California 1D  | Modified Hadley Kanamori 1D model based on Hadley-Kanamori model | 1d | 8k
+Northridge Region 1D | Los Angeles Region 1D model used in SCEC Broadband Platform | bbp1d | -
 
 A state-wide California standard topography map is distribued with UCVMC. This is a statewide
 topography map, that also includes statewide Vs30 values, combined into an etree structure.
