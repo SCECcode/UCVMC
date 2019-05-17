@@ -55,7 +55,7 @@ UCVM_CVMS = {"1d":"1D", \
              "cca":"CCA 06", \
              "cs173":"CyperShake 17.3", \
              "cs173h":"CyperShake 17.3 with San Joaquin and Santa Maria Basins data", \
-             "cvmh":"CVM-H 15.1.0", \
+             "cvmh":"CVM-H 15.1.1", \
              "cencal":"USGS Bay Area Model"}
 
 ## Constant for all material properties.
