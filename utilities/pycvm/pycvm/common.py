@@ -580,17 +580,18 @@ class UCVM:
     #  @param vs 
     #  @param vp
     #  @return poisson value
-    def poisson(self, vs, vp) :
-       val = 0 
+    def poisson(self, ovs, ovp) :
+       vs = 1000.0 * ovs
+       vp = 1000.0 * ovp
+
        if vs == 0 :
-          val = 0.5
-          return val
+          return 0.5
 
        b=(vp * vp) - (vs * vs)
        t=((vp * vp) - 2*(vs * vs))/2
 
        if(b == 0) :
-          return 0
+          return 0.0
 
        val = t/b
        return val

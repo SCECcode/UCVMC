@@ -389,7 +389,7 @@ class CrossSection:
         if mproperty != "poisson":
             cbar.set_label(mproperty.title() + " (km/s)")
         else:
-            cbar.set_label("Vp/Vs")
+            cbar.set_label("Poisson(Vs,Vp)")
        
         if self.filename:
             plt.savefig(self.filename)
