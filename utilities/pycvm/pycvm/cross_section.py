@@ -289,10 +289,7 @@ class CrossSection:
                 elif mproperty != "poisson" :
                     datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
                 else:
-                    if self.materialproperties[y][x].vp == 0 or self.materialproperties[y][x].vs == 0.0:
-                        datapoints[y][x] = 0.0
-                    else:
-                        datapoints[y][x] = self.materialproperties[y][x].getProperty("vp") / self.materialproperties[y][x].getProperty("vs")
+                    datapoints[y][x] = u.poisson(self.materialproperties[y][x].getProperty("vs"), self.materialproperties[y][x].getProperty("vp")) 
 
 
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
