@@ -575,6 +575,33 @@ class UCVM:
         return properties
     
     ##
+    #  Gets the Poisson value for a given set of Vs, Vp pair
+    #  https://www.glossary.oilfield.slb.com/en/Terms/p/poissons_ratio.aspx
+    #          σ = ½ (Vpsqr − 2Vssqr) / (Vpsqr − Vssqr)
+    #  @param vs 
+    #  @param vp
+    #  @return poisson value
+                elif self.materialproperties[i][j].vp == 0 or self.materialproperties[i][j].vs == 0.0:
+                    datapoints[i][j] = 0.0
+                else:
+                    datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
+
+    def poisson(self, vs, vp) :
+       val = 0 
+       if vs == 0 :
+          val = 0.5
+          return val
+
+       b=(vp * vp) - (vs * vs)
+       t=((vp * vp) - 2(vs * vs))/2
+
+       if(b == 0) :
+          return 0
+
+       val = t/b
+       return val
+
+    ##
     #  Gets the Vs30 values for a given set of points and a CVM to query. If
     #  the CVM does not exist, this function will throw an error. The set of
     #  points is an array of @link Point Points @endlink. The function returns

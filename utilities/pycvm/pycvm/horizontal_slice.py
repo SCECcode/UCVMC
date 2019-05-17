@@ -264,10 +264,8 @@ class HorizontalSlice:
                         if(datapoints[i][j] == -1 ) :
                            datapoints[i][j]=np.nan
                            nancnt=nancnt+1
-                elif self.materialproperties[i][j].vp == 0 or self.materialproperties[i][j].vs == 0.0:
-                    datapoints[i][j] = 0.0
-                else:
-                    datapoints[i][j] = self.materialproperties[i][j].vp / self.materialproperties[i][j].vs
+                else :
+                    datapoints[i][j] = u.poisson(self.materialproperties[i][j].vs, self.materialproperties[i][j].vp) 
 
 #        print (" total number of nancnt is ", nancnt)
 #        print (" total number of zerocnt is ", zerocnt)
