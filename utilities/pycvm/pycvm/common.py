@@ -577,7 +577,6 @@ class UCVM:
     ##
     #  Gets the Poisson value for a given set of Vs, Vp pair
     #  https://www.glossary.oilfield.slb.com/en/Terms/p/poissons_ratio.aspx
-    #          σ = ½ (Vpsqr − 2Vssqr) / (Vpsqr − Vssqr)
     #  @param vs 
     #  @param vp
     #  @return poisson value
@@ -588,7 +587,7 @@ class UCVM:
           return val
 
        b=(vp * vp) - (vs * vs)
-       t=((vp * vp) - 2(vs * vs))/2
+       t=((vp * vp) - 2*(vs * vs))/2
 
        if(b == 0) :
           return 0
