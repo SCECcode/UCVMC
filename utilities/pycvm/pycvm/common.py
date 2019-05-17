@@ -580,10 +580,7 @@ class UCVM:
     #  @param vs 
     #  @param vp
     #  @return poisson value
-    def poisson(self, ovs, ovp) :
-       vs = 1000.0 * ovs
-       vp = 1000.0 * ovp
-
+    def poisson(self, vs, vp) :
        if vs == 0 :
           return 0.5
 

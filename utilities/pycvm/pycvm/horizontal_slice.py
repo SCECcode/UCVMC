@@ -272,6 +272,13 @@ class HorizontalSlice:
 #        print (" total number of negcnt is ", negcnt)
 
         myInt=1000
+        if mproperty == "poisson": ## no need to reduce.. should also be using sd or dd
+           myInt=1
+           if color_scale == "s" :
+               color_scale = "sd"
+           elif color_scale == "d" :
+               color_scale = "dd"
+
         newdatapoints=datapoints/myInt 
 
         newmax_val=np.nanmax(newdatapoints)

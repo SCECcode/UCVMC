@@ -295,6 +295,13 @@ class CrossSection:
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         myInt=1000
+        if mproperty == "poisson": ## no need to reduce.. should also be using sd or dd
+           myInt=1
+           if color_scale == "s" :
+               color_scale = "sd"
+           elif color_scale == "d" :
+               color_scale = "dd"
+
         newdatapoints=datapoints/myInt
 
         self.max_val=np.nanmax(newdatapoints)
