@@ -22,6 +22,21 @@
 #ifdef _UCVM_ENABLE_CVMSI
 #include "ucvm_model_cvmsi.h"
 #endif
+
+/* plugin models */
+#ifdef _UCVM_ENABLE_CVMS5
+#include "cvms5.h"
+#endif
+#ifdef _UCVM_ENABLE_CCA
+#include "cca.h"
+#endif
+#ifdef _UCVM_ENABLE_CS173
+#include "cs173.h"
+#endif
+#ifdef _UCVM_ENABLE_CS173H
+#include "cs173h.h"
+#endif
+
 #ifdef _UCVM_ENABLE_CVMNCI
 #include "ucvm_model_cvmnci.h"
 #endif
@@ -1104,6 +1119,21 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
 #ifdef _UCVM_ENABLE_CVMSI
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
 		     UCVM_MODEL_CVMSI, "", res, numinst++, *len) 
+      != UCVM_CODE_SUCCESS) {
+    return(UCVM_CODE_ERROR);
+  }
+#endif
+
+/*** XXX for plugin ***/
+#ifdef _UCVM_ENABLE_CCA
+#endif
+#ifdef _UCVM_ENABLE_CS173
+#endif
+#ifdef _UCVM_ENABLE_CS173H
+#endif
+#ifdef _UCVM_ENABLE_CVMS5
+  if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
+                     UCVM_MODEL_CVMS5, "", res, numinst++, *len)
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }
