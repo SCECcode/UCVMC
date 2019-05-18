@@ -23,20 +23,6 @@
 #include "ucvm_model_cvmsi.h"
 #endif
 
-/* plugin models */
-#ifdef _UCVM_ENABLE_CVMS5
-#include "cvms5.h"
-#endif
-#ifdef _UCVM_ENABLE_CCA
-#include "cca.h"
-#endif
-#ifdef _UCVM_ENABLE_CS173
-#include "cs173.h"
-#endif
-#ifdef _UCVM_ENABLE_CS173H
-#include "cs173h.h"
-#endif
-
 #ifdef _UCVM_ENABLE_CVMNCI
 #include "ucvm_model_cvmnci.h"
 #endif
