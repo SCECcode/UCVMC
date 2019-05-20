@@ -83,10 +83,10 @@ print cmd
 cmd="./plot_vs30_etree_map.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -a s -c cencal,cca,cvmsi  -o \"norcal_vs30_etree_map.png\""
 os.system(cmd)
 print cmd
-cmd="./plot_z25_map.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -c cencal,cca,cvmsi -o \"norcal_z25_map.png\""
+cmd="./plot_z25_map.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -a s -c cencal,cca,cvmsi -o \"norcal_z25_map.png\""
 os.system(cmd)
 print cmd
-cmd="./plot_z10_map.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -c cencal,cca,cvmsi -o \"norcal_z10_map.png\""
+cmd="./plot_z10_map.py -b 30.5,-126.0 -u 42.5,-112.5 -s 0.05 -a d -c cencal,cca,cvmsi -o \"norcal_z10_map.png\""
 os.system(cmd)
 print cmd
 

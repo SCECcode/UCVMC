@@ -573,14 +573,28 @@ class UCVM:
             return properties[0]
 
         return properties
-    
+
     ##
     #  Gets the Poisson value for a given set of Vs, Vp pair
-    #  https://www.glossary.oilfield.slb.com/en/Terms/p/poissons_ratio.aspx
     #  @param vs 
     #  @param vp
     #  @return poisson value
     def poisson(self, vs, vp) :
+       if vs == 0 :
+          return 0.0
+
+       if vp == 0 :
+          return 0.0
+
+       return vp/vs
+
+    ##
+    #  Gets the Poisson value for a given set of Vs, Vp pair base on
+    #  https://www.glossary.oilfield.slb.com/en/Terms/p/poissons_ratio.aspx
+    #  @param vs 
+    #  @param vp
+    #  @return poisson value
+    def poissonComplex(self, vs, vp) :
        if vs == 0 :
           return 0.5
 
