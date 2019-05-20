@@ -86,7 +86,7 @@ void usage() {
   printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] < file.in\n\n");
   printf("Flags:\n");
   printf("\t-h This help message.\n");
-  printf("\t-H Detail help message.\n");
+/*  printf("\t-H Detail help message.\n"); */
   printf("\t-m Comma delimited list of crustal/GTL models to query in order\n");
   printf("\t   of preference. GTL models may optionally be suffixed with ':ifunc'\n");
   printf("\t   to specify interpolation function.\n");
