@@ -196,7 +196,7 @@ class CrossSection:
 
         scale_gate = None
         if 'gate' in self.meta :
-           scale_gate = int(self.meta['gate'])
+           scale_gate = float(self.meta['gate'])
 
         if color_scale == "b" and scale_gate is None:
            scale_gate=2.5
