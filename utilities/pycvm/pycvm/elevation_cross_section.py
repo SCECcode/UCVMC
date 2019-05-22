@@ -198,10 +198,9 @@ class ElevationCrossSection:
         if 'color' in self.meta :
            color_scale = self.meta['color']
 
+        scale_gate = None
         if 'gate' in self.meta :
            scale_gate = int(self.meta['gate'])
-        else:
-           scale_gate = None
 
         if color_scale == "b" and scale_gate is None:
            scale_gate=2.5

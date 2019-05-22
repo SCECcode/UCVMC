@@ -180,10 +180,9 @@ class HorizontalSlice:
         else:
            mproperty = "vs"
 
+        scale_gate = None
         if 'color' in self.meta :
            color_scale = self.meta['color']
-        else: 
-           scale_gate = None
 
         if 'gate' in self.meta :
            scale_gate = int(self.meta['gate'])
