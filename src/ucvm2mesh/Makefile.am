@@ -1,6 +1,6 @@
 # Autoconf/Automake binaries and headers
 
-bin_PROGRAMS = ucvm2mesh mesh_strip-ijk mesh_op mesh_check
+bin_PROGRAMS = ucvm2mesh mesh_strip_ijk mesh_op mesh_check
 
 if UCVM_HAVE_MPI
 bin_PROGRAMS += ucvm2mesh_mpi ucvm2mesh_mpi_layer
