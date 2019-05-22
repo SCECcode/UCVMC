@@ -22,7 +22,8 @@ def usage():
     print "\t-e, --depth: depth for horizontal slice in meters (e.g. 1000)"
     print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed velocity models"
-    print "\t-a, --scale: color scale, either 's' for smooth or 'd' for discretized, without quotes"
+    print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
+    print "\t-g, --gate: optional gate value for bi-color scale gate"
     print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
     print "\t-t, --title: optional plot title"
@@ -38,6 +39,7 @@ ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "d,datatype":"data_type", \
                          "c,cvm":"cvm", \
                          "a,scale": "color", \
+                         "g,gate,o": "gate", \
                          "f,datafile,o":"datafile",
                          "o,outfile,o":"outfile", \
                          "t,title,o":"title", \
@@ -154,16 +156,18 @@ else:
     cvm_selected = corresponding_cvm[cvm_selected]
     meta['cvm']=cvm_selected
 
-    # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
+    # We will offer three color options. Discretized, smooth or bi-color. But, we'll only offer red-blue for now.
+    gate = 2.5
     color = ""
     while color != "s" and color != "d":
         print ""
         color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
         color = color.strip()
     
-        if color != "s" and color != "d":
+        if color != "s" and color != "d" and color !="b":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
-            print "marks) for a smooth color scale."
+            print "marks) for a smooth color scale and 'b' (without quotation marks) for bi-color scale.""
+    meta['gate']=gate
     meta['color']=color
 
 

@@ -185,8 +185,8 @@ else:
         if color != "s" and color != "d" and color != "b":
             print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
             print "marks) for a smooth color scale and 'b' (without quotation marks) for bi-color scale."
-    meta['scale_gate']=gate
-    meta['color_scale']=color
+    meta['gate']=gate
+    meta['color']=color
 
 # Now we have all the information so we can actually plot the data.
 print ""
