@@ -683,7 +683,7 @@ if test "x$enable_static" = xno; then
    LDFLAGS="$LDFLAGS -ldl"
 fi
 
-AC_CONFIG_FILES([Makefile aux-config/Makefile conf/Makefile conf/example/Makefile model/ucvm/Makefile model/1d/Makefile src/ucvm/Makefile src/ucvm2etree/Makefile src/ucvm2mesh/Makefile src/grd/Makefile src/grd2etree/Makefile src/patch/Makefile src/ecoalesce/Makefile src/ecompact/Makefile src/basin/Makefile test/Makefile examples/Makefile examples/api/Makefile man/Makefile src/ssh/Makefile src/vs30/Makefile utilities/Makefile])
+AC_CONFIG_FILES([Makefile aux-config/Makefile conf/Makefile model/ucvm/Makefile model/1d/Makefile src/ucvm/Makefile src/ucvm2etree/Makefile src/ucvm2mesh/Makefile src/grd/Makefile src/grd2etree/Makefile src/patch/Makefile src/ecoalesce/Makefile src/ecompact/Makefile src/basin/Makefile test/Makefile examples/Makefile examples/api/Makefile man/Makefile src/ssh/Makefile src/vs30/Makefile utilities/Makefile])
 
 AC_OUTPUT
 
