@@ -474,13 +474,12 @@ class UCVM:
     #  
     #  @param install_dir The base installation directory of UCVM.
     #  @param config_file The location of the UCVM configuration file.
-    def __init__(self, install_dir = None, config_file = None):
+    def __init__(self, install_dir = None, config_file = None, z_range = None):
         if install_dir != None:
             ## Location of the UCVM binary directory.
             self.binary_dir = install_dir + "/bin"
         else:
             self.binary_dir = "../bin"
-            
         
         if config_file != None:
             ## Location of the UCVM configuration file.
@@ -490,6 +489,11 @@ class UCVM:
                self.config = install_dir + "/conf/ucvm.conf"
             else:
                self.config = "../conf/ucvm.conf"
+
+        if z_range != None:
+            self.z_range = z_range
+        else:
+            self.z_range= None
         
         if install_dir != None:
             ## List of all the installed CVMs.
@@ -540,11 +544,21 @@ class UCVM:
             #obj = ctypes.cdll.LoadLibrary(shared_object)
             #print obj
         
+#        print "CVM", cvm
         if( elevation ) :
-          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            if self.z_range != None :
+#                print "RANGE", self.z_range
+#                print "CVM", cvm 
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            else :
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         else :
-#          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-          proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            if self.z_range != None :
+#                print "RANGE", self.z_range
+#                print "CVM", cvm 
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            else:
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd" ], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         

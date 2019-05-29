@@ -24,6 +24,7 @@ def usage():
     print "\t-v, --vertical: vertical spacing for cross-section (meters)"
     print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed CVMs"
+    print "\t-z, --zrange: optional Z-range for elygtl:ely (e.g. -z 0,350)"
     print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
     print "\t-g, --gate: optional gate value for bi-color scale gate"
     print "\t-b, --origin: origin latitude, longitude from which to start plot (e.g. 34,-118)"
@@ -42,6 +43,7 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			 "e,ending":"ending_depth", \
                          "d,datatype":"data_type", \
 			 "c,cvm":"cvm", \
+                         "z,zrange,o":"zrange1,zrange2", \
 			 "h,horizontal":"horizontal_spacing", \
 			 "v,vertical":"vertical_spacing", \
 			 "a,scale": "color", \

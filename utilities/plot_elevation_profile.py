@@ -22,6 +22,7 @@ def usage():
     print "\t-d, --datatype: one or more 'vs', 'vp' and/or 'density'(e.g. vs,vp,density)"
     print "\t-v, --vertical: vertical spacing for elevation interval (meters)"
     print "\t-c, --cvm: one of the installed CVMs"
+    print "\t-z, --zrange: optional Z-range for elygtl:ely (e.g. -z 0,350)"
     print "\t-g, --threshold: optional  Vs threshold to display as gating"
     print "\t-f, --datafile: optional binary input data filename"
     print "\t-o, --outfile: optional png output filename"
@@ -38,6 +39,7 @@ ret_val = get_user_opts({"s,startingpoint":"lat1,lon1", \
 			 "c,cvm":"cvm", \
 			 "d,datatype":"data_type", \
 			 "v,vertical":"vertical_spacing", \
+                         "z,zrange,o":"zrange1,zrange2", \
 			 "g,gating,o":"vs_threshold", \
                          "f,datafile,o":"datafile", \
 			 "o,outfile,o":"outfile", \

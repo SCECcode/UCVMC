@@ -59,7 +59,11 @@ class ElevationProfile:
         else:
             ## Defines the elevation to which the plot should go in meters.
             self.startelevation = self.startingpoint.elevation
-            
+
+        self.z_range = None
+        if 'zrange1' in self.meta and 'zrange2' in self.meta :
+            self.z_range=self.meta['zrange1']+","+self.meta['zrange2']
+
         ## The CVM to use (must be installed with UCVM).
         if 'cvm' in self.meta :
             self.cvm = self.meta['cvm']
@@ -119,7 +123,7 @@ class ElevationProfile:
         for i in np.arange(self.startelevation, toto, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, elevation=i))
             
-        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
 
 ###MEI
         if (self.datafile != None) :

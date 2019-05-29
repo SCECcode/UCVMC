@@ -83,6 +83,10 @@ class DepthProfile:
             else:
                 self.startingdepth = self.startingpoint.depth
 
+        self.z_range = None
+        if 'zrange1' in self.meta and 'zrange2' in self.meta :
+            self.z_range=self.meta['zrange1']+","+self.meta['zrange2']
+
         ## The CVM to use (must be installed with UCVM).
         if 'cvm' in self.meta :
             self.cvm = self.meta['cvm']
@@ -128,7 +132,7 @@ class DepthProfile:
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
             self.meta['depth'].append(i)
             
-        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
 
         if (self.datafile != None) :
             print "\nUsing --> "+self.datafile
