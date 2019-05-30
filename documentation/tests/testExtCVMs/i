@@ -1,0 +1,9 @@
+
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/ucvm_nocal_elev_results.txt .
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/cencal_errors.txt .
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/cencal_results.txt .
+
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/input_files/nocal_welev.txt  cencal_input_files/
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/input_files/ucvm_nocal_depth_results.txt cencal_input_files/
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/input_files/ucvm_nocal_test_pts.txt cencal_input_files/
+scp mei@hypocenter.usc.edu:/var/www/html/research/ucvmc/compare_ucvm_cencal/input_files/ucvm_nocal_test_pts_welev.txt cencal_input_files/
