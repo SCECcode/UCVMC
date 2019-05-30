@@ -3,6 +3,13 @@ import sys
 import os
 import time
 
+# Generate the master out.grid
+
+#
+# make out.grd
+cmd="./makegrid.sh"
+os.system(cmd)
+print cmd
 #
 # Call each of the installed crustal models and time how
 # long it takes to populate the models

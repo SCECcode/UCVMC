@@ -12,6 +12,7 @@
 from horizontal_slice import HorizontalSlice
 from common import Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
+import pdb
 
 ##
 #  @class MapGridHorizontalSlice
@@ -25,24 +26,18 @@ class MapGridHorizontalSlice(HorizontalSlice):
     #
     #  @param upperleftpoint The @link common.Point starting point @endlink from which this plot should start.
     #  @param bottomrightpoint The @link common.Point ending point @endlink at which this plot should end.
-    #  @param spacing The spacing, in degrees, for this plot. 
-    #  @param cvm The community velocity model from which this data should come.
+    #  @param meta The metadata to hold the configuration settings
     #  
-    def __init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=None, ysteps=None):
-    
-        self.xsteps = xsteps
-        self.ysteps = ysteps
+    def __init__(self, upperleftpoint, bottomrightpoint, meta = {}) :
         #
         # define a list of strings that will be returned and written to file
         self.ucvm_query_results = []
 
         #  Initializes the base class which is a horizontal slice.
-        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, spacing, cvm, xsteps=xsteps, ysteps=ysteps)
+        HorizontalSlice.__init__(self, upperleftpoint, bottomrightpoint, meta)
     
-    def getplotvals(self, datafile=None):
-        
-        #  How many y and x values will we need?
-        
+    def getplotvals(self):
+
         ## The plot width - needs to be stored as property for the plot function to work.
         self.plot_width  = self.bottomrightpoint.longitude - self.upperleftpoint.longitude
         ## The plot height - needs to be stored as a property for the plot function to work.
@@ -61,7 +56,7 @@ class MapGridHorizontalSlice(HorizontalSlice):
         ## The 2D array of retrieved material properties
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
-        u = UCVM()
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
         #  Generate a list of points to pass to UCVM.
         ucvmpoints = []
@@ -78,15 +73,16 @@ class MapGridHorizontalSlice(HorizontalSlice):
     #
     #  @param filename The location to which the grid_pts should be saved. Optional.
     #
-    def plot(self, filename = None, meta={}):
-        self.getplotvals(self)
-        if filename != None:
-            print "Writing to output file: %s"%(filename) 
-            f = open(filename,"w")
+    def plot(self):
+
+        self.getplotvals()
+ 
+        if self.filename != None:
+            print "Writing to output file: %s"%(self.filename) 
+            f = open(self.filename,"w")
             for line in self.ucvm_query_results:
                 f.write("%s\n"%(line))
             f.close()
-            #print "Closed file: %s\n"%(filename)
         else:
+            print "No file created"
             pass
-            #print "No file created"

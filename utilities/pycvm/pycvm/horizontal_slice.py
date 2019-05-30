@@ -31,8 +31,7 @@ class HorizontalSlice:
     #
     #  @param upperleftpoint The @link common.Point starting point @endlink from which this plot should start.
     #  @param bottomrightpoint The @link common.Point ending point @endlink at which this plot should end.
-    #  @param spacing The spacing, in degrees, for this plot.
-    #  @param cvm The community velocity model from which this data should come.
+    #  @param meta The metadata to hold configuration values
     #  
     def __init__(self, upperleftpoint, bottomrightpoint, meta={}) :
       

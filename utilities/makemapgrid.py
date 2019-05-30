@@ -1,14 +1,12 @@
 #!/usr/bin/env python2
 
 ##
-#  @file plot_map_query.py
-#  @brief Plots a horizontal slice return from ucvm_query using command-line parameters.
-#  @author David Gill - SCEC <davidgil@usc.edu>
-#  @version 14.7.0
+#  @file makemapgrid.py
+#  @brief Generate a material properties txt information base on a slice of horizontal slice using returns from ucvm_query
+#  @author SCEC
+#  @version 19.4.0
 #
-#  Plots a horizontal slice as ucvm_query returns lines given a set of command-line parameters.
-
-from pycvm import MapGridHorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point
+from pycvm import MapGridHorizontalSlice, UCVM, VERSION, UCVM_CVMS, Point, ask_number, ask_path, ask_file, get_user_opts
 import getopt, sys, os
 
 ## Prints usage of this utility.
@@ -22,78 +20,29 @@ def usage():
     print "\t-e, --depth: depth for horizontal slice in meters (e.g. 1000)"
     print "\t-c, --cvm: one of the installed velocity models"
     print "\t-o, --outfile: output filename containing list of lines from ucvm_query"
+    print "\t-H, --help: optional display usage information"
+    print "\t-i, --installdir: optional UCVM isntall directory"
+    print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
-## Makes sure the response is a number.
-def ask_number(question):
-    temp_val = None
-    
-    while temp_val is None:
-        temp_val = raw_input(question)
-        try:
-            float(temp_val)
-            return float(temp_val)
-        except ValueError:
-            print temp_val + " is not a number. Please enter a number."
-            temp_val = None
-    
-## Gets the options and assigns them to the correct variables.
-def get_user_opts(options):
-    
-    short_opt_string = ""
-    long_opts = []
-    opts_left = []
-    opts_opt = []
-    ret_val = {}
-    
-    for key, value in options.iteritems():
-        short_opt_string = short_opt_string + key.split(",")[0] + ":"
-        long_opts.append(key.split(",")[1])
-        opts_left.append(key.split(",")[0])
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
-    except getopt.GetoptError as err:
-        print str(err)   
-        exit(1)
-
-    if len(opts) == 0 :
-        return {}
-    
-    for o, a in opts:
-        for key, value in options.iteritems():
-            if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
-                opts_left.remove(key.split(",")[0])
-                if "," in value:
-                    ret_val[value.split(",")[0]] = a.split(",")[0]
-                    ret_val[value.split(",")[1]] = a.split(",")[1]
-                else:
-                    ret_val[value] = a
-    
-    for l in opts_left :
-        if l == "o" :
-            opts_opt.append(l)
-            ret_val["outfile"] = None
-
-    if len(opts_left) == 0 or len(opts_left) == len(opts_opt):
-        return ret_val
-    else:
-        return "bad"
-
-ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", "u,upperright":"lat2,lon2", \
-                         "s,spacing":"spacing", "e,depth":"depth", \
-                         "c,cvm":"cvm_selected", \
-                         "o,outfile":"outfile"})
-
-
-# Create a new UCVM object.
-u = UCVM()
+ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
+                         "u,upperright":"lat2,lon2", \
+                         "s,spacing":"spacing", \
+                         "e,depth":"depth", \
+                         "c,cvm":"cvm", \
+                         "o,outfile":"outfile", \
+                         "H,help,o":"", \
+                         "i,installdir,o":"installdir", \
+                         "n,configfile,o":"configfile" })
 
 meta = {}
 
 if ret_val == "bad":
     usage()
     exit(1)
+elif ret_val == "help":
+    usage()
+    exit(0)
 elif len(ret_val) > 0:
     print "Using parameters:\n"
     for key, value in ret_val.iteritems():
@@ -121,6 +70,10 @@ else:
     lat1 = ask_number("Next, enter the bottom-left latitude from which the plot should start: ")
     lon2 = ask_number("Enter the top-right longitude where the plot should end: ")
     lat2 = ask_number("Enter the top-right latitude where the plot should end: ")
+    meta['lon1']=lon1
+    meta['lon2']=lon2
+    meta['lat1']=lat1
+    meta['lat2']=lat2
 
     # Check to see that this is a valid box.
     if lon1 > lon2 or lat1 > lat2:
@@ -136,6 +89,7 @@ else:
     
         if spacing <= 0:
             print "Error: grid spacing must be a positive number."
+    meta['spacing']=spacing
 
     depth = -1
     print ""
@@ -144,6 +98,7 @@ else:
         depth = ask_number("Please enter the depth, in meters, at which you would like this plot: ")
         if depth < 0:
             print "Error: the depth must be a positive number."
+    meta['depth']=depth
 
     print ""
 
@@ -152,6 +107,11 @@ else:
 
     counter = 1
     corresponding_cvm = []
+    installdir = None
+    configfile = None
+
+    # Create a new UCVM object.
+    u = UCVM(install_dir=installdir, config_file=configfile)
 
     for cvm in u.models:
         cvmtoprint = cvm
@@ -170,22 +130,11 @@ else:
             print "Error: the number you selected must be between 1 and %d" % counter
 
     cvm_selected = corresponding_cvm[cvm_selected]
-
-    # We will offer two color options. Discretized or smooth. But, we'll only offer red-blue for now.
-    color = ""
-
-    while color != "s" and color != "d" and data_type != "poisson":
-        print ""
-        color = raw_input("Finally, would you like a descritized or smooth color scale\n(enter 'd' for discrete, 's' for smooth): ")
-        color = color.strip()
-    
-        if color != "s" and color != "d":
-            print "Please enter 'd' (without quotation marks) for a discrete color bar and 's' (without quotation"
-            print "marks) for a smooth color scale."
+    meta['cvm']=cvm_selected
 
 # Now that we have all the requisite data, we can actually make the plot now.
 print "Retrieving data. Please wait..."
 
 # Generate the horizontal slice.
-h = MapGridHorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), spacing, cvm_selected)
-h.plot(filename=outfile, meta=meta)
+h = MapGridHorizontalSlice(Point(lon1, lat2, depth), Point(lon2, lat1, depth), meta)
+h.plot()
