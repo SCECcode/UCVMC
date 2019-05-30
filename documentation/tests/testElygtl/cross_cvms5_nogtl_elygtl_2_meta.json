@@ -107,7 +107,7 @@
   "datapoints": 27876, 
   "starting_depth": "0", 
   "zrange1": "0", 
-  "zrange2": "500", 
+  "zrange2": "800", 
   "title": "cvms5,elygtl:ely Cross Section from (-116.00, 34.50) to (-113.00, 34.50)", 
   "vertical_spacing": "10", 
   "data_type": "vs", 
@@ -678,5 +678,5 @@
     34.5
   ], 
   "lon2": "-113", 
-  "mean": 2.0058915615081787
+  "mean": 1.7945265769958496
 }
