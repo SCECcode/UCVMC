@@ -1,4 +1,8 @@
 
+2019-06-01  Mei-Hui Su <mei@usc.edu>
+
+* Added z-range to plotting capability for external elygtl 
+
 2019-04-15  Mei-Hui Su <mei@usc.edu>
 
 * Added new plotting capability of using elevation in addition to depth 

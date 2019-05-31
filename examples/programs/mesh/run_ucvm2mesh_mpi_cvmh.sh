@@ -22,7 +22,7 @@ SCRATCH=./scratch
 cp ${BIN_DIR}/ucvm2mesh_mpi .
 cp ${CONF_DIR}/ucvm.conf .
 
-sed 's ${SCRATCH} '$SCRATCH' ' small_cvmh.conf_template  > small_cvmh.conf
+sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmh.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmh.conf
 
 salloc -N 2 --ntasks=2 --time=00:20:00 srun --ntasks=2 -v --mpi=pmi2 ./ucvm2mesh_mpi -f small_cvmh.conf
 
