@@ -80,6 +80,10 @@ class CrossSection:
         self.z_range = None
         if 'zrange1' in self.meta and 'zrange2' in self.meta :
             self.z_range=self.meta['zrange1']+","+self.meta['zrange2']
+
+        self.z_threshold = None
+        if 'zthreshold' in self.meta:
+            self.z_threshold=self.meta['zthreshold']
         
         ## The CVM to use (must be installed with UCVM).
         if 'cvm' in self.meta :
@@ -123,13 +127,12 @@ class CrossSection:
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
+                lon = round(lon,3)
+                lat = round(lat,5)
                 point_list.append(Point(lon, lat, j))
                 if ( j == jstart) :
-                  lon_list.append( round(lon,5))
-                  lat_list.append( round(lat,5))
-#                if(cnt < 10) :
-#                   print("point.. lon ",lon, " lat ",lat," j ",j)
-#                   cnt += 1
+                  lon_list.append(lon)
+                  lat_list.append(lat)
                 
         self.lon_list=lon_list
         self.lat_list=lat_list
@@ -139,7 +142,7 @@ class CrossSection:
 #        print("total lat..", len(lat_list))
 #        print("total lat..", len(depth_list))
 
-        u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range, z_threshold=self.z_threshold)
 
 ### MEI -- TODO, need to have separate routine that generates cross section datafile
         if (self.datafile != None) :

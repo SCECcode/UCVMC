@@ -25,6 +25,7 @@ def usage():
     print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
     print "\t-c, --cvm: one of the installed CVMs"
     print "\t-z, --zrange: optional Z-range for elygtl:ely (e.g. -z 0,350)"
+    print "\t-Z, --zthreshold: optional Z-threshold for svmgtl:svm (e.g. -Z 1000)"
     print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
     print "\t-g, --gate: optional gate value for bi-color scale gate"
     print "\t-b, --origin: origin latitude, longitude from which to start plot (e.g. 34,-118)"
@@ -45,7 +46,8 @@ ret_val = get_user_opts({"b,origin":"lat1,lon1", \
 			 "c,cvm":"cvm", \
 			 "h,horizonatal":"horizontal_spacing", \
 			 "v,vertical":"vertical_spacing", \
-                         "z,zrange,o":"zrange1,zrange2", \
+			 "z,zrange,o":"zrange1,zrange2", \
+                         "Z,zthreshold,o":"zthreshold", \
 			 "a,scale": "color", \
 			 "g,gate,o": "gate", \
 			 "f,datafile,o":"datafile", \

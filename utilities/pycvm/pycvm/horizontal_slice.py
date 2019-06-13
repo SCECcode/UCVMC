@@ -165,9 +165,7 @@ class HorizontalSlice:
     ## 
     #  Plots the horizontal slice either to an image or a file name.
     # 
-    def plot(self):
-
-        horizontal_label = None
+    def plot(self, horizontal_label = None):
 
         if self.upperleftpoint.description == None:
             location_text = ""

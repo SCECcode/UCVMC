@@ -4,7 +4,7 @@ bin_PROGRAMS = ucvm_query run_ucvm.sh
 include_HEADERS = ucvm.h ucvm_dtypes.h ucvm_config.h \
 		ucvm_grid.h ucvm_proj_bilinear.h \
 		ucvm_proj_ucvm.h ucvm_meta_etree.h \
-		ucvm_meta_patch.h ucvm_utils.h
+		ucvm_meta_patch.h ucvm_utils.h ucvm_crossing.h
 
 # General compiler/linker flags
 AM_CFLAGS =
@@ -13,7 +13,7 @@ AM_LDFLAGS = ${LDFLAGS}
 # Default set of cvms to include
 MODEL_TARGS = ucvm_model_1d.o ucvm_model_1dgtl.o ucvm_model_bbp1d.o \
 		ucvm_model_plugin.o ucvm_model_elygtl.o ucvm_model_etree.o \
-		ucvm_model_cmuetree.o ucvm_model_patch.o
+		ucvm_model_cmuetree.o ucvm_model_patch.o ucvm_model_svmgtl.o
 
 # CENCALVM includes
 if UCVM_AM_ENABLE_CENCAL
@@ -116,7 +116,7 @@ all: $(lib_LIBRARIES) $(bin_PROGRAMS)
 libucvm.a: ucvm.o ucvm_config.o ucvm_grid.o \
 		ucvm_proj_bilinear.o ucvm_proj_ucvm.o \
 		ucvm_interp.o ucvm_map.o ucvm_utils.o \
-		ucvm_meta_etree.o ucvm_meta_patch.o \
+		ucvm_meta_etree.o ucvm_meta_patch.o ucvm_crossing.o \
 		$(MODEL_TARGS)
 	$(AR) rcs $@ $^
 

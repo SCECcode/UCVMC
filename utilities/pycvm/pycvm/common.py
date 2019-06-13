@@ -474,7 +474,7 @@ class UCVM:
     #  
     #  @param install_dir The base installation directory of UCVM.
     #  @param config_file The location of the UCVM configuration file.
-    def __init__(self, install_dir = None, config_file = None, z_range = None):
+    def __init__(self, install_dir = None, config_file = None, z_range = None, z_threshold = None):
         if install_dir != None:
             ## Location of the UCVM binary directory.
             self.binary_dir = install_dir + "/bin"
@@ -494,6 +494,11 @@ class UCVM:
             self.z_range = z_range
         else:
             self.z_range= None
+
+        if z_threshold != None:
+            self.z_threshold = z_threshold
+        else:
+            self.z_threshold= None
         
         if install_dir != None:
             ## List of all the installed CVMs.
@@ -513,7 +518,7 @@ class UCVM:
         output = rawoutput.split("\n")[idx:-1]
         if len(output) > 1:
             line = output[0]
-            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo" in line) or ("#" in line):
                 return output
             p=line.split()[0]
             try :
@@ -537,7 +542,7 @@ class UCVM:
         
         shared_object = "../model/" + cvm + "/lib/lib" + cvm + ".so"
         properties = []
-        
+
         # Can we load this library dynamically and bypass the C code entirely?
         if os.path.isfile(shared_object):
             import ctypes
@@ -546,16 +551,18 @@ class UCVM:
         
 #        print "CVM", cvm
         if( elevation ) :
-            if self.z_range != None :
-#                print "RANGE", self.z_range
-#                print "CVM", cvm 
+# should only be Z threashold or z range
+            if self.z_threshold != None :
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge", "-Z", self.z_threshold], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+           
+            elif self.z_range != None :
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else :
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         else :
-            if self.z_range != None :
-#                print "RANGE", self.z_range
-#                print "CVM", cvm 
+            if self.z_threshold != None :
+                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd", "-Z", self.z_threshold], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            elif self.z_range != None :
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else:
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd" ], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
@@ -575,12 +582,16 @@ class UCVM:
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
+            if ("#" in line) :
+                 print "skipping text",line
 # it is material properties.. line
-            try :
-              mp = MaterialProperties.fromUCVMOutput(line)
-              properties.append(mp)
-            except :
-              pass
+            else: 
+                try :
+                  mp = MaterialProperties.fromUCVMOutput(line)
+                  properties.append(mp)
+                except :
+                  print "bad", line
+                  pass
 
 
         if len(properties) == 1:
@@ -647,7 +658,7 @@ class UCVM:
         output = self.checkUCVMoutput(0,output)
         
         for line in output:
-            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line) or ("#" in line) :
                  print "skipping text",line
             else:
                  try :
@@ -691,12 +702,15 @@ class UCVM:
         output = self.checkUCVMoutput(0,output)
 
         for line in output:
-            try :
-                p=float(line.split()[2])
-            except :
-                print "ERROR: should be a float."
-                exit(1)
-            floats.append(p)
+            if ("#" in line) :
+                print "skipping text",line
+            else:
+                try :
+                    p=float(line.split()[2])
+                except :
+                    print "ERROR: should be a float."
+                    exit(1)
+                floats.append(p)
 
         if len(floats) == 1:
             return floats[0]
@@ -738,7 +752,7 @@ class UCVM:
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
-            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line) or ("#" in line):
                 print "skipping text",line
             else:
                 # Position 3 returned by ucvm_query is a elevation in the etree. Return this value
@@ -789,7 +803,7 @@ class UCVM:
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
-            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line) or ("#" in line):
                 print "skipping text",line
             else:
                 # print "line:",line
@@ -836,7 +850,7 @@ class UCVM:
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
-            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line) or ("#" in line):
                 print "skipping text",line
             else:
                 #print "line:",line
@@ -868,7 +882,7 @@ class UCVM:
         output = self.checkUCVMoutput(0,output)
         
         for line in output:
-            if ("WARNING" in line) or ("slow performance" in line):
+            if ("WARNING" in line) or ("slow performance" in line) or ("#" in line):
                  print "skipping text",line
             else:
                  try :

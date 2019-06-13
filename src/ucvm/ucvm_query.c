@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include "ucvm.h"
 #include "ucvm_utils.h"
+#include "ucvm_crossing.h"
 
 /* Constants */
 #define MAX_RES_LEN 256
@@ -132,12 +133,14 @@ int main(int argc, char **argv)
   char modellist[UCVM_MAX_MODELLIST_LEN];
   char configfile[UCVM_MAX_PATH_LEN];
   double zrange[2];
+  double zthreshold = 1000.0;
   int dispver = 0;
 
   ucvm_ctype_t cmode;
   int have_model = 0;
   int have_cmode = 0;
   int have_zrange = 0;
+  int have_zthreshold = 0;
   int have_map = 0;
 
   ucvm_point_t *pnts;
@@ -156,7 +159,7 @@ int main(int argc, char **argv)
   zrange[1] = ZRANGE_MAX;
 
   /* Parse options */
-  while ((opt = getopt(argc, argv, "c:f:Hhm:p:vz:")) != -1) {
+  while ((opt = getopt(argc, argv, "c:f:Hhm:p:vz:Z:")) != -1) {
     switch (opt) {
     case 'c':
       if (strcmp(optarg, "gd") == 0) {
@@ -221,6 +224,15 @@ int main(int argc, char **argv)
       }
       have_zrange = 1;
       break;
+    case 'Z':
+      if (list_parse(optarg, UCVM_MAX_PATH_LEN, 
+		     &zthreshold, 1) != UCVM_CODE_SUCCESS) {
+	fprintf(stderr, "Invalid zthreshold specified: %s.\n", optarg);
+	usage();
+	exit(1);
+      }
+      have_zthreshold = 1;
+      break;
     default: /* '?' */
       usage();
       exit(1);
@@ -270,6 +282,7 @@ int main(int argc, char **argv)
     }
   }
 
+
   if (dispver) {
     disp_resources(1);
     return(0);
@@ -278,6 +291,10 @@ int main(int argc, char **argv)
   /* Allocate buffers */
   pnts = malloc(NUM_POINTS * sizeof(ucvm_point_t));
   props = malloc(NUM_POINTS * sizeof(ucvm_data_t));
+  ucvm_crossings = malloc(NUM_POINTS * sizeof(double));
+  for(i=0; i< NUM_POINTS; i++) {
+      ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
+  }
 
   /* Read in coords */
   while (!feof(stdin)) {
@@ -291,10 +308,35 @@ int main(int argc, char **argv)
 	  (pnts[numread].coord[1] == 0.0)) {
 	continue;
       }
-
+      
       numread++;
+
+      // fill in ucvm_crossing when there is a -Z option 
+      if(have_zthreshold) {
+        // check if there is one already
+        int z;
+        int current=numread-1;
+//fprintf(stderr,"# LOOK crossing for %d |  %f %f\n", current, pnts[current].coord[0], pnts[current].coord[1]);
+        for(z=0; z < numread; z++) {
+          if(pnts[z].coord[0] == pnts[current].coord[0] &&
+                  (pnts[z].coord[1] == pnts[current].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
+            ucvm_crossings[current]=ucvm_crossings[z];
+//fprintf(stderr,"#         FOUND existing crossing\n");
+            break;
+          }
+        } 
+        if (z == numread) { // did not find one
+          have_zthreshold = 0;
+          double crossing = ucvm_first_crossing(&(pnts[current]), cmode, zthreshold);
+          have_zthreshold = 1;
+//fprintf(stderr,"#         get New crossing.. %lf for %d\n", crossing, current);
+          ucvm_crossings[current]=crossing;
+        } 
+      }
+
       if (numread == NUM_POINTS) {
 	/* Query the UCVM */
+// fprintf(stderr,"# number read.. %d\n", numread);
 	if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
 	  fprintf(stderr, "Query CVM failed\n");
 	  return(1);
@@ -324,12 +366,15 @@ int main(int argc, char **argv)
     }
   }
 
-  if (numread > 0) {
+  if (numread > 0) { // the leftover from the chunks
+
+//fprintf(stderr,"# this is a long time...(%d)\n", numread);
     /* Query the UCVM */
     if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, "Query CVM failed\n");
       return(1);
     }
+//fprintf(stderr,"# done with query long time...(%d)\n", numread);
     
     /* Display results */
     for (i = 0; i < numread; i++) {

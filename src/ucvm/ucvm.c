@@ -7,6 +7,7 @@
 #include "ucvm_utils.h"
 #include "ucvm_proj_ucvm.h"
 #include "ucvm_map.h"
+#include "ucvm_crossing.h"
 /* Interpolation functions */
 #include "ucvm_interp.h"
 /* Crustal models */
@@ -46,6 +47,7 @@
 /* GTL models */
 #include "ucvm_model_elygtl.h"
 #include "ucvm_model_1dgtl.h"
+#include "ucvm_model_svmgtl.h"
 /* Etree model */
 #include "ucvm_model_etree.h"
 #include "ucvm_model_cmuetree.h"
@@ -55,10 +57,8 @@
 #define UCVM_MODELLIST_DELIM ","
 #define UCVM_GTL_DELIM ":"
 
-
 /* Init flag */
 int ucvm_init_flag = 0;
-
 
 /* Current query mode */
 ucvm_ctype_t ucvm_cur_qmode = UCVM_COORD_GEO_DEPTH;
@@ -79,6 +79,9 @@ ucvm_config_t *ucvm_cfg = NULL;
 /* GTL smoothing parameters */
 double ucvm_interp_zmin = UCVM_DEFAULT_INTERP_ZMIN;
 double ucvm_interp_zmax = UCVM_DEFAULT_INTERP_ZMAX;
+
+/* GTL crossing values */
+double *ucvm_crossings;
 
 
 /* Get topo and vs30 values from UCVM models */
@@ -403,6 +406,11 @@ int ucvm_add_model(const char *label) {
     is_predef = 1;
   }
 
+  if (strcmp(label, UCVM_MODEL_SVMGTL) == 0) {
+    retval = ucvm_svmgtl_get_model(&m);
+    is_predef = 1;
+  }
+
   /* CMU Etree */
   if (strcmp(label, UCVM_MODEL_CMUETREE) == 0) {
     retval = ucvm_cmuetree_get_model(&m);
@@ -618,6 +626,9 @@ int ucvm_assoc_ifunc(const char *mlabel, const char *ilabel)
   } else if (strcmp(ilabel, UCVM_IFUNC_ELY) == 0) {
     ucvm_strcpy(ifunc.label, UCVM_IFUNC_ELY, UCVM_MAX_LABEL_LEN);
     ifunc.interp = ucvm_interp_ely;
+  } else if (strcmp(ilabel, UCVM_IFUNC_SVM) == 0) {
+    ucvm_strcpy(ifunc.label, UCVM_IFUNC_SVM, UCVM_MAX_LABEL_LEN);
+    ifunc.interp = ucvm_interp_svm;
   } else if (strcmp(ilabel, UCVM_IFUNC_CRUST) == 0) {
     ucvm_strcpy(ifunc.label, UCVM_IFUNC_CRUST, UCVM_MAX_LABEL_LEN);
     ifunc.interp = ucvm_interp_crustal;
@@ -909,6 +920,9 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
       break;
     case UCVM_COORD_GEO_ELEV:
       data[i].depth = data[i].surf - pnt[i].coord[2];
+//fprintf(stderr,"#   pts: %f %f %f\n", pnt[i].coord[0], pnt[i].coord[1], pnt[i].coord[2]);
+//fprintf(stderr,"#   data -depth: %f\n",data[i].depth);
+//fprintf( stderr,"#   recompute the depth in ucvm_query call..  at %d\n", i);
       break;
     default:
       fprintf(stderr, "Unsupported coord type\n");
@@ -933,15 +947,23 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
   }
 
   /* Query map model */
-  if (ucvm_map_query(ucvm_cur_qmode, n, pnt, data) != 
-      UCVM_CODE_SUCCESS) {
+  if (ucvm_map_query(ucvm_cur_qmode, n, pnt, data) != UCVM_CODE_SUCCESS) {
     fprintf(stderr, "Failed to query UCVM map\n");
     return(UCVM_CODE_ERROR);
   }
 
   /* Compute derived values */
   for (i = 0; i < n; i++) {
-    ucvm_get_model_vals(&(pnt[i]), &(data[i]));
+//fprintf(stderr,"#..%f and %f \n", ucvm_crossings[i], ucvm_interp_zmax);
+    if (ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
+      double save_ucvm_interp_zmax=ucvm_interp_zmax;
+//      fprintf(stderr,"# swap %f with %f\n", ucvm_interp_zmax, ucvm_crossings[i]);
+      ucvm_interp_zmax =ucvm_crossings[i];
+      ucvm_get_model_vals(&(pnt[i]), &(data[i]));
+      ucvm_interp_zmax =save_ucvm_interp_zmax;
+      } else { 
+          ucvm_get_model_vals(&(pnt[i]), &(data[i]));
+    }
   }
 
   /* Query crustal models */
@@ -983,8 +1005,13 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
   case UCVM_OPMODE_GTL:
     for (i = 0; i < n; i++) {
       if (data[i].gtl.source != UCVM_SOURCE_NONE) {
+        double use_ucvm_interp_zmax=ucvm_interp_zmax;
+        if(ucvm_crossings[i] != DEFAULT_NULL_DEPTH)
+            use_ucvm_interp_zmax=ucvm_crossings[i];
+//        fprintf(stderr,"#IN GTL.. using. zmax.%lf \n", use_ucvm_interp_zmax);
+//        fprintf(stderr,"#  IN GTL.. for %d, %f, %f, %f \n", i, pnt[i].coord[0], pnt[i].coord[1], pnt[i].coord[2]);
 	ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
-						   ucvm_interp_zmax, 
+						   use_ucvm_interp_zmax, 
 						   ucvm_cur_qmode,
 						   &(pnt[i]), 
 						   &(data[i]));
@@ -1084,6 +1111,12 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
     return(UCVM_CODE_ERROR);
   }
 
+  /* SVM GTL */
+  if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_GTL,
+		     UCVM_MODEL_SVMGTL, "", res, numinst++, *len) 
+      != UCVM_CODE_SUCCESS) {
+    return(UCVM_CODE_ERROR);
+  }
 
 #ifdef _UCVM_ENABLE_CVMS
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
@@ -1242,7 +1275,11 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }
-
+  if (ucvm_save_resource(UCVM_RESOURCE_IFUNC, UCVM_MODEL_CRUSTAL,
+		     UCVM_IFUNC_SVM, "", res, numinst++, *len) 
+      != UCVM_CODE_SUCCESS) {
+    return(UCVM_CODE_ERROR);
+  }
   /* Get installed maps */
   startj = numinst;
   if (ucvm_save_resource(UCVM_RESOURCE_MAP, UCVM_MODEL_CRUSTAL,
