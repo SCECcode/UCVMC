@@ -230,9 +230,7 @@ ucvm_point_t *pnt, ucvm_data_t *data) {
   else { // z1 > zstar
 
 //???  k_ = np.exp(r1 * Vs30**r2 + r3)  # updated on 2018/1/2
-
     k   = exp(r1*pow(vs30,r2) + r3);
-//    k   = exp(r1*pow(vs30,2.0) + r3);
     double o = s1*exp(s2*vs30) + s3*exp(s4*vs30);
     n   = (1.0>o ? 1.0: o);
     vz1 = vs0*pow(1.0+k*(z1-zstar),1.0/n); // vs @ z1
