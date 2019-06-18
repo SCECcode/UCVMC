@@ -312,16 +312,14 @@ int main(int argc, char **argv)
       numread++;
 
       // fill in ucvm_crossing when there is a -Z option 
-      if(have_zthreshold) {
+      if(have_zthreshold == 1) {
         // check if there is one already
         int z;
         int current=numread-1;
-//fprintf(stderr,"# LOOK crossing for %d |  %f %f\n", current, pnts[current].coord[0], pnts[current].coord[1]);
         for(z=0; z < numread; z++) {
           if(pnts[z].coord[0] == pnts[current].coord[0] &&
                   (pnts[z].coord[1] == pnts[current].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
             ucvm_crossings[current]=ucvm_crossings[z];
-//fprintf(stderr,"#         FOUND existing crossing\n");
             break;
           }
         } 
@@ -329,7 +327,6 @@ int main(int argc, char **argv)
           have_zthreshold = 0;
           double crossing = ucvm_first_crossing(&(pnts[current]), cmode, zthreshold);
           have_zthreshold = 1;
-//fprintf(stderr,"#         get New crossing.. %lf for %d\n", crossing, current);
           ucvm_crossings[current]=crossing;
         } 
       }

@@ -955,9 +955,8 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
   /* Compute derived values */
   for (i = 0; i < n; i++) {
 //fprintf(stderr,"#..%f and %f \n", ucvm_crossings[i], ucvm_interp_zmax);
-    if (ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
+    if (ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
       double save_ucvm_interp_zmax=ucvm_interp_zmax;
-//      fprintf(stderr,"# swap %f with %f\n", ucvm_interp_zmax, ucvm_crossings[i]);
       ucvm_interp_zmax =ucvm_crossings[i];
       ucvm_get_model_vals(&(pnt[i]), &(data[i]));
       ucvm_interp_zmax =save_ucvm_interp_zmax;
