@@ -84,6 +84,14 @@ class HorizontalSlice:
         except Exception:
             print "TODO"
         
+        self.z_range = None
+        if 'zrange1' in self.meta and 'zrange2' in self.meta :
+            self.z_range=self.meta['zrange1']+","+self.meta['zrange2']
+
+        self.z_threshold = None
+        if 'zthreshold' in self.meta:
+            self.z_threshold=self.meta['zthreshold']
+
         ## The community velocity model from which the data should be retrieved.
         if 'cvm' in self.meta:
             self.cvm = self.meta['cvm']
@@ -130,9 +138,8 @@ class HorizontalSlice:
         ## The 2D array of retrieved material properties.
         self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
         
-        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range, z_threshold=self.z_threshold)
 
-### MEI
         if (self.datafile != None) :
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
             print "\nUsing --> "+self.datafile 

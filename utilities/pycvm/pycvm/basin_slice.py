@@ -102,7 +102,7 @@ class BasinSlice(HorizontalSlice):
     #  HorizontalSlice routine.
     #
     #  @param horizontal_label The horizontal label of the plot. Optional.
-    def plot(self, horizontal_label = "Depth (m)") :
+    def plot(self, horizontal_label = "Depth (km)") :
 
         if self.upperleftpoint.description == None:
             location_text = ""
