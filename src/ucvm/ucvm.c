@@ -1007,9 +1007,7 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
         double use_ucvm_interp_zmax=ucvm_interp_zmax;
         if(ucvm_crossings[i] != DEFAULT_NULL_DEPTH)
             use_ucvm_interp_zmax=ucvm_crossings[i];
-//        fprintf(stderr,"#IN GTL.. using. zmax.%lf \n", use_ucvm_interp_zmax);
-//        fprintf(stderr,"#  IN GTL.. for %d, %f, %f, %f \n", i, pnt[i].coord[0], pnt[i].coord[1], pnt[i].coord[2]);
-	ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
+	    ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
 						   use_ucvm_interp_zmax, 
 						   ucvm_cur_qmode,
 						   &(pnt[i]), 

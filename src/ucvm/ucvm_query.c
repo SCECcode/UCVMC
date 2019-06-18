@@ -357,8 +357,11 @@ int main(int argc, char **argv)
 		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
 		 props[i].cmb.rho);
 	}
-
 	numread = 0;
+        // clean up..
+        for(i=0; i< NUM_POINTS; i++) {
+            ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
+        }
       }
     }
   }
@@ -393,6 +396,10 @@ int main(int argc, char **argv)
     }
     
     numread = 0;
+    // clean up..
+    for(i=0; i< NUM_POINTS; i++) {
+        ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
+    }
   }
 
   ucvm_finalize();
