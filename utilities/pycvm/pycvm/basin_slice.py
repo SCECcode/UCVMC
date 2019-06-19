@@ -101,7 +101,8 @@ class BasinSlice(HorizontalSlice):
     #  Plots the basin depth data as a horizontal slice. This code is very similar to the
     #  HorizontalSlice routine.
     #
-    def plot(self) :
+    #  @param horizontal_label The horizontal label of the plot. Optional.
+    def plot(self, horizontal_label = "Depth (km)") :
 
         if self.upperleftpoint.description == None:
             location_text = ""
@@ -120,7 +121,7 @@ class BasinSlice(HorizontalSlice):
  
         self.meta['mproperty']="vs"
 
-        HorizontalSlice.plot(self)
+        HorizontalSlice.plot(self, horizontal_label)
         
 ##
 #  @class Z10Slice
