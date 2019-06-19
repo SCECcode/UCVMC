@@ -12,13 +12,10 @@
 #include "ucvm_utils.h"
 #include "ucvm_crossing.h"
 
-/* Constants */
-#define NUM_POINTS 20000
-#define DEFAULT_ZERO_DEPTH 0.0
-#define DEFAULT_MAX_DEPTH 15000.0
+int *ucvm_crossings;
 
 /* Extract basin values for the specified points */
-int ucvm_extract_basins(int n, ucvm_point_t *pnts, \
+double ucvm_extract_basins(int n, ucvm_point_t *pnts, \
 		   ucvm_point_t *qpnts, ucvm_data_t *qprops, \
 		   double max_depth, double z_inter, double vs_thresh, \
                    ucvm_ctype_t cmode)
@@ -91,7 +88,7 @@ int ucvm_extract_basins(int n, ucvm_point_t *pnts, \
 }
 
 
-double ucvm_first_crossing(ucvm_point_t *pnts, ucvm_ctype_t cmode, double vs_thresh) {
+int ucvm_first_crossing(ucvm_point_t *pnts, ucvm_ctype_t cmode, double vs_thresh) {
 
 // variable, all locally defined
   ucvm_point_t *qpnts;
@@ -104,7 +101,7 @@ double ucvm_first_crossing(ucvm_point_t *pnts, ucvm_ctype_t cmode, double vs_thr
   qpnts = malloc((int)(max_depth/z_inter+1) * sizeof(ucvm_data_t));
   qprops = malloc((int)(max_depth/z_inter+1) * sizeof(ucvm_data_t));
 
-  double crossing=ucvm_extract_basins(1, pnts, qpnts, qprops, 
+  int crossing=ucvm_extract_basins(1, pnts, qpnts, qprops, 
 			   max_depth, z_inter, vs_thresh, cmode);
 
   free(qpnts);

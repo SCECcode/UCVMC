@@ -8,7 +8,8 @@
 
 /* Constants */
 #define MAX_RES_LEN 256
-#define NUM_POINTS 20000
+//#define NUM_POINTS 20000
+#define NUM_POINTS 200
 #define ZRANGE_MIN 0.0
 #define ZRANGE_MAX 350.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
@@ -291,7 +292,7 @@ int main(int argc, char **argv)
   /* Allocate buffers */
   pnts = malloc(NUM_POINTS * sizeof(ucvm_point_t));
   props = malloc(NUM_POINTS * sizeof(ucvm_data_t));
-  ucvm_crossings = malloc(NUM_POINTS * sizeof(double));
+  ucvm_crossings = malloc(NUM_POINTS * sizeof(int));
   for(i=0; i< NUM_POINTS; i++) {
       ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
   }
@@ -309,27 +310,25 @@ int main(int argc, char **argv)
 	continue;
       }
       
-      numread++;
-
       // fill in ucvm_crossing when there is a -Z option 
       if(have_zthreshold == 1) {
         // check if there is one already
         int z;
-        int current=numread-1;
         for(z=0; z < numread; z++) {
-          if(pnts[z].coord[0] == pnts[current].coord[0] &&
-                  (pnts[z].coord[1] == pnts[current].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
-            ucvm_crossings[current]=ucvm_crossings[z];
+          if(pnts[z].coord[0] == pnts[numread].coord[0] &&
+                  (pnts[z].coord[1] == pnts[numread].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
+            ucvm_crossings[numread]=ucvm_crossings[z];
             break;
           }
         } 
         if (z == numread) { // did not find one
           have_zthreshold = 0;
-          double crossing = ucvm_first_crossing(&(pnts[current]), cmode, zthreshold);
+          ucvm_crossings[numread] = ucvm_first_crossing(&(pnts[numread]), cmode, zthreshold);
           have_zthreshold = 1;
-          ucvm_crossings[current]=crossing;
         } 
       }
+
+      numread++;
 
       if (numread == NUM_POINTS) {
 	/* Query the UCVM */
@@ -357,24 +356,30 @@ int main(int argc, char **argv)
 		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
 		 props[i].cmb.rho);
 	}
-	numread = 0;
         // clean up..
         for(i=0; i< NUM_POINTS; i++) {
             ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
         }
+        printf("# a complete set %d\n",numread);
+	numread = 0;
       }
     }
   }
 
   if (numread > 0) { // the leftover from the chunks
+    // 
+    int k;
+    for(k=numread ; k<NUM_POINTS; k++) {
+       if(ucvm_crossings[k] != DEFAULT_NULL_DEPTH) {
+         printf("### BADDDD. %d\n",k);
+       }
+    }
 
-//fprintf(stderr,"# this is a long time...(%d)\n", numread);
     /* Query the UCVM */
     if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, "Query CVM failed\n");
       return(1);
     }
-//fprintf(stderr,"# done with query long time...(%d)\n", numread);
     
     /* Display results */
     for (i = 0; i < numread; i++) {
@@ -395,16 +400,18 @@ int main(int argc, char **argv)
 	     props[i].cmb.rho);
     }
     
-    numread = 0;
     // clean up..
     for(i=0; i< NUM_POINTS; i++) {
         ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
     }
+    printf("# a partial set %d\n",numread);
+    numread = 0;
   }
 
   ucvm_finalize();
   free(pnts);
   free(props);
+  free(ucvm_crossings);
 
   return(0);
 }

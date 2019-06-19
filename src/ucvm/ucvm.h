@@ -4,8 +4,6 @@
 #include <stdarg.h>
 #include "ucvm_dtypes.h"
 
-extern double *ucvm_crossings;
-
 /* Initializer */
 int ucvm_init(const char *config);
 

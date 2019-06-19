@@ -81,7 +81,7 @@ double ucvm_interp_zmin = UCVM_DEFAULT_INTERP_ZMIN;
 double ucvm_interp_zmax = UCVM_DEFAULT_INTERP_ZMAX;
 
 /* GTL crossing values */
-double *ucvm_crossings;
+int *ucvm_crossings;
 
 
 /* Get topo and vs30 values from UCVM models */
