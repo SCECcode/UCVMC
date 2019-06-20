@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 
   /* Allocate buffers */
   pnts = malloc(NUM_POINTS * sizeof(ucvm_point_t));
-  qpnts = malloc((int)(max_depth/z_inter) * sizeof(ucvm_data_t));
+  qpnts = malloc((int)(max_depth/z_inter) * sizeof(ucvm_point_t));
   qprops = malloc((int)(max_depth/z_inter) * sizeof(ucvm_data_t));
 
   /* Read in coords */
