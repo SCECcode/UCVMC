@@ -577,8 +577,17 @@ class UCVM:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.elevation)
             else:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+        
+#        ffh = open("test_points", 'w+')
+#        ffh.write(text_points)
+#        ffh.close()
 
         output = proc.communicate(input=text_points)[0]
+
+#        ffh = open("test_result", 'w+')
+#        ffh.write(output)
+#        ffh.close()
+
         output = self.checkUCVMoutput(1,output)
 
         for line in output:

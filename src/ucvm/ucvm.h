@@ -42,4 +42,8 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data);
 /* Get installed feature information */
 int ucvm_get_resources(ucvm_resource_t *res, int *len);
 
+/* GTL crossing control */
+int ucvm_enable_crossing();
+int ucvm_disable_crossing();
+
 #endif

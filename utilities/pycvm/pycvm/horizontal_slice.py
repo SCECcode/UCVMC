@@ -149,9 +149,11 @@ class HorizontalSlice:
             ucvmpoints = []
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):
-                    ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
-                                            self.bottomrightpoint.latitude + y * self.spacing, \
-                                            self.upperleftpoint.depth))
+                    lon = (self.upperleftpoint.longitude + x * self.spacing)
+                    lon = round(lon,5)
+                    lat = (self.bottomrightpoint.latitude + y * self.spacing)
+                    lat = round(lat,5)
+                    ucvmpoints.append(Point(lon,lat, self.upperleftpoint.depth))
             data = u.query(ucvmpoints, self.cvm)
 
         i = 0

@@ -12,12 +12,10 @@
 #include "ucvm_utils.h"
 #include "ucvm_crossing.h"
 
-int *ucvm_crossings;
-
 /* Extract basin values for the specified points */
-double ucvm_extract_basins(int n, ucvm_point_t *pnts, \
-		   ucvm_point_t *qpnts, ucvm_data_t *qprops, \
-		   double max_depth, double z_inter, double vs_thresh, \
+double ucvm_extract_basins(int n, ucvm_point_t *pnts,
+		   ucvm_point_t *qpnts, ucvm_data_t *qprops,
+		   double max_depth, double z_inter, double vs_thresh,
                    ucvm_ctype_t cmode)
 {
   int i, p, dnum, numz;
@@ -77,7 +75,7 @@ double ucvm_extract_basins(int n, ucvm_point_t *pnts, \
     }
 
   /* Display output */
-//    fprintf(stderr, "#%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf\n" , pnts[p].coord[0], pnts[p].coord[1], depths[0], depths[1], depths[2]);
+//    printf("# from extract basin %10.4lf %10.4lf %10.3lf %10.3lf %10.3lf\n" , pnts[p].coord[0], pnts[p].coord[1], depths[0], depths[1], depths[2]);
 
     }
   
@@ -88,24 +86,25 @@ double ucvm_extract_basins(int n, ucvm_point_t *pnts, \
 }
 
 
-int ucvm_first_crossing(ucvm_point_t *pnts, ucvm_ctype_t cmode, double vs_thresh) {
+double ucvm_first_crossing(ucvm_point_t *pnts, ucvm_ctype_t cmode, double vs_thresh) {
 
 // variable, all locally defined
-  ucvm_point_t *qpnts;
-  ucvm_data_t *qprops;
+  ucvm_point_t *lqpnts;
+  ucvm_data_t *lqprops;
 
   double max_depth = DEFAULT_MAX_DEPTH;
   double z_inter = DEFAULT_Z_INTERVAL;
+  int num=(int)(max_depth/z_inter+1);
 
   /* Allocate buffers */
-  qpnts = malloc((int)(max_depth/z_inter+1) * sizeof(ucvm_data_t));
-  qprops = malloc((int)(max_depth/z_inter+1) * sizeof(ucvm_data_t));
+  lqpnts = malloc( num*sizeof(ucvm_point_t));
+  lqprops = malloc( num*sizeof(ucvm_data_t));
 
-  int crossing=ucvm_extract_basins(1, pnts, qpnts, qprops, 
+  double crossing=ucvm_extract_basins(1, pnts, lqpnts, lqprops, 
 			   max_depth, z_inter, vs_thresh, cmode);
 
-  free(qpnts);
-  free(qprops);
+  free(lqpnts);
+  free(lqprops);
 
   if( crossing == DEFAULT_NULL_DEPTH ) {
       fprintf(stderr, "Crossing retrieval failed\n");

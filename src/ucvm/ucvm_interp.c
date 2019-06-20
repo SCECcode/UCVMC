@@ -163,6 +163,8 @@ ucvm_point_t *pnt, ucvm_data_t *data) {
 
   // curve fitting parameters for SVM model
 
+//  printf("#calling ucvm_interp_svm...zmax %lf (%lf,%lf)\n", zmax, pnt->coord[0], pnt->coord[1]);
+
   double p1 = -2.1688E-04;
   double p2 =  0.5182    ;
   double p3 = 69.452     ;

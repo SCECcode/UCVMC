@@ -8,8 +8,7 @@
 
 /* Constants */
 #define MAX_RES_LEN 256
-//#define NUM_POINTS 20000
-#define NUM_POINTS 200
+#define NUM_POINTS 20000
 #define ZRANGE_MIN 0.0
 #define ZRANGE_MAX 350.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
@@ -134,7 +133,7 @@ int main(int argc, char **argv)
   char modellist[UCVM_MAX_MODELLIST_LEN];
   char configfile[UCVM_MAX_PATH_LEN];
   double zrange[2];
-  double zthreshold = 1000.0;
+  double zthreshold = DEFAULT_VS_THRESH;
   int dispver = 0;
 
   ucvm_ctype_t cmode;
@@ -292,7 +291,7 @@ int main(int argc, char **argv)
   /* Allocate buffers */
   pnts = malloc(NUM_POINTS * sizeof(ucvm_point_t));
   props = malloc(NUM_POINTS * sizeof(ucvm_data_t));
-  ucvm_crossings = malloc(NUM_POINTS * sizeof(int));
+  ucvm_crossings = malloc(NUM_POINTS * sizeof(double));
   for(i=0; i< NUM_POINTS; i++) {
       ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
   }
@@ -322,11 +321,12 @@ int main(int argc, char **argv)
           }
         } 
         if (z == numread) { // did not find one
-          have_zthreshold = 0;
+          ucvm_disable_crossing();
           ucvm_crossings[numread] = ucvm_first_crossing(&(pnts[numread]), cmode, zthreshold);
-          have_zthreshold = 1;
+          ucvm_enable_crossing();
         } 
       }
+
 
       numread++;
 
@@ -360,7 +360,6 @@ int main(int argc, char **argv)
         for(i=0; i< NUM_POINTS; i++) {
             ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
         }
-        printf("# a complete set %d\n",numread);
 	numread = 0;
       }
     }
@@ -368,13 +367,6 @@ int main(int argc, char **argv)
 
   if (numread > 0) { // the leftover from the chunks
     // 
-    int k;
-    for(k=numread ; k<NUM_POINTS; k++) {
-       if(ucvm_crossings[k] != DEFAULT_NULL_DEPTH) {
-         printf("### BADDDD. %d\n",k);
-       }
-    }
-
     /* Query the UCVM */
     if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, "Query CVM failed\n");
@@ -404,7 +396,6 @@ int main(int argc, char **argv)
     for(i=0; i< NUM_POINTS; i++) {
         ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
     }
-    printf("# a partial set %d\n",numread);
     numread = 0;
   }
 

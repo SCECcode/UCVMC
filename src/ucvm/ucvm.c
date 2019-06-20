@@ -81,8 +81,18 @@ double ucvm_interp_zmin = UCVM_DEFAULT_INTERP_ZMIN;
 double ucvm_interp_zmax = UCVM_DEFAULT_INTERP_ZMAX;
 
 /* GTL crossing values */
-int *ucvm_crossings;
+double *ucvm_crossings;
 
+// GTL/crossing there are time when want to skip 
+// use of ucvm_crossings
+int skip_crossing = 0; 
+
+int ucvm_enable_crossing() {
+    skip_crossing = 0;
+}
+int ucvm_disable_crossing() {
+    skip_crossing = 1;
+}
 
 /* Get topo and vs30 values from UCVM models */
 int ucvm_get_model_vals(ucvm_point_t *pnt, ucvm_data_t *data)
@@ -954,8 +964,7 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
 
   /* Compute derived values */
   for (i = 0; i < n; i++) {
-//fprintf(stderr,"#..%f and %f \n", ucvm_crossings[i], ucvm_interp_zmax);
-    if (ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
+    if (!skip_crossing && ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
       double save_ucvm_interp_zmax=ucvm_interp_zmax;
       ucvm_interp_zmax =ucvm_crossings[i];
       ucvm_get_model_vals(&(pnt[i]), &(data[i]));
@@ -1005,13 +1014,14 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
     for (i = 0; i < n; i++) {
       if (data[i].gtl.source != UCVM_SOURCE_NONE) {
         double use_ucvm_interp_zmax=ucvm_interp_zmax;
-        if(ucvm_crossings[i] != DEFAULT_NULL_DEPTH)
+        if(!skip_crossing && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
             use_ucvm_interp_zmax=ucvm_crossings[i];
 	    ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
 						   use_ucvm_interp_zmax, 
 						   ucvm_cur_qmode,
 						   &(pnt[i]), 
 						   &(data[i]));
+        }
       } else if ((data[i].domain == UCVM_DOMAIN_CRUST) &&
 		 (data[i].crust.source != UCVM_SOURCE_NONE)) {
 	ucvm_ifunc_list[data[i].crust.source].interp(ucvm_interp_zmin, 
