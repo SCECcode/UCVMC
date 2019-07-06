@@ -8,6 +8,38 @@
 #include "ucvm_proj_bilinear.h"
 #include "ucvm_proj_ucvm.h"
 
+
+/* Query underlying models */
+#define NUM_POINTS_CHUNK 200000
+
+int ucvm_query_chunk(int n, ucvm_point_t *pnt, ucvm_data_t *data) {
+    fprintf(stderr,"ucvm_query_chunk --> %d\n", n);
+    int i;
+    int cnt = n / NUM_POINTS_CHUNK;
+    int idx;
+    int rval;
+    if (n < NUM_POINTS_CHUNK) {
+       return ucvm_query(n, pnt, data);
+       } else {
+       for(i=0; i< cnt; i++) {
+         idx=i * NUM_POINTS_CHUNK;
+         fprintf(stderr,"   --> %d\n", idx);
+         rval=ucvm_query(NUM_POINTS_CHUNK, &pnt[idx], &data[idx]);
+         if(rval != UCVM_CODE_SUCCESS) {
+           return rval;
+         }
+       }
+       idx=idx+NUM_POINTS_CHUNK;
+       int d=n-idx;
+       if(d>0) {
+         fprintf(stderr,"   --> %d\n", idx);
+         return ucvm_query(d, &pnt[idx], &data[idx]);
+       }
+    }
+    return rval;
+}
+
+
 /* Insert 2D grid at required resolution in a buffer */
 int insert_grid_buf(ue_cfg_t *cfg,
 		     etree_addr_t *pnts, ucvm_data_t *props, 
@@ -256,6 +288,7 @@ int extract(ue_cfg_t *cfg,
     return(UCVM_CODE_ERROR);
   }
   if (num_points > max_points) {
+fprintf(stderr, "### bad [%d] num_points %d, max_points %d\n", cfg->rank, num_points, max_points);
     fprintf(stderr, 
 	    "[%d] Num points exceeds max points at %d,%d,ztics=%u\n",
 	    cfg->rank, i, j, ztics);
@@ -273,6 +306,7 @@ int extract(ue_cfg_t *cfg,
     }
     
     /* Sample x-y slice @ z depth at 'level' resolution */
+fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at A\n", cfg->rank, num_points);
     if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, 
 	      "[%d] Failed to query grid for %d,%d,ztics=%u\n",
@@ -326,6 +360,7 @@ int extract(ue_cfg_t *cfg,
       }
       
       /* Sample x-y slice @ z depth at 'level' resolution */
+fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at B\n", cfg->rank, num_points);
       if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
 	fprintf(stderr, 
 		"[%d] Failed to query grid for %d,%d,ztics=%u\n",
@@ -353,6 +388,7 @@ int extract(ue_cfg_t *cfg,
 	  }
 	  
 	  /* Sample x-y slice @ z depth at 'level' resolution */
+fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at C\n", cfg->rank, num_points);
 	  if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
 	    fprintf(stderr, 
 		    "[%d] Failed to query grid for %d,%d,ztics=%u\n",

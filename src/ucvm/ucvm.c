@@ -47,7 +47,7 @@
 /* GTL models */
 #include "ucvm_model_elygtl.h"
 #include "ucvm_model_1dgtl.h"
-#include "ucvm_model_svmgtl.h"
+#include "ucvm_model_svm.h"
 /* Etree model */
 #include "ucvm_model_etree.h"
 #include "ucvm_model_cmuetree.h"
@@ -80,19 +80,6 @@ ucvm_config_t *ucvm_cfg = NULL;
 double ucvm_interp_zmin = UCVM_DEFAULT_INTERP_ZMIN;
 double ucvm_interp_zmax = UCVM_DEFAULT_INTERP_ZMAX;
 
-/* GTL crossing values */
-double *ucvm_crossings;
-
-// GTL/crossing there are time when want to skip 
-// use of ucvm_crossings
-int skip_crossing = 0; 
-
-int ucvm_enable_crossing() {
-    skip_crossing = 0;
-}
-int ucvm_disable_crossing() {
-    skip_crossing = 1;
-}
 
 /* Get topo and vs30 values from UCVM models */
 int ucvm_get_model_vals(ucvm_point_t *pnt, ucvm_data_t *data)
@@ -285,7 +272,6 @@ int ucvm_add_model_list(const char *list) {
   for (i = 0; i < num_models; i++) {
     /* Add model */
     if (strlen(models[i]) > 0) {
-      //fprintf(stderr, "Adding model %s\n", models[i]);
       if (ucvm_add_model(models[i]) != UCVM_CODE_SUCCESS) {
 	fprintf(stderr, "Failed to add parsed model %s\n", models[i]);
 	return(UCVM_CODE_ERROR);
@@ -293,7 +279,6 @@ int ucvm_add_model_list(const char *list) {
       
       /* Associate optional interp function */
       if (strlen(ifuncs[i]) > 0) {
-	//fprintf(stderr, "Adding ifunc %s\n", ifuncs[i]);
 	if (ucvm_assoc_ifunc(models[i], ifuncs[i]) != UCVM_CODE_SUCCESS) {
 	  fprintf(stderr, "Failed to add interp func %s for model %s\n", 
 		  ifuncs[i], models[i]);
@@ -416,8 +401,8 @@ int ucvm_add_model(const char *label) {
     is_predef = 1;
   }
 
-  if (strcmp(label, UCVM_MODEL_SVMGTL) == 0) {
-    retval = ucvm_svmgtl_get_model(&m);
+  if (strcmp(label, UCVM_MODEL_SVM) == 0) {
+    retval = ucvm_svm_get_model(&m);
     is_predef = 1;
   }
 
@@ -636,8 +621,8 @@ int ucvm_assoc_ifunc(const char *mlabel, const char *ilabel)
   } else if (strcmp(ilabel, UCVM_IFUNC_ELY) == 0) {
     ucvm_strcpy(ifunc.label, UCVM_IFUNC_ELY, UCVM_MAX_LABEL_LEN);
     ifunc.interp = ucvm_interp_ely;
-  } else if (strcmp(ilabel, UCVM_IFUNC_SVM) == 0) {
-    ucvm_strcpy(ifunc.label, UCVM_IFUNC_SVM, UCVM_MAX_LABEL_LEN);
+  } else if (strcmp(ilabel, UCVM_IFUNC_SVM1D) == 0) {
+    ucvm_strcpy(ifunc.label, UCVM_IFUNC_SVM1D, UCVM_MAX_LABEL_LEN);
     ifunc.interp = ucvm_interp_svm;
   } else if (strcmp(ilabel, UCVM_IFUNC_CRUST) == 0) {
     ucvm_strcpy(ifunc.label, UCVM_IFUNC_CRUST, UCVM_MAX_LABEL_LEN);
@@ -930,9 +915,6 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
       break;
     case UCVM_COORD_GEO_ELEV:
       data[i].depth = data[i].surf - pnt[i].coord[2];
-//fprintf(stderr,"#   pts: %f %f %f\n", pnt[i].coord[0], pnt[i].coord[1], pnt[i].coord[2]);
-//fprintf(stderr,"#   data -depth: %f\n",data[i].depth);
-//fprintf( stderr,"#   recompute the depth in ucvm_query call..  at %d\n", i);
       break;
     default:
       fprintf(stderr, "Unsupported coord type\n");
@@ -962,9 +944,14 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
     return(UCVM_CODE_ERROR);
   }
 
+  /* setup ucvm_crossings if need to, must have a modellist first */
+  if(!ucvm_skip_crossing() && ucvm_has_zthreshold() != 0) {
+    ucvm_setup_crossings(n, pnt, ucvm_zthreshold());
+  }
+
   /* Compute derived values */
   for (i = 0; i < n; i++) {
-    if (!skip_crossing && ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
+    if (!ucvm_skip_crossing() && ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
       double save_ucvm_interp_zmax=ucvm_interp_zmax;
       ucvm_interp_zmax =ucvm_crossings[i];
       ucvm_get_model_vals(&(pnt[i]), &(data[i]));
@@ -1014,14 +1001,14 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
     for (i = 0; i < n; i++) {
       if (data[i].gtl.source != UCVM_SOURCE_NONE) {
         double use_ucvm_interp_zmax=ucvm_interp_zmax;
-        if(!skip_crossing && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
+        if(!ucvm_skip_crossing() && ucvm_crossings && ucvm_crossings[i] != DEFAULT_NULL_DEPTH) {
             use_ucvm_interp_zmax=ucvm_crossings[i];
-	    ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
+        }
+	ucvm_ifunc_list[data[i].gtl.source].interp(ucvm_interp_zmin, 
 						   use_ucvm_interp_zmax, 
 						   ucvm_cur_qmode,
 						   &(pnt[i]), 
 						   &(data[i]));
-        }
       } else if ((data[i].domain == UCVM_DOMAIN_CRUST) &&
 		 (data[i].crust.source != UCVM_SOURCE_NONE)) {
 	ucvm_ifunc_list[data[i].crust.source].interp(ucvm_interp_zmin, 
@@ -1036,6 +1023,9 @@ int ucvm_query(int n, ucvm_point_t *pnt, ucvm_data_t *data)
     break;
   }
   
+  if(!ucvm_skip_crossing() && ucvm_has_zthreshold() != 0) {
+    ucvm_free_crossings(n);
+  }
   return(UCVM_CODE_SUCCESS);
 }
 
@@ -1118,9 +1108,9 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
     return(UCVM_CODE_ERROR);
   }
 
-  /* SVM GTL */
+  /* SVM GVP*/
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_GTL,
-		     UCVM_MODEL_SVMGTL, "", res, numinst++, *len) 
+		     UCVM_MODEL_SVM, "", res, numinst++, *len) 
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }
@@ -1283,7 +1273,7 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
     return(UCVM_CODE_ERROR);
   }
   if (ucvm_save_resource(UCVM_RESOURCE_IFUNC, UCVM_MODEL_CRUSTAL,
-		     UCVM_IFUNC_SVM, "", res, numinst++, *len) 
+		     UCVM_IFUNC_SVM1D, "", res, numinst++, *len) 
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }

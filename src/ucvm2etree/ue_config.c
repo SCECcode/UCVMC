@@ -260,11 +260,19 @@ int read_config(int myid, int nproc, const char *cfgfile, ue_cfg_t *cfg)
 	      myid);
       return(UCVM_CODE_ERROR);
     }
-    if (list_parse(cptr->value, UCVM_CONFIG_MAX_STR, 
+
+    fprintf(stderr,"XX looking for zrange...\n");
+
+    // ucvm_interp_zrange could be Z1 or 0.0,350
+    if(cptr->value[0]=='Z') {
+      sprintf(cfg->ucvm_interpZ, "%s", cptr->value);
+      } else {
+        if (list_parse(cptr->value, UCVM_CONFIG_MAX_STR, 
 		   &(cfg->ucvm_zrange[0]), 2) != UCVM_CODE_SUCCESS) {
-      fprintf(stderr, "[%d] Failed to parse ucvm_interp_zrange in config\n", 
+          fprintf(stderr, "[%d] Failed to parse ucvm_interp_zrange in config\n", 
 	      myid);
-      return(UCVM_CODE_ERROR);
+          return(UCVM_CODE_ERROR);
+      }
     }
     
     cptr = ucvm_find_name(chead, "ucvmconf");
@@ -466,6 +474,12 @@ int read_config(int myid, int nproc, const char *cfgfile, ue_cfg_t *cfg)
 	return(UCVM_CODE_ERROR);
       }
     }
+
+    if (MPI_Bcast(cfg->ucvm_interpZ, UCVM_CONFIG_MAX_STR, MPI_CHAR,
+                  0, MPI_COMM_WORLD) != MPI_SUCCESS) {
+      fprintf(stderr, "[%d] Failed to broadcast interpZ\n", myid);
+      return(UCVM_CODE_ERROR);
+    }
     
     if (MPI_Bcast(cfg->ucvmconf, UCVM_CONFIG_MAX_STR, MPI_CHAR, 
 		  0, MPI_COMM_WORLD) != MPI_SUCCESS) {
@@ -631,6 +645,7 @@ int disp_config(ue_cfg_t *cfg)
   printf("\t[%d] UCVM String: %s\n", cfg->rank, cfg->ucvmstr);
   printf("\t[%d] UCVM Interp: %lf m - %lf m\n", cfg->rank, cfg->ucvm_zrange[0],
 	 cfg->ucvm_zrange[1]);
+  printf("\t[%d] UCVM InterpZ: %s\n", cfg->rank, cfg->ucvm_interpZ);
   printf("\t[%d] UCVM Conf: %s\n", cfg->rank, cfg->ucvmconf);
   printf("\t[%d] Vs Min: %lf m/s\n", cfg->rank, cfg->vs_min);
   printf("\t[%d] Scratch Dir: %s\n\n", cfg->rank, cfg->scratch);

@@ -87,6 +87,7 @@ typedef struct ue_cfg_t {
   double vs_min;
   char ucvmstr[UCVM_CONFIG_MAX_STR];
   double ucvm_zrange[2];
+  char ucvm_interpZ[UCVM_CONFIG_MAX_STR];
   char ucvmconf[UCVM_CONFIG_MAX_STR];
   ue_etree_t ecfg;
   int rank;

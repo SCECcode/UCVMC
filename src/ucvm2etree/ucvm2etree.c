@@ -6,6 +6,7 @@
 #include "ue_extract.h"
 #include "ue_config.h"
 #include "ucvm_meta_etree.h"
+#include "ucvm_crossing.h"
 
 
 /* Default config file */
@@ -47,6 +48,7 @@ int init_app(const char *cfgfile, ue_cfg_t *cfg)
   }
 
   /* Columns must be square */
+  fprintf(stderr, "Column length and width must be equal, %d %d\n", cfg->ecfg.col_ticks[0], cfg->ecfg.col_ticks[1]);
   if (cfg->ecfg.col_ticks[0] != cfg->ecfg.col_ticks[1]) {
     fprintf(stderr, "Column length and width must be equal, adjust nx/ny.\n");
     return(UCVM_CODE_ERROR);
@@ -73,11 +75,18 @@ int init_app(const char *cfgfile, ue_cfg_t *cfg)
   }
 
   /* Set interpolation z range */
+  fprintf(stderr,"# zranges %lf %lf \n", cfg->ucvm_zrange[0], cfg->ucvm_zrange[1]);
   if (ucvm_setparam(UCVM_PARAM_IFUNC_ZRANGE, 
 		    cfg->ucvm_zrange[0], 
 		    cfg->ucvm_zrange[1]) != UCVM_CODE_SUCCESS) {
     fprintf(stderr, "Failed to set interpolation z range\n");
     return(UCVM_CODE_ERROR);
+  }
+
+  if( strcmp(cfg->ucvm_interpZ, "Z1") == 0) {
+      double zval=1000.0;
+      ucvm_setup_zthreshold(zval,UCVM_COORD_GEO_DEPTH);
+      fprintf(stderr,"setting the zthreshold ..\n");
   }
   
   /* Set file pointers to NULL */

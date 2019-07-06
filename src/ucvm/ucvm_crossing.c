@@ -12,6 +12,100 @@
 #include "ucvm_utils.h"
 #include "ucvm_crossing.h"
 
+/* GTL crossing values */
+double *ucvm_crossings = NULL;
+
+// skipping looking at crossing.
+int _skip_crossing = 0; 
+
+// has -Z option
+double _zthreshold = -1;
+ucvm_ctype_t _cmode = UCVM_COORD_GEO_DEPTH;
+
+void ucvm_setup_zthreshold(double val, ucvm_ctype_t val2) {
+  _zthreshold = val;
+  _cmode = val2;
+}
+
+int ucvm_has_zthreshold() {
+  if(_zthreshold != -1) {
+     return 1;
+  }
+  return 0;
+}
+double ucvm_zthreshold() {
+  return _zthreshold;
+}
+
+void ucvm_enable_zthreshold(int val) {
+    _zthreshold = val;
+}
+
+void ucvm_enable_skip_crossing() {
+    _skip_crossing = 0;
+}
+void ucvm_disable_skip_crossing() {
+    _skip_crossing = 1;
+}
+
+int ucvm_skip_crossing() {
+    return _skip_crossing;
+}
+
+void ucvm_free_crossings() {
+    free(ucvm_crossings);
+    ucvm_crossings = NULL;
+}
+
+void ucvm_clear_crossings(double num) {
+    int i;
+    for(i=0; i< num; i++) {
+      ucvm_crossings[i] = DEFAULT_NULL_DEPTH;
+    }
+}
+
+void ucvm_setup_crossings(double num, ucvm_point_t *pnts, double zthreshold) {
+    int i;
+
+//    printf("### ### ucvm_setup_crossing %lf\n",num);
+    if(ucvm_crossings != NULL) {
+       ucvm_free_crossings();
+    } 
+    ucvm_crossings = malloc(num * sizeof(double));
+    ucvm_clear_crossings(num);
+
+    // fill in th crossing needed
+    for(i=0; i < num; i++) {
+
+//       fprintf(stderr,"###    %lf %lf >>%lf<<\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2]);
+
+/*
+       ucvm_disable_skip_crossing();
+       ucvm_crossings[i] = ucvm_first_crossing(&(pnts[i]), _cmode, zthreshold);
+fprintf(stderr,"###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
+       ucvm_enable_skip_crossing();
+*/
+/* for big set of data, the comparison might take too much time */
+       int z;
+       for(z=0; z < i; z++ ) { 
+         if(pnts[z].coord[0] == pnts[i].coord[0] &&
+                 (pnts[z].coord[1] == pnts[i].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
+           ucvm_crossings[i]=ucvm_crossings[z];
+           break;
+         }
+       }
+       if (z == i) { // did not find one, using locally defined _cmode
+         ucvm_disable_skip_crossing();
+         ucvm_crossings[i] = ucvm_first_crossing(&(pnts[i]), _cmode, zthreshold);
+//printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
+         ucvm_enable_skip_crossing();
+       }
+    }
+//    fprintf(stderr,"### done with ucvm_setup_crossing %lf\n",num);
+}
+
+/**************************************************************************/
+
 /* Extract basin values for the specified points */
 double ucvm_extract_basins(int n, ucvm_point_t *pnts,
 		   ucvm_point_t *qpnts, ucvm_data_t *qprops,

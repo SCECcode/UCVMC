@@ -9,6 +9,7 @@
 #include "ue_mpi.h"
 #include "ue_config.h"
 #include "code.h"
+#include "ucvm_crossing.h"
 
 /* Extraction status */
 #define UE_EXTRACT_OK 0
@@ -62,7 +63,8 @@ int init_app(int myid, int nproc, const char *cfgfile, ue_cfg_t *cfg)
   /* Make sure each rank can get at least one column */
   if (cfg->nproc > cfg->col_dims.dim[0]*cfg->col_dims.dim[1]) {
     fprintf(stderr, 
-	    "[%d] Nproc must be <= number of columns\n", myid);
+	    "[%d] Nproc must be <= number of columns nproc(%d), %d(%d,%d)\n", myid, cfg->nproc , 
+cfg->col_dims.dim[0]*cfg->col_dims.dim[1], cfg->col_dims.dim[0],cfg->col_dims.dim[1]);
     return(1);
   }
 
@@ -129,7 +131,8 @@ int main(int argc, char **argv)
 
   /* Nproc must be 2^N + 1 cores */
   if (((nproc - 1) & (nproc - 2)) != 0) {
-    fprintf(stderr, "[%d] nproc must be 2^N+1 cores\n", myid);
+    int o=((nproc - 1) & (nproc - 2));
+    fprintf(stderr, "[%d] nproc must be 2^N+1 cores (%d)(%d)\n", myid, nproc, o);
     return(1);
   }
 
@@ -335,6 +338,11 @@ int main(int argc, char **argv)
 		      cfg.ucvm_zrange[1]) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, "[%d] Failed to set interpolation z range\n", myid);
       return(1);
+    }
+
+    if( strcmp(cfg.ucvm_interpZ, "Z1") == 0) {
+      double zval=1000.0;
+      ucvm_setup_zthreshold(zval,UCVM_COORD_GEO_DEPTH);
     }
     
     /* Wait for worker ready state */
