@@ -198,6 +198,7 @@ int main(int argc, char **argv)
   for (j = 0; j < cfg.col_dims.dim[1]; j++) {
     for (i = 0; i < cfg.col_dims.dim[0]; i++) {
       printf("Extracting col %d,%d\n", i,j);
+fprintf(stderr,"Extracting col %d,%d\n", i,j);
       /* Populate the etree */
       if (extract(&cfg, insert_grid_etree, 
 		  j*cfg.col_dims.dim[0]+i,

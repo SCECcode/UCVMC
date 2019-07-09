@@ -207,6 +207,7 @@ int main(int argc, char **argv)
     col_left = cfg.col_dims.dim[0]*cfg.col_dims.dim[1];
     next_col = 0;
     num_full = 0;
+
     while (col_left > 0) {
 
       if ((col_left % 100 == 0) || (col_left < 20)) {
@@ -264,7 +265,9 @@ int main(int argc, char **argv)
 	dispatch.col = ranks[src];
 	dispatch.octcount = 0;
 	dispatch.status = UE_EXTRACT_DONE;
+
       }
+
       MPI_Send(&dispatch, 1, MPI_DISPATCH, src, 0, MPI_COMM_WORLD);
 
       //printf("[%d] Num full = %d\n", myid, num_full);
@@ -375,6 +378,9 @@ int main(int argc, char **argv)
       (cfg.ecfg.col_ticks[1]/maxrez);
     printf("[%d] Allocating buffers for %d points, data values\n", 
 	   myid, max_points);
+
+fprintf(stderr, "### [%d] Allocating buffers for %d max points, data values, max_octants %d\n", myid, max_points, cfg.ecfg.max_octants);
+
     cvm_pnts = malloc(max_points * sizeof(ucvm_point_t));
     etree_pnts = malloc(max_points * sizeof(etree_addr_t));
     props = malloc(max_points * sizeof(ucvm_data_t));
@@ -382,6 +388,8 @@ int main(int argc, char **argv)
       fprintf(stderr, "[%d] Failed to allocate buffers\n", myid);
       return(1);
     }
+
+fprintf(stderr, "### [%d] size for etree_pnts for %ld \n", myid, (max_points* sizeof(etree_addr_t)));
 
     done = 0;
     total_count = 0;
@@ -397,21 +405,26 @@ int main(int argc, char **argv)
       MPI_Recv(&dispatch, 1, MPI_DISPATCH, 0, MPI_ANY_TAG, 
 	       MPI_COMM_WORLD, &status);
 
+      src = status.MPI_SOURCE;
+
       //src = status.MPI_SOURCE;
       //printf("[%d] Recv from %d: %d %lu %d\n", myid, src,
       //	     dispatch.col, dispatch.octcount, dispatch.status);
 
       if (dispatch.status == UE_EXTRACT_OK) {
 	//printf("[%d] Extracting col %lu.\n", myid, dispatch.col);
+fprintf(stderr, "### [%d] Extracting col %d.\n", myid, dispatch.col);
 	if (extract(&cfg, write_func, dispatch.col, 
 		    cvm_pnts, etree_pnts, props, &(dispatch.octcount)) != 0) {
 	  fprintf(stderr, "[%d] Extraction failed\n", myid);
 	  return(1);
 	}
 	total_count = total_count + dispatch.octcount;
+fprintf(stderr, "### [%d] Extracted %ld octcount from col %d.\n", myid, dispatch.octcount, dispatch.col);
 	/* Check for full output file */
 	if (total_count > cfg.buf_extract_ffile_max_oct) {
 	  printf("[%d] Worker is full\n", myid);
+fprintf(stderr, "### [%d] Worker is full, total count (%ld), (max %d)\n", myid, total_count, cfg.buf_extract_ffile_max_oct);
 	  dispatch.status = UE_EXTRACT_FULL;
 	} else {
 	  dispatch.status = UE_EXTRACT_OK;

@@ -168,11 +168,8 @@ int main(int argc, char **argv)
 	 inputfile, cfg.ecfg.max_octants);
   while (!feof(cfg.ecfg.efp[0])) {
     if (cfg.ecfg.num_octants[0] == cfg.ecfg.max_octants) {
-      fprintf(stderr, "[%d] Flat file buffer is full\n", myid);
-/*
-      fprintf(stderr, "   --Flat file buffer is full -- %d, %d\n",
+      fprintf(stderr, "[%d] Flat file buffer is full at  %d, max limit = %d\n",myid,
                                     cfg.ecfg.num_octants[0],cfg.ecfg.max_octants);
-*/
       return(1);
     }
     num_read = fread((cfg.ecfg.bufp[0] + cfg.ecfg.num_octants[0]), 

@@ -261,8 +261,6 @@ int read_config(int myid, int nproc, const char *cfgfile, ue_cfg_t *cfg)
       return(UCVM_CODE_ERROR);
     }
 
-    fprintf(stderr,"XX looking for zrange...\n");
-
     // ucvm_interp_zrange could be Z1 or 0.0,350
     if(cptr->value[0]=='Z') {
       sprintf(cfg->ucvm_interpZ, "%s", cptr->value);
