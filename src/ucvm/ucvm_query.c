@@ -12,11 +12,11 @@
 #define ZRANGE_MAX 350.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
 
+#define JSON_OUTPUT_FMT "{ \"lon\"=%.4lf,\"lat\"=%.4lf,\"Z\"=%.3lf,\"surf\"=%.3lf,\"vs30\"=%.3lf,\"crustal\"=\"%s\",\"cr_vp\"=%.3lf,\"cr_vs\"=%.3lf,\"cr_rho\"=%.3lf,\"gtl\"=\"%s\",\"gtl_vp\"=%.3lf,\"gtl_vs\"=%.3lf,\"gtl_rho\"=%.3lf,\"cmb_algo\"=\"%s\",\"cmb_vp\"=%.3lf,\"cmb_vs\"=%.3lf,\"cvm_rho\"=%.3lf }\n"
 
 /* Getopt flags */
 extern char *optarg;
 extern int optind, opterr, optopt;
-
 
 /* Display resource information */
 int disp_resources(int active_only)
@@ -86,7 +86,7 @@ void usage() {
   printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] < file.in\n\n");
   printf("Flags:\n");
   printf("\t-h This help message.\n");
-/*  printf("\t-H Detail help message.\n"); */
+  printf("\t-H Detail help message.\n");
   printf("\t-m Comma delimited list of crustal/GTL models to query in order\n");
   printf("\t   of preference. GTL models may optionally be suffixed with ':ifunc'\n");
   printf("\t   to specify interpolation function.\n");
@@ -95,12 +95,14 @@ void usage() {
   printf("\t-p User-defined map to use for elevation and vs30 data.\n");
   printf("\t-v Display model version information only.\n");
   printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
+  printf("\t-b Optional output in json format\n\n");
+  printf("\t-l Optional input lon,lat,Z(depth/elevation)\n\n");
   exit (0);
 }
 
 /* Usage function */
 void usage_detail() {
-  printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] < file.in\n\n");
+  printf("Usage: ucvm_query [-m models<:ifunc>] [-p user_map] [-c coordtype] [-f config] [-z zmin,zmax] [-b] < file.in\n\n");
   printf("Flags:\n");
   printf("\t-h This help message.\n");
   printf("\t-H Detail help message.\n");
@@ -112,6 +114,8 @@ void usage_detail() {
   printf("\t-p User-defined map to use for elevation and vs30 data.\n");
   printf("\t-v Display model version information only.\n");
   printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
+  printf("\t-b Optional output in json format\n\n");
+  printf("\t-l Optional input lon,lat,Z(depth/elevation)\n\n");
   printf("Input format is:\n");
   printf("\tlon lat Z\n\n");
   printf("Output format is:\n");
@@ -123,6 +127,49 @@ void usage_detail() {
   exit (0);
 }
 
+void process_query(ucvm_point_t *pnts, ucvm_data_t *props,int numread,int output_json) {
+
+  int i;
+  char cr_label[UCVM_MAX_LABEL_LEN];
+  char gtl_label[UCVM_MAX_LABEL_LEN];
+  char if_label[UCVM_MAX_LABEL_LEN];
+
+	/* Query the UCVM */
+	if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
+	  fprintf(stderr, "Query CVM failed\n");
+	  return;
+	}
+
+	/* Display results */
+	for (i = 0; i < numread; i++) {
+	  ucvm_model_label(props[i].crust.source, 
+			   cr_label, UCVM_MAX_LABEL_LEN);
+	  ucvm_model_label(props[i].gtl.source, 
+	  		   gtl_label, UCVM_MAX_LABEL_LEN);
+	  ucvm_ifunc_label(props[i].cmb.source, 
+			   if_label, UCVM_MAX_LABEL_LEN);
+
+          if(output_json) {
+	      printf(JSON_OUTPUT_FMT, 
+		 pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
+		 props[i].surf, props[i].vs30,
+		 cr_label, props[i].crust.vp, props[i].crust.vs, 
+		 props[i].crust.rho, gtl_label, props[i].gtl.vp,
+		 props[i].gtl.vs, props[i].gtl.rho,
+		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
+		 props[i].cmb.rho);
+          } else {
+	      printf(OUTPUT_FMT, 
+		 pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
+		 props[i].surf, props[i].vs30,
+		 cr_label, props[i].crust.vp, props[i].crust.vs, 
+		 props[i].crust.rho, gtl_label, props[i].gtl.vp,
+		 props[i].gtl.vs, props[i].gtl.rho,
+		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
+		 props[i].cmb.rho);
+          }
+	}
+}
 
 
 int main(int argc, char **argv)
@@ -132,6 +179,8 @@ int main(int argc, char **argv)
   char modellist[UCVM_MAX_MODELLIST_LEN];
   char configfile[UCVM_MAX_PATH_LEN];
   double zrange[2];
+  double lvals[3];
+  int use_cmdline=0;
   int dispver = 0;
 
   ucvm_ctype_t cmode;
@@ -139,6 +188,7 @@ int main(int argc, char **argv)
   int have_cmode = 0;
   int have_zrange = 0;
   int have_map = 0;
+  int output_json =0;
 
   ucvm_point_t *pnts;
   ucvm_data_t *props;
@@ -156,8 +206,20 @@ int main(int argc, char **argv)
   zrange[1] = ZRANGE_MAX;
 
   /* Parse options */
-  while ((opt = getopt(argc, argv, "c:f:Hhm:p:vz:")) != -1) {
+  while ((opt = getopt(argc, argv, "c:f:Hhm:p:vbz:l:")) != -1) {
     switch (opt) {
+    case 'b':
+      output_json=1;
+      break;
+    case 'l':  // lon,lat,Z
+      if (list_parse(optarg, UCVM_MAX_PATH_LEN,
+                     lvals, 3) != UCVM_CODE_SUCCESS) {
+        fprintf(stderr, "Invalid -l lon,lat,depth/elevation: %s.\n", optarg);
+        usage();
+        exit(1);
+      }
+      use_cmdline=1;
+      break;
     case 'c':
       if (strcmp(optarg, "gd") == 0) {
 	cmode = UCVM_COORD_GEO_DEPTH;
@@ -280,36 +342,48 @@ int main(int argc, char **argv)
   props = malloc(NUM_POINTS * sizeof(ucvm_data_t));
 
   /* Read in coords */
-  while (!feof(stdin)) {
+  if(use_cmdline) { // just 1 set
+
     memset(&(pnts[numread]), 0, sizeof(ucvm_point_t));
-    if (fscanf(stdin,"%lf %lf %lf",
+    pnts[numread].coord[0]=lvals[1];
+    pnts[numread].coord[1]=lvals[0];
+    pnts[numread].coord[2]=lvals[1];
+    numread++;
+    process_query(pnts, props, numread, output_json);
+
+  } else {
+
+    while (!feof(stdin)) {
+      memset(&(pnts[numread]), 0, sizeof(ucvm_point_t));
+      if (fscanf(stdin,"%lf %lf %lf",
                &(pnts[numread].coord[0]),
 	       &(pnts[numread].coord[1]),
 	       &(pnts[numread].coord[2])) == 3) {
-      /* Check for scan failure */
-      if ((pnts[numread].coord[0] == 0.0) || 
+        /* Check for scan failure */
+        if ((pnts[numread].coord[0] == 0.0) || 
 	  (pnts[numread].coord[1] == 0.0)) {
-	continue;
-      }
+	  continue;
+        }
 
-      numread++;
-      if (numread == NUM_POINTS) {
-	/* Query the UCVM */
-	if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
-	  fprintf(stderr, "Query CVM failed\n");
-	  return(1);
-	}
-
-	/* Display results */
-	for (i = 0; i < numread; i++) {
-	  ucvm_model_label(props[i].crust.source, 
+        numread++;
+        if (numread == NUM_POINTS) {
+	  /* Query the UCVM */
+	  if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
+	    fprintf(stderr, "Query CVM failed\n");
+	    return(1);
+	  }
+  
+	  /* Display results */
+	  for (i = 0; i < numread; i++) {
+	    ucvm_model_label(props[i].crust.source, 
 			   cr_label, UCVM_MAX_LABEL_LEN);
-	  ucvm_model_label(props[i].gtl.source, 
+	    ucvm_model_label(props[i].gtl.source, 
 	  		   gtl_label, UCVM_MAX_LABEL_LEN);
-	  ucvm_ifunc_label(props[i].cmb.source, 
+	    ucvm_ifunc_label(props[i].cmb.source, 
 			   if_label, UCVM_MAX_LABEL_LEN);
 
-	  printf(OUTPUT_FMT, 
+            if(output_json) {
+	      printf(JSON_OUTPUT_FMT, 
 		 pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
 		 props[i].surf, props[i].vs30,
 		 cr_label, props[i].crust.vp, props[i].crust.vs, 
@@ -317,30 +391,41 @@ int main(int argc, char **argv)
 		 props[i].gtl.vs, props[i].gtl.rho,
 		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
 		 props[i].cmb.rho);
-	}
+            } else {
+	      printf(OUTPUT_FMT, 
+		 pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
+		 props[i].surf, props[i].vs30,
+		 cr_label, props[i].crust.vp, props[i].crust.vs, 
+		 props[i].crust.rho, gtl_label, props[i].gtl.vp,
+		 props[i].gtl.vs, props[i].gtl.rho,
+		 if_label, props[i].cmb.vp, props[i].cmb.vs, 
+		 props[i].cmb.rho);
+            }
+	  }
 
-	numread = 0;
+	  numread = 0;
+        }
       }
     }
-  }
 
-  if (numread > 0) {
-    /* Query the UCVM */
-    if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
-      fprintf(stderr, "Query CVM failed\n");
-      return(1);
-    }
-    
-    /* Display results */
-    for (i = 0; i < numread; i++) {
-      ucvm_model_label(props[i].crust.source, 
+    if (numread > 0) {
+      /* Query the UCVM */
+      if (ucvm_query(numread, pnts, props) != UCVM_CODE_SUCCESS) {
+        fprintf(stderr, "Query CVM failed\n");
+        return(1);
+      }
+      
+      /* Display results */
+      for (i = 0; i < numread; i++) {
+        ucvm_model_label(props[i].crust.source, 
 		       cr_label, UCVM_MAX_LABEL_LEN);
-      ucvm_model_label(props[i].gtl.source, 
+        ucvm_model_label(props[i].gtl.source, 
 		       gtl_label, UCVM_MAX_LABEL_LEN);
-      ucvm_ifunc_label(props[i].cmb.source, 
+        ucvm_ifunc_label(props[i].cmb.source, 
 		       if_label, UCVM_MAX_LABEL_LEN);
 
-      printf(OUTPUT_FMT, 
+        if( output_json ) {
+            printf(JSON_OUTPUT_FMT, 
 	     pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
 	     props[i].surf, props[i].vs30,
 	     cr_label, props[i].crust.vp, props[i].crust.vs, 
@@ -348,9 +433,20 @@ int main(int argc, char **argv)
 	     props[i].gtl.vs, props[i].gtl.rho,
 	     if_label, props[i].cmb.vp, props[i].cmb.vs, 
 	     props[i].cmb.rho);
-    }
+         } else {
+            printf(OUTPUT_FMT, 
+	     pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],
+	     props[i].surf, props[i].vs30,
+	     cr_label, props[i].crust.vp, props[i].crust.vs, 
+	     props[i].crust.rho, gtl_label, props[i].gtl.vp,
+	     props[i].gtl.vs, props[i].gtl.rho,
+	     if_label, props[i].cmb.vp, props[i].cmb.vs, 
+	     props[i].cmb.rho);
+         }
+      }
     
-    numread = 0;
+      numread = 0;
+    }
   }
 
   ucvm_finalize();
