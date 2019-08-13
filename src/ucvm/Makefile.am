@@ -1,6 +1,6 @@
 # Autoconf/Automake binaries and headers
 lib_LIBRARIES = libucvm.a
-bin_PROGRAMS = ucvm_query run_ucvm.sh
+bin_PROGRAMS = ucvm_query run_ucvm.sh run_ucvm_query.sh
 include_HEADERS = ucvm.h ucvm_dtypes.h ucvm_config.h \
 		ucvm_grid.h ucvm_proj_bilinear.h \
 		ucvm_proj_ucvm.h ucvm_meta_etree.h \
@@ -97,6 +97,7 @@ endif
 libucvm_a_SOURCES = ucvm*.c ucvm*.h
 ucvm_query_SOURCES = ucvm_query.c
 run_ucvm_sh_SOURCES = run_ucvm.sh
+run_ucvm_query_sh_SOURCES = run_ucvm_query.sh
 
 
 all: $(lib_LIBRARIES) $(bin_PROGRAMS)
@@ -124,6 +125,8 @@ ucvm_query: ucvm_query.o ucvm.o ucvm_config.o ucvm_utils.o libucvm.a
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
 run_ucvm.sh:
+
+run_ucvm_query.sh:
 
 
 ############################################
