@@ -347,7 +347,7 @@ int main(int argc, char **argv)
     memset(&(pnts[numread]), 0, sizeof(ucvm_point_t));
     pnts[numread].coord[0]=lvals[1];
     pnts[numread].coord[1]=lvals[0];
-    pnts[numread].coord[2]=lvals[1];
+    pnts[numread].coord[2]=lvals[2];
     numread++;
     process_query(pnts, props, numread, output_json);
 

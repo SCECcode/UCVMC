@@ -24,8 +24,4 @@ export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/pro
 export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib
 
 ${SCRIPT_DIR}/ucvm_query ${FLAGS} 
-if [ $? -ne 0 ]; then
-    exit 1
-fi
 
-exit 0
