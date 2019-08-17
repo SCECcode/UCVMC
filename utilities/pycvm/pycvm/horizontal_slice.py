@@ -134,7 +134,10 @@ class HorizontalSlice:
 
 ### MEI
         if (self.datafile != None) :
-            data = u.import_binary(self.datafile, self.num_x, self.num_y)
+            if self.datafile.rfind(".raw") :
+                data = u.import_data(self.datafile, self.num_x, self.num_y)
+            else:
+                data = u.import_binary(self.datafile, self.num_x, self.num_y)
             print "\nUsing --> "+self.datafile 
             print "expecting x ",self.num_x," y ",self.num_y
 	else: 
@@ -150,17 +153,21 @@ class HorizontalSlice:
         i = 0
         j = 0
         isfloat = 0
+#        fp=open("raw_data","w")
         if (self.datafile != None) :
             isfloat = 1
         for matprop in data:
             if isfloat:
                 self.materialproperties[i][j].setProperty(mproperty,matprop)
+#                float_string = "%.5f\n" % matprop
+#                fp.write(float_string)
             else:
                 self.materialproperties[i][j]=matprop
             j = j + 1
             if j >= self.num_x:
                 j = 0
                 i = i + 1
+#        fp.close()
 
     ## 
     #  Plots the horizontal slice either to an image or a file name.

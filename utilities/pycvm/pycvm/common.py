@@ -571,6 +571,10 @@ class UCVM:
             else:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
 
+#	fp = open("input_points", 'w') 
+#	fp.write(text_points);
+#	fp.close()
+
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
 
@@ -882,6 +886,30 @@ class UCVM:
             return floats[0]
         
         return floats
+
+# import raw floats data from the external file 
+# that is in ascii float format, 1 float per line
+# dat file is filename_data.raw
+    def import_data(self, fname, num_x, num_y):
+        rawfile=fname
+        k = rawfile.rfind(".png")
+        if( k != -1) : 
+            rawfile = rawfile[:k] + "_data.raw"
+        try :
+            fh = open(rawfile, 'r') 
+        except:
+            print "ERROR: binary data does not exist."
+            exit(1)
+            
+        floats=[]
+        sz = (num_x * num_y)
+        dlines = fh.readlines()
+        for oline in dlines :
+          parts = oline.split()
+          floats.append(float(parts[0]))
+        fh.close()
+        return floats
+
 
 #  import meta data as a json blob
 #
