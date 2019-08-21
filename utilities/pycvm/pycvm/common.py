@@ -889,8 +889,9 @@ class UCVM:
 
 # import raw floats data from the external file 
 # that is in ascii float format, 1 float per line
-# dat file is filename_data.raw
-    def import_data(self, fname, num_x, num_y):
+# file name is: filename_data.raw
+#
+    def import_raw_data(self, fname, num_x, num_y):
         rawfile=fname
         k = rawfile.rfind(".png")
         if( k != -1) : 
@@ -928,7 +929,9 @@ class UCVM:
 	fh.close()
 	return data
 
-#  import raw floats data from the external file 
+#  import raw binary floats data from the external file 
+#
+#  file name is: filename_data.bin
 #
 #  if filename is image.png, look for a matching
 #  image_data.bin
