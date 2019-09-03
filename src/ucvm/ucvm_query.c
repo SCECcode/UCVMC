@@ -12,7 +12,7 @@
 #define ZRANGE_MAX 350.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
 
-#define JSON_OUTPUT_FMT "{ \"lon\":%.4lf,\"lat\":%.4lf,\"Z\":%.3lf,\"surf\":%.3lf,\"vs30\":%.3lf,\"crustal\":\"%s\",\"cr_vp\":%.3lf,\"cr_vs\":%.3lf,\"cr_rho\":%.3lf,\"gtl\":\"%s\",\"gtl_vp\":%.3lf,\"gtl_vs\":%.3lf,\"gtl_rho\":%.3lf,\"cmb_algo\":\"%s\",\"cmb_vp\":%.3lf,\"cmb_vs\":%.3lf,\"cvm_rho\":%.3lf }\n"
+#define JSON_OUTPUT_FMT "{ \"lon\":%.4lf,\"lat\":%.4lf,\"Z\":%.3lf,\"surf\":%.3lf,\"vs30\":%.3lf,\"crustal\":\"%s\",\"cr_vp\":%.3lf,\"cr_vs\":%.3lf,\"cr_rho\":%.3lf,\"gtl\":\"%s\",\"gtl_vp\":%.3lf,\"gtl_vs\":%.3lf,\"gtl_rho\":%.3lf,\"cmb_algo\":\"%s\",\"cmb_vp\":%.3lf,\"cmb_vs\":%.3lf,\"cmb_rho\":%.3lf }\n"
 
 /* Getopt flags */
 extern char *optarg;
