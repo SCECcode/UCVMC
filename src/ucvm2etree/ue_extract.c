@@ -288,7 +288,6 @@ int extract(ue_cfg_t *cfg,
     return(UCVM_CODE_ERROR);
   }
   if (num_points > max_points) {
-fprintf(stderr, "### bad [%d] num_points %d, max_points %d\n", cfg->rank, num_points, max_points);
     fprintf(stderr, 
 	    "[%d] Num points exceeds max points at %d,%d,ztics=%u\n",
 	    cfg->rank, i, j, ztics);
@@ -306,7 +305,6 @@ fprintf(stderr, "### bad [%d] num_points %d, max_points %d\n", cfg->rank, num_po
     }
     
     /* Sample x-y slice @ z depth at 'level' resolution */
-fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at A\n", cfg->rank, num_points);
     if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
       fprintf(stderr, 
 	      "[%d] Failed to query grid for %d,%d,ztics=%u\n",
@@ -360,7 +358,6 @@ fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at A\n", cfg->rank, num_po
       }
       
       /* Sample x-y slice @ z depth at 'level' resolution */
-fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at B\n", cfg->rank, num_points);
       if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
 	fprintf(stderr, 
 		"[%d] Failed to query grid for %d,%d,ztics=%u\n",
@@ -388,7 +385,6 @@ fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at B\n", cfg->rank, num_po
 	  }
 	  
 	  /* Sample x-y slice @ z depth at 'level' resolution */
-fprintf(stderr,"### [%d] calling ucvm_query -> (%d) - at C\n", cfg->rank, num_points);
 	  if (ucvm_query(num_points, cvm_pnts, props) != UCVM_CODE_SUCCESS) {
 	    fprintf(stderr, 
 		    "[%d] Failed to query grid for %d,%d,ztics=%u\n",

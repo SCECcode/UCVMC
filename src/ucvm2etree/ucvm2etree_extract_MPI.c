@@ -379,8 +379,6 @@ int main(int argc, char **argv)
     printf("[%d] Allocating buffers for %d points, data values\n", 
 	   myid, max_points);
 
-fprintf(stderr, "### [%d] Allocating buffers for %d max points, data values, max_octants %d\n", myid, max_points, cfg.ecfg.max_octants);
-
     cvm_pnts = malloc(max_points * sizeof(ucvm_point_t));
     etree_pnts = malloc(max_points * sizeof(etree_addr_t));
     props = malloc(max_points * sizeof(ucvm_data_t));
@@ -388,8 +386,6 @@ fprintf(stderr, "### [%d] Allocating buffers for %d max points, data values, max
       fprintf(stderr, "[%d] Failed to allocate buffers\n", myid);
       return(1);
     }
-
-fprintf(stderr, "### [%d] size for etree_pnts for %ld \n", myid, (max_points* sizeof(etree_addr_t)));
 
     done = 0;
     total_count = 0;
@@ -420,7 +416,6 @@ fprintf(stderr, "### [%d] Extracting col %d.\n", myid, dispatch.col);
 	  return(1);
 	}
 	total_count = total_count + dispatch.octcount;
-fprintf(stderr, "### [%d] Extracted %ld octcount from col %d.\n", myid, dispatch.octcount, dispatch.col);
 	/* Check for full output file */
 	if (total_count > cfg.buf_extract_ffile_max_oct) {
 	  printf("[%d] Worker is full\n", myid);

@@ -102,8 +102,9 @@ int ucvm_get_model_vals(ucvm_point_t *pnt, ucvm_data_t *data)
   /* Recompute domain and depth shift values */
   switch (ucvm_cur_mmode) {
   case UCVM_OPMODE_GTL:
-    if ((data->depth < ucvm_interp_zmax) && 
-	(data->depth >= ucvm_interp_zmin)) {
+// XXXX MEI, special test for svm if ((data->depth < ucvm_interp_zmax) && 
+    if ( (data->depth <= ucvm_interp_zmax) && 
+               (data->depth >= ucvm_interp_zmin)) {
       data->shift_cr = ucvm_interp_zmax - data->depth;
       data->shift_gtl = ucvm_interp_zmin - data->depth;
       data->domain = UCVM_DOMAIN_INTERP;

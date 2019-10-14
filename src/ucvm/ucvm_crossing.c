@@ -67,7 +67,6 @@ void ucvm_clear_crossings(double num) {
 void ucvm_setup_crossings(double num, ucvm_point_t *pnts, double zthreshold) {
     int i;
 
-fprintf(stderr, "### ucvm_setup_crossing %lf\n",num);
     if(ucvm_crossings != NULL) {
        ucvm_free_crossings();
     } 
@@ -78,29 +77,27 @@ fprintf(stderr, "### ucvm_setup_crossing %lf\n",num);
     for(i=0; i < num; i++) {
        ucvm_disable_skip_crossing();
        ucvm_crossings[i] = ucvm_first_crossing(&(pnts[i]), _cmode, zthreshold);
-//fprintf(stderr,"###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
+//printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
        ucvm_enable_skip_crossing();
 
-/* for big set of data, the comparison might take too much time */
-/*
+/* for big set of data, the comparison might take too much time 
        int z;
        for(z=0; z < i; z++ ) { 
          if(pnts[z].coord[0] == pnts[i].coord[0] &&
                  (pnts[z].coord[1] == pnts[i].coord[1]) && ucvm_crossings[z] != DEFAULT_NULL_DEPTH) {
            ucvm_crossings[i]=ucvm_crossings[z];
-//printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
+printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
            break;
          }
        }
        if (z == i) { // did not find one, using locally defined _cmode
          ucvm_disable_skip_crossing();
          ucvm_crossings[i] = ucvm_first_crossing(&(pnts[i]), _cmode, zthreshold);
-//printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
+printf("###   %lf,%lf,%lf,%lf\n", pnts[i].coord[0], pnts[i].coord[1], pnts[i].coord[2],ucvm_crossings[i]);
          ucvm_enable_skip_crossing();
        }
 */
     }
-    fprintf(stderr,"### done with ucvm_setup_crossing %lf\n",num);
 }
 
 /**************************************************************************/

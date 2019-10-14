@@ -163,8 +163,6 @@ ucvm_point_t *pnt, ucvm_data_t *data) {
 
   // curve fitting parameters for SVM model
 
-//  printf("#calling ucvm_interp_svm...zmax %lf (%lf,%lf)\n", zmax, pnt->coord[0], pnt->coord[1]);
-
   double p1 = -2.1688E-04;
   double p2 =  0.5182    ;
   double p3 = 69.452     ;
@@ -212,7 +210,9 @@ ucvm_point_t *pnt, ucvm_data_t *data) {
   // if no z1 data, compute empirically
   if (z1 == 0.0 || z1 == -1.0) {
     z1 = _calc_z1_from_Vs30(vs30);
+//printf("### in interp, was 0 and now %lf vs30(%lf) %lf %lf %lf \n",z1,vs30,pnt->coord[0],pnt->coord[1],pnt->coord[2]);
   }
+
 
   // query in crustal properties
   if (z >= z1) {
