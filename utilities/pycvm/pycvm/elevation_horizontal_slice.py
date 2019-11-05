@@ -1,8 +1,8 @@
 ##
-#  @file horizontal_slice.py
+#  @file elevation_horizontal_slice.py
 #  @brief Plots a horizontal slice either for display or saving to a file.
-#  @author David Gill - SCEC <davidgil@usc.edu>
-#  @version 14.7.0
+#  @author 
+#  @version 19.
 #
 #  Allows for generation of a horizontal slice, either interactively, via
 #  arguments, or through Python code in the class HorizontalSlice.
@@ -14,18 +14,18 @@ from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
                    math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
 
 ##
-#  @class HorizontalSlice
-#  @brief Plots a horizontal slice starting at a given @link common.Point Point @endlink
+#  @class ElevationHorizontalSlice
+#  @brief Plots a elevation horizontal slice starting at a given @link common.Point Point @endlink
 #         to another @link common.Point Point @endlink.
 #
 #  Generates a horizontal slice that can either be displayed to the user, saved to a file
 #  or differenced with another plot.
-class HorizontalSlice:
+class ElevationHorizontalSlice:
     
     ##
     #  Initializes the horizontal slice. The slice will go from the upper-left 
     #  @link common.Point Point @endlink parameter to the bottom-right 
-    #  @link common.Point Point @endlink parameter, at the depth specified in the 
+    #  @link common.Point Point @endlink parameter, at the elevation specified in the 
     #  upper-left point. 
     #
     #  @param upperleftpoint The @link common.Point starting point @endlink from which this plot should start.
@@ -146,8 +146,8 @@ class HorizontalSlice:
                 for x in xrange(0, self.num_x):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
-                                            self.upperleftpoint.depth))
-            data = u.query(ucvmpoints, self.cvm)
+                                            elevation=self.upperleftpoint.elevation))
+            data = u.query(ucvmpoints, self.cvm, elevation=1)
 
         i = 0
         j = 0
@@ -202,7 +202,7 @@ class HorizontalSlice:
         if 'title' in self.meta :
             title =  self.meta['title']
         else:
-            title = "%s%s Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
+            title = "%s%s Elevation Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
             self.meta['title'] = title
 
         self.getplotvals(mproperty)
