@@ -34,6 +34,7 @@ void usage(char *arg)
   printf("\tucvmlist: comma-delimited list of CVMs to query (as supported by UCVM)\n");
   printf("\tucvmconf: UCVM API config file\n");
   printf("\tgridtype: location of x-y gridded points: VERTEX, or CENTER\n");
+  printf("\tquerymode: query mode, DEPTH, or ELEVATION\n");
   printf("\tspacing: grid spacing (units appropriate for proj)\n");
   printf("\tproj: Proj.4 projection specification, or 'cmu' for TeraShake\n");
   printf("\trot: proj rotation angle in degrees, (+ is counter-clockwise)\n");
@@ -77,7 +78,7 @@ int init_app(const char *cfgfile, mesh_config_t *cfg)
 
   /* Set depth query mode */
   if (ucvm_setparam(UCVM_PARAM_QUERY_MODE,
-		    UCVM_COORD_GEO_DEPTH) != UCVM_CODE_SUCCESS) {
+		    cfg->querymode) != UCVM_CODE_SUCCESS) {
     fprintf(stderr, "Set query mode failed\n");
     return(1);
   }
@@ -173,7 +174,11 @@ int extract(mesh_config_t *cfg)
     gettimeofday(&start,NULL);
 
     /* Set z coordinate */
-    z = cfg->origin.coord[2] + (k * cfg->spacing);
+    if(cfg->querymode == UCVM_COORD_GEO_DEPTH) {
+      z = cfg->origin.coord[2] + (k * cfg->spacing);
+      } else {
+        z = cfg->origin.coord[2] - (k * cfg->spacing);
+    }
     for (n = 0; n < num_grid; n++) {
       pntbuf[n].coord[2] = z;
     }
@@ -185,10 +190,14 @@ int extract(mesh_config_t *cfg)
     }
 
     /* Convert the data points to a mesh node list */
-    if (mesh_data_to_node(0, 0, cfg->dims.dim[0], 0, cfg->dims.dim[1],
+    int icnt = mesh_data_to_node(0, 0, cfg->dims.dim[0], 0, cfg->dims.dim[1],
 			  k, pntbuf, propbuf, node_buf, cfg->vp_min,
-			  cfg->vs_min) != 0) {
-      return(1);
+			  cfg->vs_min);
+    /* it is possible to have 'invalid' mesh node for UCVM_COORD_GEO_ELEVATION */
+    if (icnt != 0) {
+      if (cfg->querymode == UCVM_COORD_GEO_DEPTH) {
+        return(1);
+      }
     }
 
     /* Calculate statistics */

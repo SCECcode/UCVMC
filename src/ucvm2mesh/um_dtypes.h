@@ -14,6 +14,7 @@ typedef struct mesh_config_t
   double ucvm_zrange[2];
   char ucvmconf[UCVM_MAX_PATH_LEN];
   ucvm_gtype_t gridtype;
+  ucvm_ctype_t querymode;
   double spacing;
   char proj[UCVM_MAX_PROJ_LEN];
   double rot;
