@@ -1,5 +1,10 @@
 # UCVMC
 
+## Current UCVM Software Release
+The current UCVM software version is UCVM v19.4.0 which was released in June 2019. We recommend that new users work with this most recent version.
+
+UCVM is distributed as open-source scientific software. It can be installed compiled and run on most Linux-based computer systems if the system includes software development tools including Python, C, and Fortran compilers, and other software tools. The UCVM v19.4.0 source code is distributed using a github repository. On Github, users can find the source code, installation directions for Linux, and a wiki that provide examples and the expected results from UCVM.
+
 ## Background
 
 The SCEC Unified Community Velocity Model (UCVM) software is used to access information, including estimated Vp and Vs seismic wave velocities and density, about the earth's crust. 
