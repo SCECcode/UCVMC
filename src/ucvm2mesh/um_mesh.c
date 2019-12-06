@@ -63,6 +63,7 @@ int mesh_data_to_node(int myid, int i_start, int i_end,
 		      mesh_ijk32_t *node_buf, double vp_min, double vs_min)
 {
   int i, j, n;
+  int invalid_cnt=0;
 
   n = 0;
   for (j = j_start; j < j_end; j++) {  
@@ -103,13 +104,15 @@ int mesh_data_to_node(int myid, int i_start, int i_end,
 		node_buf[n].vp, 
 		node_buf[n].vs, 
 		node_buf[n].rho);
-	return(1);
+        invalid_cnt++;
+//	return(1);
       }
       n++;
     }
   }
 
-  return(0);
+  return(invalid_cnt);
+//  return(0);
 }
 
 

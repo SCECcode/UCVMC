@@ -24,9 +24,10 @@ shift $(($OPTIND - 1))
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-## need to add path to cvmsi(cvms426)
-export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib
-export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib
+## 
+export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
+
+export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
 
 if [ "$IN" != "" ]; then
   if [ "$OUT" != "" ]; then

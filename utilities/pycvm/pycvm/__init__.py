@@ -3,6 +3,7 @@ from common import Plot, Point, UCVM, MaterialProperties, \
                    UCVM_CVMS, get_user_opts, \
                    ask_number, ask_path, ask_file
 
+from elevation_horizontal_slice import ElevationHorizontalSlice
 from horizontal_slice import HorizontalSlice
 from cross_section import CrossSection
 from elevation_cross_section import ElevationCrossSection

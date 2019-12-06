@@ -202,7 +202,7 @@ class ElevationHorizontalSlice:
         if 'title' in self.meta :
             title =  self.meta['title']
         else:
-            title = "%s%s Elevation Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.depth)
+            title = "%s%s Elevation Horizontal Slice at %.0fm" % (location_text, cvmdesc, self.upperleftpoint.elevation)
             self.meta['title'] = title
 
         self.getplotvals(mproperty)
