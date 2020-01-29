@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: smooth_mesh_2d.py
@@ -30,39 +30,39 @@ class SmoothMesh2D:
         return
 
     def main(self):
-        print "Mesh    : %s" % (self.meshfile)
-        print "Dims    : %s" % (self.dims)
-        print "X-bounds: %s" % (self.bounds)
-        print "Z-bounds: %s" % (self.zrange)
+        print("Mesh    : %s" % (self.meshfile))
+        print("Dims    : %s" % (self.dims))
+        print("X-bounds: %s" % (self.bounds))
+        print("Z-bounds: %s" % (self.zrange))
         sys.stdout.flush()
         recsize = struct.calcsize(AWP12_FORMAT)
         ip = open(self.meshfile, 'r+')
 
         # Step through each z value
         for z in xrange(self.zrange[0], self.zrange[1]):
-            print "Processing k=%s" % (z)
+            print("Processing k=%s" % (z))
             sys.stdout.flush()
 
             # Step through each y value
             for y in xrange(0, self.dims[1]):
-                #print "Processing j=%s" % (y)
+                #print("Processing j=%s" % (y))
                 #sys.stdout.flush()
 
                 # Find value at max x-bound
                 offset = (z * (self.dims[0] * self.dims[1]) + \
                             y * (self.dims[0]) + self.bounds[1]) * recsize
-                #print "Seeking to max offset %d" % (offset)
+                #print("Seeking to max offset %d" % (offset))
                 ip.seek(offset)
                 maxdata = struct.unpack(AWP12_FORMAT, ip.read(recsize))
-                #print self.bounds[1], y, z, maxdata
+                #print(self.bounds[1], y, z, maxdata)
 
                 # Find value at min x-bound
                 offset = (z * (self.dims[0] * self.dims[1]) + \
                               y * (self.dims[0]) + self.bounds[0]) * recsize
-                #print "Seeking to min offset %d" % (offset)
+                #print("Seeking to min offset %d" % (offset))
                 ip.seek(offset)
                 mindata = struct.unpack(AWP12_FORMAT, ip.read(recsize))
-                #print self.bounds[0], y, z, mindata
+                #print(self.bounds[0], y, z, mindata)
 
                 # Interpolate interior range for vp, vs, and rho
                 ip_vp = numpy.interp(xrange(self.bounds[0]+1, \
@@ -88,17 +88,17 @@ class SmoothMesh2D:
                                         ip_vp[x-(self.bounds[0]+1)], \
                                         ip_vs[x-(self.bounds[0]+1)], \
                                         ip_rho[x-(self.bounds[0]+1)])
-                #print "Writing data"
+                #print("Writing data")
                 ip.write(idata)
  
-        print "Closing mesh file"
+        print("Closing mesh file")
         sys.stdout.flush()
         ip.close()
         return(0)
 
 
 def usage():
-    print "usage: %s <meshfile> <nx> <ny> <nz> <xmin> <xmax> <zmin> <zmax>" % (sys.argv[0])
+    print("usage: %s <meshfile> <nx> <ny> <nz> <xmin> <xmax> <zmin> <zmax>" % (sys.argv[0]))
     return
 
 

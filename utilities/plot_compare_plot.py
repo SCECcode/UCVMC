@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 ##
 #  @file plot_compare_plot.py
@@ -17,12 +17,12 @@ import numpy as np
 import sys,getopt
 
 def usage():
-  print "\nPlot a scatter plot to compare two binary data files"
-  print "Valid arguments:"
-  print "\t-x, --xfile: file to use for x axis"
-  print "\t-y, --yfile: file to use for y axis"
-  print "\t-o, --ofile: png filename to use for resulting plot"
-  print "./plot_compare_plot.py -x x.bin -y y.bin [-o o.png]"
+  print("\nPlot a scatter plot to compare two binary data files")
+  print("Valid arguments:")
+  print("\t-x, --xfile: file to use for x axis")
+  print("\t-y, --yfile: file to use for y axis")
+  print("\t-o, --ofile: png filename to use for resulting plot")
+  print("./plot_compare_plot.py -x x.bin -y y.bin [-o o.png]")
   sys.exit(2)
 
 ## need to figure out how to distinguish them
@@ -50,8 +50,8 @@ def main(argv):
   if (len(xinputfile)<1 or len(yinputfile)<1):
     usage()
 
-  print "\nInput CVM files are: ", xinputfile, " ", yinputfile
-  print "Output Image file is: ", outputfile
+  print("\nInput CVM files are: ", xinputfile, " ", yinputfile)
+  print("Output Image file is: ", outputfile)
 
   list_of_colors = "blue"
 
@@ -66,11 +66,11 @@ def main(argv):
 
   fh = open(xinputfile,'r')
   x = np.fromfile(fh, dtype=np.float32)
-  print "extracted ",len(x)," data points from ", xinputfile
+  print("extracted ",len(x)," data points from ", xinputfile)
   fh.close()
   fh = open(yinputfile,'r')
   y = np.fromfile(fh, dtype=np.float32)
-  print "extracted ",len(y)," data points from ", yinputfile
+  print("extracted ",len(y)," data points from ", yinputfile)
   fh.close()
 
   ax.scatter(x,y,color=list_of_colors,s=5,edgecolor='none')

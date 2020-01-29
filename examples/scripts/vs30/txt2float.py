@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: txt2float.py
@@ -48,7 +48,7 @@ class txt2float:
     def main(self):
 
         # Parse header
-        print "Parsing data header"
+        print("Parsing data header")
         self._parseHdr()
 
         ifp = open(self.infile, 'rb')
@@ -67,7 +67,7 @@ class txt2float:
 
 
 def usage():
-    print "usage: %s <hdr> <infile> <outfile>" % (sys.argv[0])
+    print("usage: %s <hdr> <infile> <outfile>" % (sys.argv[0]))
     return
 
 

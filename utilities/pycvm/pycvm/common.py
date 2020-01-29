@@ -22,7 +22,7 @@ import json
 try:
     import numpy as np
 except StandardError, e:
-    print "ERROR: NumPy must be installed on your system in order to generate these plots."
+    print("ERROR: NumPy must be installed on your system in order to generate these plots.")
     exit(1)
     
 #  Matplotlib is required.
@@ -33,14 +33,14 @@ try:
     import matplotlib.colors as mcolors
     import matplotlib.cm as cm
 except StandardError, e:
-    print "ERROR: Matplotlib must be installed on your system in order to generate these plots."
+    print("ERROR: Matplotlib must be installed on your system in order to generate these plots.")
     exit(1)    
 
 #  Basemap is required.
 try:
     from mpl_toolkits import basemap
 except StandardError, e:
-    print "ERROR: Basemap Toolkit must be installed on your system in order to generate these plots."
+    print("ERROR: Basemap Toolkit must be installed on your system in order to generate these plots.")
     exit(1)
 
 #  Constants
@@ -85,7 +85,7 @@ def ask_number(question):
             float(temp_val)
             return float(temp_val)
         except ValueError:
-            print temp_val + " is not a number. Please enter a number."
+            print(temp_val + " is not a number. Please enter a number.")
             temp_val = None
 
     
@@ -103,7 +103,7 @@ def ask_path(question,target):
         if os.exists(temp_val) and os.isdir(tmp_val) :
             return temp_val
         else :
-            print "\n" + temp_val + " does not exist or not a directory"
+            print("\n" + temp_val + " does not exist or not a directory")
             temp_val= raw_input("Please enter a different path or blank to use the default path: ")
     return target
 
@@ -121,7 +121,7 @@ def ask_file(question,target):
         if os.exists(temp_val) and os.isfile(tmp_val) :
             return temp_val
         else :
-            print "\n" + temp_val + " does not exist or not a file"
+            print("\n" + temp_val + " does not exist or not a file")
             temp_val= raw_input("Please enter a different file or blank to use the default file: ")
     return target
 
@@ -158,7 +158,7 @@ def get_user_opts(options):
     try:
         opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
     except getopt.GetoptError as err:
-        print str(err)   
+        print(str(err))   
         exit(1)
 
     if len(opts) == 0 :
@@ -519,7 +519,7 @@ class UCVM:
             try :
                 f=float(p)
             except :
-                print "ERROR: ", line
+                print("ERROR: ", line)
                 exit(1)
            
         return output
@@ -542,20 +542,20 @@ class UCVM:
         if os.path.isfile(shared_object):
             import ctypes
             #obj = ctypes.cdll.LoadLibrary(shared_object)
-            #print obj
+            #print(obj)
         
-#        print "CVM", cvm
+#        print("CVM", cvm)
         if( elevation ) :
             if self.z_range != None :
-#                print "RANGE", self.z_range
-#                print "CVM", cvm 
+#                print("RANGE", self.z_range)
+#                print("CVM", cvm) 
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else :
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         else :
             if self.z_range != None :
-#                print "RANGE", self.z_range
-#                print "CVM", cvm 
+#                print("RANGE", self.z_range)
+#                print("CVM", cvm) 
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else:
                 proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd" ], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
@@ -648,12 +648,12 @@ class UCVM:
         
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
-                 print "skipping text",line
+                 print("skipping text",line)
             else:
                  try :
                      p=float(line.split()[2])
                  except :
-                     print "ERROR: should be a float."
+                     print("ERROR: should be a float.")
                      exit(1)
                  floats.append(p)
         
@@ -694,7 +694,7 @@ class UCVM:
             try :
                 p=float(line.split()[2])
             except :
-                print "ERROR: should be a float."
+                print("ERROR: should be a float.")
                 exit(1)
             floats.append(p)
 
@@ -721,7 +721,7 @@ class UCVM:
         if os.path.isfile(shared_object):
             import ctypes
             #obj = ctypes.cdll.LoadLibrary(shared_object)
-            #print obj
+            #print(obj)
         
         proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
@@ -732,20 +732,20 @@ class UCVM:
          
         for point in point_list:
             text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
-            # print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
+            # print("%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth))
         
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
-                print "skipping text",line
+                print("skipping text",line)
             else:
                 # Position 3 returned by ucvm_query is a elevation in the etree. Return this value
                 try:
                     p=float(line.split()[3])
                 except:
-                    print "ERROR: should be a float value."
+                    print("ERROR: should be a float value.")
                     exit(1)
                 properties.append(p)
 
@@ -772,7 +772,7 @@ class UCVM:
         if os.path.isfile(shared_object):
             import ctypes
             #obj = ctypes.cdll.LoadLibrary(shared_object)
-            #print obj
+            #print(obj)
         
         proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
@@ -783,16 +783,16 @@ class UCVM:
          
         for point in point_list:
             text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
-            #  print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
+            #  print("%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth))
         
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
-                print "skipping text",line
+                print("skipping text",line)
             else:
-                # print "line:",line
+                # print("line:",line)
                 # return the whole line which will be printed to file
                 properties.append(line)
 
@@ -819,7 +819,7 @@ class UCVM:
         if os.path.isfile(shared_object):
             import ctypes
             #obj = ctypes.cdll.LoadLibrary(shared_object)
-            #print obj
+            #print(obj)
         
         proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
@@ -830,21 +830,21 @@ class UCVM:
          
         for point in point_list:
             text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
-            # print "%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth)
+            # print("%.5f %.5f %.5f" % (point.longitude, point.latitude, point.depth))
         
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
 
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line) or ("Using Geo Depth coordinates as default mode" in line):
-                print "skipping text",line
+                print("skipping text",line)
             else:
-                #print "line:",line
+                #print("line:",line)
                 # return position 4 from ucvm_query is the etree vs30 value. return that
                 try :
                    p=float(line.split()[4])
                 except :
-                   print "ERROR: should be a float."
+                   print("ERROR: should be a float.")
                    exit(1)
                 properties.append(p)
 
@@ -869,12 +869,12 @@ class UCVM:
         
         for line in output:
             if ("WARNING" in line) or ("slow performance" in line):
-                 print "skipping text",line
+                 print("skipping text",line)
             else:
                  try :
                      p=float(line.split()[2])
                  except :
-                     print "ERROR: should be a float."
+                     print("ERROR: should be a float.")
                      exit(1)
                  floats.append(p)
         
@@ -889,11 +889,11 @@ class UCVM:
         rawfile=fname
         k = rawfile.rfind(".json")
         if( k == -1) : 
-            print "Supplied ",fname," did not have .json suffix\n"
+            print("Supplied ",fname," did not have .json suffix\n")
         try :
 	    fh = open(rawfile, 'r') 
         except :
-            print "ERROR: json meta data does not exist."
+            print("ERROR: json meta data does not exist.")
             exit(1)
 
 	data = json.load(fh)
@@ -913,7 +913,7 @@ class UCVM:
         try :
             fh = open(rawfile, 'r') 
         except:
-            print "ERROR: binary data does not exist."
+            print("ERROR: binary data does not exist.")
             exit(1)
             
         floats = np.fromfile(fh, dtype=np.float32)
@@ -923,11 +923,11 @@ class UCVM:
           fh.seek(0,0)
           floats = np.fromfile(fh, dtype=np.float)
 
-        print "TOTAL number of binary data read:",len(floats),"\n"
+        print("TOTAL number of binary data read:",len(floats),"\n")
 
         # sanity check,  
         if len(floats) != (num_x * num_y) :
-            print "import_binary(), wrong size !!!", len(floats), " expecting ", (num_x * num_y)
+            print("import_binary(), wrong size !!!", len(floats), " expecting ", (num_x * num_y))
             exit(1)
 
         fh.close()
@@ -948,11 +948,11 @@ class UCVM:
         try :
             fh = open(rawfile, 'w+') 
         except:
-            print "ERROR: can not write out binary data."
+            print("ERROR: can not write out binary data.")
             exit(1)
         floats.tofile(fh)
 
-        print "export_binary(), size=",floats.size
+        print("export_binary(), size=",floats.size)
 
         fh.close()
 
@@ -966,7 +966,7 @@ class UCVM:
         try :
             fh = open(metafile, 'r') 
         except:
-            print "ERROR: can not find the meata data."
+            print("ERROR: can not find the meata data.")
             exit(1)
         meta = json.load(fh)
         fh.close()
@@ -983,7 +983,7 @@ class UCVM:
         try :
             fh = open(metafile, 'w+') 
         except:
-            print "ERROR: can not write the meta data."
+            print("ERROR: can not write the meta data.")
             exit(1)
         json.dump(meta, fh, indent=2, sort_keys=False)
         fh.close()
@@ -1013,7 +1013,7 @@ class UCVM:
         try :
             fh = open(matpropsfile, 'w+') 
         except:
-            print "ERROR: can not write the material property data."
+            print("ERROR: can not write the material property data.")
             exit(1)
         json.dump(blob, fh, indent=2, sort_keys=False)
         fh.close()
@@ -1029,7 +1029,7 @@ class UCVM:
         try :
             fh = open(rawfile, 'w+')
         except:
-            print "ERROR: can not write the material property data."
+            print("ERROR: can not write the material property data.")
             exit(1)
         raw={"vs":vslist, "vp":vplist, "rho":rholist};
         json.dump(raw, fh, indent=2, sort_keys=False)
@@ -1062,7 +1062,7 @@ class UCVM:
             bounds.append(round(s,4))
 
         bounds.append(round((step * nstep + minval),4))
-#        print "bounds", bounds
+#        print("bounds", bounds)
         return bounds
 
     ## 
@@ -1080,7 +1080,7 @@ class UCVM:
             ticks.append(tick)
 
         ticks.append(round((step * nstep + minval),4))
-#        print "ticks ", ticks
+#        print("ticks ", ticks)
         return ticks
 
 
@@ -1090,10 +1090,10 @@ class UCVM:
 #  Displays an error message and exits the program.
 #  @param message The error message to be displayed.
 def pycvm_display_error(message):
-    print "An error has occurred while executing this script. The error was:\n"
-    print message
-    print "\nPlease contact software@scec.org and describe both the error and a bit"
-    print "about the computer you are running CVM-S5 on (Linux, Mac, etc.)."
+    print("An error has occurred while executing this script. The error was:\n")
+    print(message)
+    print("\nPlease contact software@scec.org and describe both the error and a bit")
+    print("about the computer you are running CVM-S5 on (Linux, Mac, etc.).")
     exit(0)
     
 ##

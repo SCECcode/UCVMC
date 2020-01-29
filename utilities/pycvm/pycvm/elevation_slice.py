@@ -64,8 +64,8 @@ class ElevationSlice(HorizontalSlice):
 
         ###MEI
         if (self.datafile != None) :
-            print "\nUsing --> "+self.datafile
-        # print "expecting x ",self.num_x," y ",self.num_y
+            print("\nUsing --> "+self.datafile)
+        # print("expecting x ",self.num_x," y ",self.num_y)
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.

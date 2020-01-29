@@ -135,14 +135,14 @@ class DepthProfile:
         u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
 
         if (self.datafile != None) :
-            print "\nUsing --> "+self.datafile
+            print("\nUsing --> "+self.datafile)
             data = u.import_matprops(self.datafile)
             if len(data) == 0 :
-                print "ERROR: no matprops plot data."
+                print("ERROR: no matprops plot data.")
                 exit(1)
         else:
             data = u.query(point_list, self.cvm)
-#        print "NUMBER of data found ", len(data)
+#        print("NUMBER of data found ", len(data))
         
         tmp = []
         for matprop in data:

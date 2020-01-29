@@ -19,7 +19,7 @@ import string
 try:
     import pyproj
 except StandardError, e:
-    print "ERROR: PyProj must be installed for this script to work."
+    print("ERROR: PyProj must be installed for this script to work.")
     exit(1)
 
 ##
@@ -147,8 +147,8 @@ class CrossSection:
             self.num_x = num_prof +1
             ## Private number of y points.
             self.num_y = (int(self.todepth) - int(self.startingdepth)) / int(self.vspacing) +1
-            print "\nUsing -->"+self.datafile
-            print "expecting x ",self.num_x," y ",self.num_y
+            print("\nUsing -->"+self.datafile)
+            print("expecting x ",self.num_x," y ",self.num_y)
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
 ## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
         ## The 2D array of retrieved material properties.
@@ -359,7 +359,7 @@ class CrossSection:
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         else: 
-            print "ERROR: unknown option for colorscale."
+            print("ERROR: unknown option for colorscale.")
     
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file

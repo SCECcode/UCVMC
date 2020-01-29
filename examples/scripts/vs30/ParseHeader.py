@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Basic modules
 import os
@@ -30,9 +30,9 @@ class ParseConfig:
         return
 
     def showDict(self):
-        print "Parsed from config:"
+        print("Parsed from config:")
         for key in self.dict.keys():
-            print "\t%s = %s" % (key, self.dict[key])
+            print("\t%s = %s" % (key, self.dict[key]))
         return(0)
 
 

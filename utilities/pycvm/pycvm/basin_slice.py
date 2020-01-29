@@ -1,4 +1,5 @@
 ##
+#
 #  @file basin_slice.py
 #  @brief Gets the Z1.0, Z2.5, or other thresholds from a specified velocity model.
 #  @author David Gill - SCEC <davidgil@usc.edu>
@@ -69,9 +70,9 @@ class BasinSlice(HorizontalSlice):
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 ### MEI
         if (self.datafile != None) :
-#            print "\nUsing --> "+datafile
+#            print("\nUsing --> "+datafile)
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
-#            print "Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y
+#            print("Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
@@ -80,7 +81,7 @@ class BasinSlice(HorizontalSlice):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))
-#            print "Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y
+#            print("Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y)
             data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
 
         i = 0

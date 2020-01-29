@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Basic modules
 import os
@@ -105,7 +105,7 @@ class Interpolate:
         
 
         if (k >= 10):
-            print "Unable to convert %lf %lf\n" % (lat,lon)
+            print("Unable to convert %lf %lf\n" % (lat,lon))
             return (-1.0,-1.0);
     
         x = (x + 1) * self.dims[0]/2.0

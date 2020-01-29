@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 #  plot_scatter_plot.py
 #
@@ -15,11 +15,11 @@ import sys,getopt
 
 
 def usage():
-  print "Usage: ./plot_scatter_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)"
-  print "Usage: ./plot_scatter_plot.py -i inputfile -d depth -n description"
-  print "input file is a list of text file lines as returned by ucvm_query"
-  print "-i inputfilename -e depth(meters) -n String describing data being plotted" 
-  print "./plot_scatter_plot.py -i map_pts.txt -e 0.0 -n Density(CCA)(X) Density(Algo)(Y)"
+  print("Usage: ./plot_scatter_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)")
+  print("Usage: ./plot_scatter_plot.py -i inputfile -d depth -n description")
+  print("input file is a list of text file lines as returned by ucvm_query")
+  print("-i inputfilename -e depth(meters) -n String describing data being plotted")
+  print("./plot_scatter_plot.py -i map_pts.txt -e 0.0 -n Density(CCA)(X) Density(Algo)(Y)")
   sys.exit(2)
 
 #
@@ -49,17 +49,17 @@ def main(argv):
   if (len(inputfile)<1):
     usage()
 
-  print "\n"
-  print "Input CVM file is: ", inputfile
-  print "Output Image file is: ", outputfile
-  print "Slide Depth:",depth
-  print "Description:",descript
+  print("\n")
+  print("Input CVM file is: ", inputfile)
+  print("Output Image file is: ", outputfile)
+  print("Slide Depth:",depth)
+  print("Description:",descript)
 
   list_of_datafiles = inputfile
   list_of_colors = "blue"
 
   fig = plt.figure()
-  ax =  fig.add_subplot(111)
+  ax = fig.add_subplot(111)
 
   ax.set_title(descript)
   ax.set_xlabel("Vp (m/s) at depth %s"%(depth))

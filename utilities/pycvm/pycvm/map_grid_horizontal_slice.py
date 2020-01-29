@@ -78,11 +78,11 @@ class MapGridHorizontalSlice(HorizontalSlice):
         self.getplotvals()
  
         if self.filename != None:
-            print "Writing to output file: %s"%(self.filename) 
+            print("Writing to output file: %s"%(self.filename)) 
             f = open(self.filename,"w")
             for line in self.ucvm_query_results:
                 f.write("%s\n"%(line))
             f.close()
         else:
-            print "No file created"
+            print("No file created")
             pass

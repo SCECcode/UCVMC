@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: apply_yong_mapping.py
@@ -72,7 +72,7 @@ class apply_yong_mapping:
     def main(self):
 
         # Parse header
-        print "Parsing data header"
+        print("Parsing data header")
         self._parseHdr()
 
         ifp = open(self.infile, 'rb')
@@ -83,7 +83,7 @@ class apply_yong_mapping:
                 buf = ifp.read(4)
                 val = int(struct.unpack('f', buf)[0])
                 if (not MAPPING.has_key(val)):
-                    print "Terrain type %d not found in mapping" % (val)
+                    print("Terrain type %d not found in mapping" % (val))
                     return 1
                 buf = struct.pack('f', MAPPING[val])
                 ofp.write(buf)
@@ -94,7 +94,7 @@ class apply_yong_mapping:
 
 
 def usage():
-    print "usage: %s <hdr> <infile> <outfile>" % (sys.argv[0])
+    print("usage: %s <hdr> <infile> <outfile>" % (sys.argv[0]))
     return
 
 

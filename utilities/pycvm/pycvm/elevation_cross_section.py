@@ -19,7 +19,7 @@ import string
 try:
     import pyproj
 except StandardError, e:
-    print "ERROR: PyProj must be installed for this script to work."
+    print("ERROR: PyProj must be installed for this script to work.")
     exit(1)
 
 ##
@@ -147,8 +147,8 @@ class ElevationCrossSection:
             self.num_x = num_prof +1
             ## Private number of y points.
             self.num_y = abs((int(self.toelevation) - int(self.startelevation)) / int(self.vspacing)) +1
-            print "\nUsing -->"+self.datafile
-            print "expecting x ",self.num_x," y ",self.num_y
+            print("\nUsing -->"+self.datafile)
+            print("expecting x ",self.num_x," y ",self.num_y)
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
 ## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
         ## The 2D array of retrieved material properties.
@@ -183,7 +183,7 @@ class ElevationCrossSection:
             for y in xrange(0, self.num_y):
                 for x in xrange(0, self.num_x):   
                     self.materialproperties[y][x] = data[y * self.num_x + x]     
-#            print "outputting num_x ",self.num_x," num_y ",self.num_y
+#            print("outputting num_x ",self.num_x," num_y ",self.num_y)
 
     ## 
     #  Plots the horizontal slice either to an image or a file name.
@@ -312,9 +312,9 @@ class ElevationCrossSection:
         self.min_val=np.nanmin(newdatapoints)
         self.mean_val=np.mean(newdatapoints)
 
-#        print "max_val ", self.max_val
-#        print "min_val ", self.min_val
-#        print "mean_val", self.mean_val
+#        print("max_val ", self.max_val)
+#        print("min_val ", self.min_val)
+#        print("mean_val", self.mean_val)
 
         BOUNDS = u.makebounds()
         TICKS = u.maketicks()
@@ -364,7 +364,7 @@ class ElevationCrossSection:
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         else:
-            print "ERROR: unknown option for colorscale."
+            print("ERROR: unknown option for colorscale.")
 
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file

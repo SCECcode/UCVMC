@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 ##
 #  @file view_png.py
@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 
 ## Prints usage of this utility.
 def usage():
-    print "Generates an image given a png file "
-    print "\t-f, --datafile: plot.png"
+    print("Generates an image given a png file ")
+    print("\t-f, --datafile: plot.png")
 
 ## Gets the options and assigns them to the correct variables.
 def get_user_opts(options):
@@ -36,7 +36,7 @@ def get_user_opts(options):
     try:
         opts, args = getopt.getopt(sys.argv[1:], short_opt_string, long_opts)
     except getopt.GetoptError as err:
-        print str(err)   
+        print(str(err))   
         exit(1)
     
     for o, a in opts:
@@ -60,9 +60,9 @@ if ret_val == "bad":
     usage()
     exit(1)
 elif len(ret_val) > 0:
-    print "Using parameters:\n"
+    print("Using parameters:\n")
     for key, value in ret_val.iteritems():
-        print key , " = " , value
+        print(key , " = " , value)
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
@@ -72,11 +72,11 @@ elif len(ret_val) > 0:
             else:
                 exec("%s = '%s'" % (key, value))
 else:      
-    print ""
-    print "view_png  - UCVM %s" % VERSION
-    print ""
-    print "This utility helps you display any image in png format"
-    print ""
+    print("")
+    print("view_png  - UCVM %s" % VERSION)
+    print("")
+    print("This utility helps you display any image in png format")
+    print("")
 
 fig = plt.figure(figsize=(5, 5), dpi=100)
 view=fig.add_subplot(1,1,1)
