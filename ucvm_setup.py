@@ -214,6 +214,134 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     config_data["Install"]="true"
     os.chdir(savedPath)
     callAndRecord(["cd", savedPath], True)
+
+
+## create the ucvm.sh that is approriate to go into /etc/profile.d/
+##
+def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
+    str= "${UCVM_INSTALL_PATH}/lib/euclid3/lib:" + \
+        "${UCVM_INSTALL_PATH}/lib/proj-5/lib"
+    if "CS173" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cs173/lib"
+    if "CS173H" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cs173h/lib"
+    if "CVM-H" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cvmh1511/lib"
+    if "CVM-S4" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cvms/lib"
+    if "CVM-S4.26" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cvms5/lib"
+    if "CVM-S4.26.M01" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cvms426/lib"
+    if "CenCalVM" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cencal/lib"
+    if "CCA" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/cca/lib"
+    if "NetCDF" in librariesToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/lib/netcdf/lib"
+        str=str + ":${UCVM_INSTALL_PATH}/lib/hdf5/lib"
+    return str
+
+def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
+    str="" 
+    fp=open("bash_ucvm.sh","w")
+    fp.write("## \n")
+    fp.write("##  models: [")
+    for x in modelsToInstall:
+      fp.write(x)
+    fp.write("]")
+    fp.write("\n")
+    fp.write("##  libraries: [")
+    for x in librariesToInstall:
+      fp.write(x)
+    fp.write("]")
+    fp.write("\n")
+    fp.write("## \n")
+    fp.write("\n")
+    str="export TOP_UCVM_DIR=" + ucvmsrc 
+    fp.write(str)
+    fp.write("\n")
+    str="export UCVM_SRC_PATH=${TOP_UCVM_DIR}/UCVMC" 
+    fp.write(str)
+    fp.write("\n")
+    str="export UCVM_INSTALL_PATH="+ucvmpath.rstrip("/")
+    fp.write(str)
+    fp.write("\n")
+    fp.write("\n")
+
+
+    ldstr=_formLIBRARYPATH(modelsToInstall,librariesToInstall)
+    str="if [ \"$LD_LIBRARY_PATH\" ] ; then"
+    fp.write(str)
+    fp.write("\n")
+    str="   export LD_LIBRARY_PATH=\""+ldstr+":${LD_LIBRARY_PATH}\""
+    fp.write(str)
+    fp.write("\n")
+    str="   else"
+    fp.write(str)
+    fp.write("\n")
+    str="     export LD_LIBRARY_PATH=\""+ldstr+"\""
+    fp.write(str)
+    fp.write("\n")
+    str="fi"
+    fp.write(str)
+    fp.write("\n")
+    fp.write("\n")
+
+    str="if [ \"$DYLD_LIBRARY_PATH\" ] ; then"
+    fp.write(str)
+    fp.write("\n")
+    str="   export DYLD_LIBRARY_PATH=\""+ldstr+":${DYLD_LIBRARY_PATH}\""
+    fp.write(str)
+    fp.write("\n")
+    str="   else"
+    fp.write(str)
+    fp.write("\n")
+    str="     export DYLD_LIBRARY_PATH=\""+ldstr+"\""
+    fp.write(str)
+    fp.write("\n")
+    str="fi"
+    fp.write(str)
+    fp.write("\n")
+    fp.write("\n")
+
+    str="if [ $PYTHONPATH ] ; then"
+    fp.write(str)
+    fp.write("\n")
+    str="   export PYTHONPATH=\"$PYTHONPATH:${UCVM_INSTALL_PATH}/utilities/pycvm\""
+    fp.write(str)
+    fp.write("\n")
+    str="   else"
+    fp.write(str)
+    fp.write("\n")
+    str="     export PYTHONPATH=\"" + "${UCVM_INSTALL_PATH}/utilities/pycvm\""
+    fp.write(str)
+    fp.write("\n")
+    str="fi"
+    fp.write(str)
+    fp.write("\n")
+    fp.write("\n")
+
+    str="if [ $PATH ] ; then "
+    fp.write(str)
+    fp.write("\n")
+    str="   export PATH=\"${UCVM_INSTALL_PATH}/bin:${PATH}\""
+    fp.write(str)
+    fp.write("\n")
+    str="   else"
+    fp.write(str)
+    fp.write("\n")
+    str="     export PATH=\"${UCVM_INSTALL_PATH}/bin\""
+    fp.write(str)
+    fp.write("\n")
+    str="fi"
+    fp.write(str)
+    fp.write("\n")
+    fp.write("\n")
+    fp.close();
+    
+
+
 #
 # Start of main method.
 # Read in the possible arguments
@@ -547,6 +675,7 @@ if platform.system() == "Darwin":
     print ""
                 
 elif dynamic_flag == True:
+    makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     print "Please export the following library paths (note this is in Bash format):"
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
     print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
