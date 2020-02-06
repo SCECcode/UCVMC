@@ -244,7 +244,7 @@ def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
 
 def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="" 
-    fp=open("bash_ucvm.sh","w")
+    fp=open("/conf/ucvm_bash.sh","w")
     fp.write("## \n")
     fp.write("##  models: [")
     for x in modelsToInstall:
@@ -652,55 +652,12 @@ print "\nDone installing UCVMC!"
 sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
 
-if platform.system() == "Darwin":
-    print "To try out UCVMC, please edit your ~/.bash_profile to include"
-    print "the following lines:"
-    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$DYLD_LIBRARY_PATH" 
-    print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$DYLD_LIBRARY_PATH"
-    if "CVM-S4.26" in modelsToInstall:
-        print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$DYLD_LIBRARY_PATH"
-    if "CenCalVM" in modelsToInstall:
-        print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$DYLD_LIBRARY_PATH"
-    if "CCA" in modelsToInstall:
-        print "\tDYLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$DYLD_LIBRARY_PATH"
-    print "\texport DYLD_LIBRARY_PATH"
-    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/") 
-    print "\texport UCVM_INSTALL_PATH"
-    print "\tif [ $PYTHONPATH ] ; then"
-    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
-    print "\telse"
-    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
-    print "\tfi"
-    print "\texport PYTHONPATH"
-    print ""
-                
-elif dynamic_flag == True:
+if platform.system() == "Darwin" or dynamic_flag == True:
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
-    print "Please export the following library paths (note this is in Bash format):"
-    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/euclid3/lib:$LD_LIBRARY_PATH" 
-    print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/proj-5/lib:$LD_LIBRARY_PATH"
-    if "CVM-S4.26" in modelsToInstall:
-        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cvms426/lib:$LD_LIBRARY_PATH"    
-    if "CenCalVM" in modelsToInstall:
-        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cencal/lib:$LD_LIBRARY_PATH"
-    if "CCA" in modelsToInstall:
-        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/model/cca/lib:$LD_LIBRARY_PATH"
-    if "NetCDF" in librariesToInstall:
-        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/netcdf/lib:$LD_LIBRARY_PATH"
-        print "\tLD_LIBRARY_PATH=" + ucvmpath.rstrip("/") + "/lib/hdf5/lib:$LD_LIBRARY_PATH"
-    print "\texport LD_LIBRARY_PATH"
-    print "\tUCVM_INSTALL_PATH=" + ucvmpath.rstrip("/")
-    print "\texport UCVM_INSTALL_PATH"
-    print "\tif [ $PYTHONPATH ] ; then"
-    print "\t  export PYTHONPATH=$PYTHONPATH:" + ucvmpath.rstrip("/") + "/utilities/pycvm"
-    print "\telse"
-    print "\t     export PYTHONPATH=" + ucvmpath.rstrip("/") + "/utilities/pycvm"
-    print "\tfi"
-    print "\texport PYTHONPATH"
-    print ""
-    print "We recommend adding the above lines to the end of your ~/.bash_profile file so that"
+
+    print "To try out UCVMC, we recommend adding the content from " + ucvmpath.rstrip("/")  + "/conf/ucvm_bash.sh +" 
+    print "to the end of your ~/.bash_profile file so that"
     print "they are preserved for the next time you login."
-    
 
 print "\nOnce you have set these environment variables, return to the UCVMC source directory and type"
 print "make check"
