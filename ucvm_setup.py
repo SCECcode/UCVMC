@@ -244,7 +244,7 @@ def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
 
 def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="" 
-    fp=open("/conf/ucvm_bash.sh","w")
+    fp=open("conf/ucvm_bash.sh","w")
     fp.write("## \n")
     fp.write("##  models: [")
     for x in modelsToInstall:
