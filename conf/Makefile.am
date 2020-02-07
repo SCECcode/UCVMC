@@ -80,7 +80,7 @@ install:
 	if ! test . -ef ${prefix}/conf; then \
                 cp ucvm.conf ${prefix}/conf; \
         fi
-	if -e ucvm_bash.sh; then \
+	if test -e ucvm_bash.sh; then \
                 cp ucvm_bash.sh ${prefix}/conf; \
         fi
 
