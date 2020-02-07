@@ -325,13 +325,13 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="if [ $PATH ] ; then "
     fp.write(str)
     fp.write("\n")
-    str="   export PATH=\"${UCVM_INSTALL_PATH}/bin:${PATH}\""
+    str="   export PATH=\"${UCVM_INSTALL_PATH}/bin:${UCVM_INSTALL_PATH}/utilities:${PATH}\""
     fp.write(str)
     fp.write("\n")
     str="   else"
     fp.write(str)
     fp.write("\n")
-    str="     export PATH=\"${UCVM_INSTALL_PATH}/bin\""
+    str="     export PATH=\"${UCVM_INSTALL_PATH}/bin:${UCVM_INSTALL_PATH}/utilities\""
     fp.write(str)
     fp.write("\n")
     str="fi"
