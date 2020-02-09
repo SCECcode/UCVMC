@@ -29,7 +29,7 @@ def usage():
     print "\t-o, --outfile: optional png output filename"
     print "\t-t, --title: optional plot title"
     print "\t-H, --help: optional display usage information"
-    print "\t-i, --installdir: optional UCVM isntall directory"
+    print "\t-i, --installdir: optional UCVM install directory"
     print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
