@@ -478,6 +478,9 @@ class UCVM:
         if install_dir != None:
             ## Location of the UCVM binary directory.
             self.binary_dir = install_dir + "/bin"
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.binary_dir = mypath+"/bin"
         else:
             self.binary_dir = "../bin"
         
@@ -487,6 +490,9 @@ class UCVM:
         else:
             if install_dir != None:
                self.config = install_dir + "/conf/ucvm.conf"
+            elif 'UCVM_INSTALL_PATH' in os.environ:
+               mypath=os.environ.get('UCVM_INSTALL_PATH')
+               self.config = mypath+"/conf/ucvm.conf"
             else:
                self.config = "../conf/ucvm.conf"
 
@@ -498,6 +504,9 @@ class UCVM:
         if install_dir != None:
             ## List of all the installed CVMs.
             self.models = [x for x in os.listdir(install_dir + "/model")]
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.models = [x for x in os.listdir(mypath + "/model")]
         else:
             self.models = [x for x in os.listdir("../model")]
             
