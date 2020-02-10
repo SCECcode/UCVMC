@@ -478,6 +478,9 @@ class UCVM:
         if install_dir != None:
             ## Location of the UCVM binary directory.
             self.binary_dir = install_dir + "/bin"
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.binary_dir = mypath+"/bin"
         else:
             self.binary_dir = "../bin"
         
@@ -487,6 +490,9 @@ class UCVM:
         else:
             if install_dir != None:
                self.config = install_dir + "/conf/ucvm.conf"
+            elif 'UCVM_INSTALL_PATH' in os.environ:
+               mypath=os.environ.get('UCVM_INSTALL_PATH')
+               self.config = mypath+"/conf/ucvm.conf"
             else:
                self.config = "../conf/ucvm.conf"
 
