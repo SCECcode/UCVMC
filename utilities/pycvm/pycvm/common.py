@@ -504,6 +504,9 @@ class UCVM:
         if install_dir != None:
             ## List of all the installed CVMs.
             self.models = [x for x in os.listdir(install_dir + "/model")]
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.models = [x for x in os.listdir(mypath + "/model")]
         else:
             self.models = [x for x in os.listdir("../model")]
             
