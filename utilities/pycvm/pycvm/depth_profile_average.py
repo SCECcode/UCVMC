@@ -161,32 +161,32 @@ class DepthProfileAverage:
         else:
 
 ## get the latlons
-           latlons_list=[]
-           latlons_list.append({'lat':self.startingpoint.latitude,'lon':self.startingpoint.longitude})
+        latlons_list=[]
+        latlons_list.append({'lat':self.startingpoint.latitude,'lon':self.startingpoint.longitude})
 ##XXX
-           dlen=len(self.meta['depth'])
-           blob_list=[]
-           idx=0
-           xmax=(2* self.deltax)+1
-           ymax=(2* self.deltay)+1
-           for y in xrange(0, ymax) :
-              for x in xrange(0, xmax) :
+        dlen=len(self.meta['depth'])
+        blob_list=[]
+        idx=0
+        xmax=(2* self.deltax)+1
+        ymax=(2* self.deltay)+1
+        for y in xrange(0, ymax) :
+            for x in xrange(0, xmax) :
 ##XXX                  lalons=latlons_list[idx]
-                  lalons=latlons_list[0]
-                  vplist=[]
-                  vslist=[]
-                  rholist=[]
-                  b=getplotvals_one(idx, self.meta['depth'], latlons['lat'], latlons['lon'], vplist, vslist, rholist)
-                  idx=idx+1
-                  blob_list.append(b)
+                lalons=latlons_list[0]
+                vplist=[]
+                vslist=[]
+                rholist=[]
+                b=getplotvals_one(idx, self.meta['depth'], latlons['lat'], latlons['lon'], vplist, vslist, rholist)
+                idx=idx+1
+                blob_list.append(b)
 ## accumulate it
-                  for z in xrange(0, dlen):
-                      vs_sum[z]=vs_sum[z]+vslist[z]
-                      vp_sum[z]=vp_sum[z]+vplist[z]
-                      rho_sum[z]=rho_sum[z]+rholist[z]
+                for z in xrange(0, dlen):
+                    vs_sum[z]=vs_sum[z]+vslist[z]
+                    vp_sum[z]=vp_sum[z]+vplist[z]
+                    rho_sum[z]=rho_sum[z]+rholist[z]
 
 ### average and extract the vp,vs,rho 
-           averageplotdata(idx, dlen, vs_sum, vp_sum, rho_sum);
+        averageplotdata(idx, dlen, vs_sum, vp_sum, rho_sum);
 
     def averageplotvals(self, counts,dlen, vssum, vpsum, rhosum ):
         for i xrange(0, dlen) :
