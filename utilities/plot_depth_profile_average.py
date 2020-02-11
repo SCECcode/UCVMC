@@ -33,8 +33,8 @@ def usage():
     print "\t-H, --help: optional display usage information"
     print "\t-i, --installdir: optional UCVM install directory"
     print "\t-n, --configfile: optional UCVM configfile"
-    print "\t-x, --deltaX: optional delta X (default:1) "
-    print "\t-y, --deltaY: optional delta Y (default:1) "
+    print "\t-x, --deltaX: optional delta X (default:0) "
+    print "\t-y, --deltaY: optional delta Y (default:0) "
     print "UCVM %s\n" % VERSION
 
 ret_val = get_user_opts({"s,startingpoint":"lat1,lon1", \

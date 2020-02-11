@@ -52,7 +52,7 @@ class DepthProfileAverage:
 
         if 'deltay' in self.meta:
             self.deltay = int(self.meta['deltay'])
-        else
+        else:
             self.deltay=0
 
         if 'installdir' in self.meta:
@@ -154,29 +154,27 @@ class DepthProfileAverage:
         vs_sum=[]
         rho_sum=[]
 
-## coming in from external file,  just 1 set
-        if (self.datafile != None) :
-            print "ERROR: TODO"
-                exit(1)
-        else:
-
-## get the latlons
         latlons_list=[]
         latlons_list.append({'lat':self.startingpoint.latitude,'lon':self.startingpoint.longitude})
 ##XXX
         dlen=len(self.meta['depth'])
+
+        for i in xrange(0,dlen) :
+            vs_sum.push(0)
+            vp_sum.push(0)
+            rho_sum.push(0)
+
         blob_list=[]
         idx=0
         xmax=(2* self.deltax)+1
         ymax=(2* self.deltay)+1
         for y in xrange(0, ymax) :
             for x in xrange(0, xmax) :
-##XXX                  lalons=latlons_list[idx]
-                lalons=latlons_list[0]
+                latlons=latlons_list[0]
                 vplist=[]
                 vslist=[]
                 rholist=[]
-                b=getplotvals_one(idx, self.meta['depth'], latlons['lat'], latlons['lon'], vplist, vslist, rholist)
+                b=self.getplotvals_one(idx, self.meta['depth'], latlons['lat'], latlons['lon'], vplist, vslist, rholist)
                 idx=idx+1
                 blob_list.append(b)
 ## accumulate it
@@ -186,13 +184,13 @@ class DepthProfileAverage:
                     rho_sum[z]=rho_sum[z]+rholist[z]
 
 ### average and extract the vp,vs,rho 
-        averageplotdata(idx, dlen, vs_sum, vp_sum, rho_sum);
+        self.averageplotvals(idx, dlen, vs_sum, vp_sum, rho_sum);
 
     def averageplotvals(self, counts,dlen, vssum, vpsum, rhosum ):
-        for i xrange(0, dlen) :
-            vplist.append(vpsum[i]/counts)
-            vslist.append(vssum[i]/counts)
-            rholist.append(rhosum[i]/counts)
+        for i in xrange(0, dlen) :
+            self.vplist.append(vpsum[i]/counts)
+            self.vslist.append(vssum[i]/counts)
+            self.rholist.append(rhosum[i]/counts)
 
     def getplotvals_one(self, idx, depth_list, lat, lon, vplist, vslist, rholist):
         # Generate the list of points.
