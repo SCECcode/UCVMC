@@ -182,13 +182,27 @@ class DepthProfileAverage:
                     rho_sum[z]=rho_sum[z]+rholist[z]
 
 ### average and extract the vp,vs,rho 
-        self.averageplotvals(idx, dlen, vs_sum, vp_sum, rho_sum);
+        u = UCVM(install_dir=self.installdir, config_file=self.configfile)
+        tmp=self.averageplotvals(idx, dlen, vs_sum, vp_sum, rho_sum);
+        if(self.datafile == None) :
+              blob = { 'matprops' : tmp }
+              u.export_matprops(blob,self.filename)
+              u.export_metadata(self.meta,self.filename)
 
     def averageplotvals(self, counts,dlen, vssum, vpsum, rhosum ):
+        tmp=[]
         for i in xrange(0, dlen) :
-            self.vplist.append(vpsum[i]/counts)
-            self.vslist.append(vssum[i]/counts)
-            self.rholist.append(rhosum[i]/counts)
+            vs=vssum[i]/counts
+            vp=vpsum[i]/counts
+            rho=rhosum[i]/counts
+            self.vplist.append(vp)
+            self.vslist.append(vs)
+            self.rholist.append(rho)
+            # create the blob
+            if(self.datafile == None) : ## save an external copy of matprops
+              b= { 'vp':float(vp), 'vs':float(vs), 'density':float(rho) }
+              tmp.append(b)
+        return tmp
 
     def getplotvals_one(self, idx, depth_list, lat, lon, vplist, vslist, rholist):
         # Generate the list of points.
