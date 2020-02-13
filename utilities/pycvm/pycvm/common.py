@@ -17,6 +17,7 @@ import struct
 import getopt
 import pdb
 import json
+import pyproj
 
 #  Numpy is required.
 try:
@@ -1146,3 +1147,219 @@ def pycvm_cmapDiscretize(cmap, N):
         cdict[key] = tuple(L)
     # Return colormap object.
     return mcolors.LinearSegmentedColormap('colormap',cdict,1024)
+
+###### specific to cvms5 and the depth_profile_average.py
+MODEL_CONFIG= { 
+"cvms5" : { "nx":1536,
+            "ny":992,
+            "nz":100,
+            "zone":11,
+            "bottom_right_corner_e":596013.92402056302,
+            "bottom_right_corner_n":3368878.9393477398,
+            "bottom_left_corner_e":10616.346941343043,
+            "bottom_left_corner_n":3868878.9393477398,
+            "top_right_corner_e":916460.47111054836,
+            "top_right_corner_n":3746813.1405760832,
+            "top_left_corner_e":331062.89403132832,
+            "top_left_corner_n":4243165.7639697529
+          },
+"cca" : { "nx":1024,
+          "ny":896,
+          "nz":100,
+          "zone":10,
+          "top_left_corner_e":503240.523120,
+          "top_left_corner_n":4051863.829470, 
+          "bottom_left_corner_e":779032.901477,
+          "bottom_left_corner_n":3699450.983449,
+          "top_right_corner_e":906054.312483,
+          "top_right_corner_n":4367099.140150,
+          "bottom_right_corner_e":1181846.690839,
+          "bottom_right_corner_n":4014686.294129
+          }
+}
+
+def grid2latlon(model, x_coord, y_coord) :
+    print "====grid2latlon==="
+
+    conf=MODEL_CONFIG[model]
+
+    proj = pyproj.Proj(proj='utm', zone=conf['zone'], ellps='WGS84')
+
+## Calculate the rotation angle the box.
+    north_height_m = float(conf['top_left_corner_n']) - float(conf['bottom_left_corner_n'])
+    east_width_m = float(conf['top_left_corner_e']) - float(conf['bottom_left_corner_e'])
+    
+## Rotation angle. Cos, sin, and tan are expensive computationally, so calculate once.
+    rotation_angle = math.atan(east_width_m / north_height_m)
+    
+    cos_rotation_angle = math.cos(rotation_angle)
+    sin_rotation_angle = math.sin(rotation_angle)
+
+    print "cos_rotation ", cos_rotation_angle, "sin_rotation ",sin_rotation_angle
+    
+    total_height_m = math.sqrt(pow( float(conf['top_left_corner_n']) - 
+                     float(conf['bottom_left_corner_n']), 2) +
+                     pow(float(conf['top_left_corner_e']) - 
+                     float(conf['bottom_left_corner_e']), 2))
+    total_width_m  = math.sqrt(pow( float(conf['top_right_corner_n']) - 
+                     float(conf['top_left_corner_n']), 2) +
+                     pow(float(conf['top_right_corner_e']) - 
+                     float(conf['top_left_corner_e']), 2))
+    
+    point_utm_e = float(x_coord)/(conf['nx']-1) * total_width_m
+    point_utm_n = float(y_coord)/(conf['ny']-1) * total_height_m
+
+    print "x_coord is ", x_coord, " y_coord is ", y_coord
+    print "point_utm_e is ", point_utm_e," point_utm_n is ",point_utm_n
+    
+#    e=point_utm_e
+#    ee=e/total_width_m * (conf['nx']-1)
+#    print "ee is ",ee
+    temp_utm_n=((cos_rotation_angle * point_utm_n) - (sin_rotation_angle * point_utm_e))/ ((sin_rotation_angle *sin_rotation_angle) + (cos_rotation_angle * cos_rotation_angle))
+    temp_utm_e= (point_utm_e + (sin_rotation_angle * temp_utm_n))/cos_rotation_angle
+
+    print "temp_utm_e is ",temp_utm_e," temp_utm_n is ",temp_utm_n
+## add back
+    point_utm_ee= temp_utm_e + conf['bottom_left_corner_e']
+    point_utm_nn= temp_utm_n + conf['bottom_left_corner_n']
+    lon,lat=proj(point_utm_ee, point_utm_nn, inverse=True)
+    print "reverse lon ",lon," lat ",lat
+
+    
+
+def latlon2grid(model, longitude, latitude):    
+    print "====latlon2grid==="
+
+    conf=MODEL_CONFIG[model]
+
+## Calculate the rotation angle of the box.
+    north_height_m = float(conf['top_left_corner_n']) - float(conf['bottom_left_corner_n'])
+    east_width_m = float(conf['top_left_corner_e']) - float(conf['bottom_left_corner_e'])
+    
+## Rotation angle. Cos, sin, and tan are expensive computationally, so calculate once.
+    rotation_angle = math.atan(east_width_m / north_height_m)
+    
+    cos_rotation_angle = math.cos(rotation_angle)
+    sin_rotation_angle = math.sin(rotation_angle)
+
+    print "cos_rotation ", cos_rotation_angle, "sin_rotation ",sin_rotation_angle
+    total_height_m = math.sqrt(pow( float(conf['top_left_corner_n']) - 
+                     float(conf['bottom_left_corner_n']), 2) +
+                     pow(float(conf['top_left_corner_e']) - 
+                     float(conf['bottom_left_corner_e']), 2))
+    total_width_m  = math.sqrt(pow( float(conf['top_right_corner_n']) - 
+                     float(conf['top_left_corner_n']), 2) +
+                     pow(float(conf['top_right_corner_e']) - 
+                     float(conf['top_left_corner_e']), 2))
+    
+    
+#    temp_utm_e = longitude
+#    temp_utm_n = latitude
+    
+    proj = pyproj.Proj(proj='utm', zone=conf['zone'], ellps='WGS84')
+    point_utm_e, point_utm_n = proj(longitude, latitude)
+    print "longitude ",longitude, "latitude ",latitude
+    print "point_utm_e ",point_utm_e, "point_utm_n ",point_utm_n
+## proj(x,y,inverset=True)
+    lon,lat = proj(point_utm_e, point_utm_n, inverse=True)
+    print "again longitude ",lon, "latitude ",lat
+    
+## Point within rectangle.
+    point_utm_n -= float(conf['bottom_left_corner_n']);
+    point_utm_e -= float(conf['bottom_left_corner_e']);
+    
+    temp_utm_n = point_utm_n;
+    temp_utm_e = point_utm_e;
+    
+## We need to rotate that point, the number of degrees we calculated above.
+    point_utm_e = cos_rotation_angle * temp_utm_e - sin_rotation_angle * temp_utm_n;
+    point_utm_n = sin_rotation_angle * temp_utm_e + cos_rotation_angle * temp_utm_n;
+    
+    print "temp_utm_e ",temp_utm_e, " temp_utm_n ",temp_utm_n
+    print "point_utm_e ",point_utm_e, " point_utm_n ",point_utm_n
+## Which point base point does that correspond to?
+    load_x_coord = math.floor(point_utm_e / total_width_m * ( conf['nx'] -1));
+    load_y_coord = math.floor(point_utm_n / total_height_m * ( conf['ny'] - 1));
+#    print load_x_coord, " ", load_y_coord
+
+
+def getlatlonslist(model, longitude, latitude, deltax, deltay):    
+#    print "====getlatlonslist==="
+
+    latlons_list=[]
+    xcnt=(2* deltax)+1
+    ycnt=(2* deltay)+1
+
+    conf=MODEL_CONFIG[model]
+
+## Calculate the rotation angle of the box.
+    north_height_m = float(conf['top_left_corner_n']) - float(conf['bottom_left_corner_n'])
+    east_width_m = float(conf['top_left_corner_e']) - float(conf['bottom_left_corner_e'])
+    
+## Rotation angle. Cos, sin, and tan are expensive computationally, so calculate once.
+    rotation_angle = math.atan(east_width_m / north_height_m)
+    
+    cos_rotation_angle = math.cos(rotation_angle)
+    sin_rotation_angle = math.sin(rotation_angle)
+
+    total_height_m = math.sqrt(pow( float(conf['top_left_corner_n']) - 
+                     float(conf['bottom_left_corner_n']), 2) +
+                     pow(float(conf['top_left_corner_e']) - 
+                     float(conf['bottom_left_corner_e']), 2))
+    total_width_m  = math.sqrt(pow( float(conf['top_right_corner_n']) - 
+                     float(conf['top_left_corner_n']), 2) +
+                     pow(float(conf['top_right_corner_e']) - 
+                     float(conf['top_left_corner_e']), 2))
+    
+    
+#    temp_utm_e = longitude
+#    temp_utm_n = latitude
+    
+    proj = pyproj.Proj(proj='utm', zone=conf['zone'], ellps='WGS84')
+    point_utm_e, point_utm_n = proj(longitude, latitude)
+    
+## Point within rectangle.
+    point_utm_n -= float(conf['bottom_left_corner_n']);
+    point_utm_e -= float(conf['bottom_left_corner_e']);
+    
+    temp_utm_n = point_utm_n;
+    temp_utm_e = point_utm_e;
+    
+## We need to rotate that point, the number of degrees we calculated above.
+    point_utm_e = cos_rotation_angle * temp_utm_e - sin_rotation_angle * temp_utm_n;
+    point_utm_n = sin_rotation_angle * temp_utm_e + cos_rotation_angle * temp_utm_n;
+    
+## Which point base point does that correspond to?
+    x_target = math.floor(point_utm_e / total_width_m * ( conf['nx'] -1));
+    y_target = math.floor(point_utm_n / total_height_m * ( conf['ny'] - 1));
+
+#    print "x_target ", x_target, "y_target ", y_target, "from(",longitude,",",latitude,")"
+    x_start=int(x_target) - deltax;
+    y_start=int(y_target) - deltay;
+    x_end=int(x_target) + deltax+1;
+    y_end=int(y_target) + deltay+1;
+
+    for y_coord in xrange(y_start, y_end) :
+       for x_coord in xrange(x_start, x_end) :
+           point_utm_e = float(x_coord)/(conf['nx']-1) * total_width_m
+           point_utm_n = float(y_coord)/(conf['ny']-1) * total_height_m
+
+           temp_utm_n=((cos_rotation_angle * point_utm_n) - (sin_rotation_angle * point_utm_e))/ ((sin_rotation_angle *sin_rotation_angle) + (cos_rotation_angle * cos_rotation_angle))
+           temp_utm_e= (point_utm_e + (sin_rotation_angle * temp_utm_n))/cos_rotation_angle
+
+           point_utm_ee= temp_utm_e + conf['bottom_left_corner_e']
+           point_utm_nn= temp_utm_n + conf['bottom_left_corner_n']
+           lon,lat=proj(point_utm_ee, point_utm_nn, inverse=True)
+           print "new lon ",lon," lat ",lat," for(",x_coord,",",y_coord,")"
+           latlons_list.append({'lat':lat,'lon':lon})
+    return latlons_list
+
+
+#### MAIN ####
+    
+#latlon2grid('cvms5', -118.5807, 35.0929)    
+#latlon2grid('cvms5', -120.252475183120,34.751093624284)
+#grid2latlon('cvms5', 504, 475)
+#getlatlonslist('cvms5', -118.580702223379,35.0929478486243,1,1)
+#getlatlonslist('cvms5', -118.580702223379,35.0929478486243,0,0)
+

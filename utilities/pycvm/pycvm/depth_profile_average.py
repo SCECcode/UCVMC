@@ -8,7 +8,7 @@
 #  arguments, or through Python code in the class DepthProfile.
 
 #  Imports
-from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, plt
+from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, plt, getlatlonslist
 from scipy.interpolate import spline, splprep, splev
 from scipy.interpolate import Rbf, InterpolatedUnivariateSpline
 import scipy.interpolate as interpolate
@@ -154,15 +154,13 @@ class DepthProfileAverage:
         vs_sum=[]
         rho_sum=[]
 
-        latlons_list=[]
-        latlons_list.append({'lat':self.startingpoint.latitude,'lon':self.startingpoint.longitude})
-##XXX
+        latlons_list=getlatlonslist('cvms5',self.startingpoint.longitude,self.startingpoint.latitude,self.deltax,self.deltay)
         dlen=len(self.meta['depth'])
 
         for i in xrange(0,dlen) :
-            vs_sum.push(0)
-            vp_sum.push(0)
-            rho_sum.push(0)
+            vs_sum.append(0)
+            vp_sum.append(0)
+            rho_sum.append(0)
 
         blob_list=[]
         idx=0
@@ -170,7 +168,7 @@ class DepthProfileAverage:
         ymax=(2* self.deltay)+1
         for y in xrange(0, ymax) :
             for x in xrange(0, xmax) :
-                latlons=latlons_list[0]
+                latlons=latlons_list[idx]
                 vplist=[]
                 vslist=[]
                 rholist=[]
@@ -187,23 +185,10 @@ class DepthProfileAverage:
         self.averageplotvals(idx, dlen, vs_sum, vp_sum, rho_sum);
 
     def averageplotvals(self, counts,dlen, vssum, vpsum, rhosum ):
-        tmp = []
         for i in xrange(0, dlen) :
-            vp=(vpsum[i]/counts)
-            vs=(vssum[i]/counts)
-            rho=(rhosum[i]/counts)
-            self.vplist.append(vp)
-            self.vslist.append(vs)
-            self.rholist.append(rho)
-            ## create the blob
-            if(self.datafile == None) : ## save an external copy of matprops
-                b= { 'vp':float(vp), 'vs':float(vs), 'density':float(rho) }
-                tmp.append(b)
-
-         if(self.datafile == None) :
-            blob = { 'matprops' : tmp }
-            u.export_matprops(blob,self.filename)
-            u.export_metadata(self.meta,self.filename)
+            self.vplist.append(vpsum[i]/counts)
+            self.vslist.append(vssum[i]/counts)
+            self.rholist.append(rhosum[i]/counts)
 
     def getplotvals_one(self, idx, depth_list, lat, lon, vplist, vslist, rholist):
         # Generate the list of points.
