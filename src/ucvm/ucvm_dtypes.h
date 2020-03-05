@@ -64,6 +64,7 @@
 #define UCVM_MODEL_JAPAN "japan"
 /* plugin models */
 #define UCVM_MODEL_CVMS5 "cvms5"
+#define UCVM_MODEL_ALBACORE "albacore"
 #define UCVM_MODEL_CCA "cca"
 #define UCVM_MODEL_CS173 "cs173"
 #define UCVM_MODEL_CS173H "cs173h"

@@ -160,7 +160,12 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
     createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
-    if config_data["Path"] == "cvms5":
+    if config_data["Path"] == "albacore":
+        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
+        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+        configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
+        configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
+    elif config_data["Path"] == "cvms5":
         configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
         configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
@@ -229,6 +234,8 @@ def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
         str=str + ":${UCVM_INSTALL_PATH}/model/cvmh1511/lib"
     if "CVM-S4" in modelsToInstall:
         str=str + ":${UCVM_INSTALL_PATH}/model/cvms/lib"
+    if "ALBACORE" in modelsToInstall:
+        str=str + ":${UCVM_INSTALL_PATH}/model/albacore/lib"
     if "CVM-S4.26" in modelsToInstall:
         str=str + ":${UCVM_INSTALL_PATH}/model/cvms5/lib"
     if "CVM-S4.26.M01" in modelsToInstall:
