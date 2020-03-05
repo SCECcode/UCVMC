@@ -414,6 +414,32 @@ int test_lib_add_model_cvms5()
   return(0);
 }
 
+
+int test_lib_add_model_albacore()
+{
+  printf("Test: UCVM lib add model ALBACORE\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_ALBACORE) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_ALBACORE);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
 int test_lib_add_model_cca()
 {
   printf("Test: UCVM lib add model CCA\n");
@@ -596,6 +622,14 @@ int suite_lib(const char *xmldir)
   strcpy(suite.tests[suite.num_tests].test_name, 
   	 "test_lib_add_model_cvmsi");
   suite.tests[suite.num_tests].test_func = &test_lib_add_model_cvmsi;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_ALBACORE
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_albacore");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_albacore;
   suite.tests[suite.num_tests].elapsed_time = 0.0;
   suite.num_tests++;
 #endif
