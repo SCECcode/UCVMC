@@ -3,7 +3,7 @@
 		"ALBACORE": {
 			"Version": "1.0",
                         "Abbreviation": "albacore",
-                        "Size": "2M",
+                        "Size": "2.3M",
 			"Path": "albacore",
 			"URL": "http://hypocenter.usc.edu/research/ucvmc/V19_4/albacore.tar.gz",
 			"Flags": "--enable-model-albacore --with-albacore-lib-path=lib --with-albacore-include-path=include",

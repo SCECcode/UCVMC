@@ -32,7 +32,7 @@ optional_large_model_size = { 'cvms5':'1.2G',
                               'cvms426':'1.6G',
                               'cencal080':'17M',
                               'cvmh-15.1.1':'1.6G',
-                              'albacore':'2M'}
+                              'albacore':'2.3M'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
