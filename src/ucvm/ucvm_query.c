@@ -362,7 +362,7 @@ int main(int argc, char **argv)
         /* Check for scan failure */
         if ((pnts[numread].coord[0] == 0.0) || 
 	  (pnts[numread].coord[1] == 0.0)) {
-	  continue;
+	  break;
         }
 
         numread++;
