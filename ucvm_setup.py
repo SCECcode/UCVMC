@@ -653,7 +653,7 @@ callAndRecord(["make", "clean"])
 callAndRecord(["make"])
 print "\nInstalling UCVMC"
 callAndRecord(["make", "install"])
-elif dynamic_flag == True:
+
 print "\nDone installing UCVMC!"
 
 sys.stdout.write("\nThank you for installing UCVMC. ")
