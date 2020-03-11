@@ -73,6 +73,12 @@ AC_ARG_ENABLE([model-cvms],
         [enable model SCEC CVM-S])],
         [enable_model_cvms=yes],
         [enable_model_cvms=no])
+
+AC_ARG_ENABLE([model-albacore],
+        [AS_HELP_STRING([--enable-model-albacore],
+        [enable model SCEC ALBACORE])],
+        [enable_model_albacore=yes],
+        [enable_model_albacore=no])
         
 AC_ARG_ENABLE([model-cvms5],
         [AS_HELP_STRING([--enable-model-cvms5],
@@ -263,6 +269,19 @@ AC_ARG_WITH([cvmsi-model-path],
   [AS_HELP_STRING([--with-cvmsi-model-path], [location of the SCEC CVM-SI model files])],
   [CVMSI_MODEL="$withval"],
   [CVMSI_MODEL="/usr/cvmsi/model"])
+fi
+
+# Get SCEC ALBACORE library and include locations
+if test "x$enable_model_albacore" = xyes; then
+AC_ARG_WITH([albacore-include-path],
+  [AS_HELP_STRING([--with-albacore-include-path],
+    [location of the SCEC ALBACORE headers])],
+  [ALBACORE_INCL="-I$withval"],
+  [ALBACORE_INCL="/usr/include/albacore"])
+AC_ARG_WITH([albacore-lib-path],
+  [AS_HELP_STRING([--with-albacore-lib-path], [location of the SCEC ALBACORE libraries])],
+  [ALBACORE_LIB="-L$withval -lalbacore -lproj -letree"],
+  [ALBACORE_LIB="-lalbacore -lproj -letree"])
 fi
 
 # Get SCEC CVM-S5 library and include locations
@@ -533,6 +552,23 @@ if test "x$enable_model_cvmsi" = xyes; then
    AC_CHECK_FILE([$CVMSI_MODEL], [], [AC_MSG_ERROR(["SCEC CVM-SI model dir not found; use --with-cvmsi-model-path"])])
 else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMSI, false)
+fi
+
+# Check optional SCEC ALBACORE installation
+if test "x$enable_static" = xyes; then
+if test "x$enable_model_albacore" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$ALBACORE_INCL $CFLAGS"
+   LDFLAGS="$ALBACORE_LIB $LDFLAGS"
+
+   echo "Checking for SCEC ALBACORE"
+   AC_CHECK_LIB(albacore, albacore_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_ALBACORE, true)], [AC_MSG_ERROR(["SCEC ALBACORE library not found; use --with-albacore-lib-path"])],[-lproj -letree -lm])
+   AC_CHECK_HEADER(albacore.h,[],[AC_MSG_ERROR(["SCEC ALBACORE header not found; use --with-albacore-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_ALBACORE, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_ALBACORE, [test x"$enable_model_albacore" = xyes])
 fi
 
 # Check optional SCEC CVM-S5 installation

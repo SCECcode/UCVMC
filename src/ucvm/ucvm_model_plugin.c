@@ -9,6 +9,12 @@
 #endif
 
 #ifdef _UCVM_AM_STATIC
+#ifdef _UCVM_ENABLE_ALBACORE
+	extern int albacore_init;
+	extern int albacore_query;
+	extern int albacore_finalize;
+	extern int albacore_version;
+#endif
 #ifdef _UCVM_ENABLE_CVMS5
 	extern int cvms5_init;
 	extern int cvms5_query;
@@ -115,6 +121,18 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 
 #ifdef _UCVM_AM_STATIC
+#ifdef _UCVM_ENABLE_ALBACORE
+        if (strcmp(conf->label, UCVM_MODEL_ALBACORE) == 0) {
+                pptr->model_init = &albacore_init;
+                pptr->model_query = &albacore_query;
+                pptr->model_finalize = &albacore_finalize;
+                pptr->model_version = &albacore_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
+                        fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
+                        return UCVM_CODE_ERROR;
+                }
+        }
+#endif
 #ifdef _UCVM_ENABLE_CVMS5
         if (strcmp(conf->label, UCVM_MODEL_CVMS5) == 0) {
                 pptr->model_init = &cvms5_init;

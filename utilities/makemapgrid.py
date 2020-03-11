@@ -21,7 +21,7 @@ def usage():
     print "\t-c, --cvm: one of the installed velocity models"
     print "\t-o, --outfile: output filename containing list of lines from ucvm_query"
     print "\t-H, --help: optional display usage information"
-    print "\t-i, --installdir: optional UCVM isntall directory"
+    print "\t-i, --installdir: optional UCVM install directory"
     print "\t-n, --configfile: optional UCVM configfile"
     print "UCVM %s\n" % VERSION
 
