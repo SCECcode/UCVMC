@@ -96,7 +96,7 @@ void usage() {
   printf("\t-v Display model version information only.\n");
   printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
   printf("\t-b Optional output in json format\n\n");
-  printf("\t-l Optional input lon,lat,Z(depth/elevation)\n\n");
+  printf("\t-l Optional input lat,lon,Z(depth/elevation)\n\n");
   exit (0);
 }
 
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
     memset(&(pnts[numread]), 0, sizeof(ucvm_point_t));
     pnts[numread].coord[0]=lvals[1];
     pnts[numread].coord[1]=lvals[0];
-    pnts[numread].coord[2]=lvals[1];
+    pnts[numread].coord[2]=lvals[2];
     numread++;
     process_query(pnts, props, numread, output_json);
 
