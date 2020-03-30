@@ -37,8 +37,8 @@ if [ "$CONF" == "" ]; then
    if [ -f ./ucvm_conf  ]; then 
       FLAGS="${FLAGS} -f ./ucvm_conf"
    else
-      if [ -z "${UCVM_INSTALL_PATH}" ]; then
-          FLAGS="${FLAGS} -f ${UCVM_INSTALL_PATH}
+      if [ ! -z "${UCVM_INSTALL_PATH}" ]; then
+          FLAGS="${FLAGS} -f ${UCVM_INSTALL_PATH}/conf/ucvm.conf"
       fi 
    fi
 fi
