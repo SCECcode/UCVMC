@@ -55,7 +55,7 @@
 		"CenCalVM": {
 			"Version": "0.8.0",	
                         "Abbreviation": "cencal",
-                        "Size": "17M",
+                        "Size": "21G",
 			"Path": "cencal",
 			"URL": "http://hypocenter.usc.edu/research/ucvmc/V19_4/cencal080.tar.gz",
 			"Flags": "--enable-model-cencal --with-cencal-lib-path=lib --with-cencal-include-path=include/cencalvm/query/ --with-cencal-model-path=model/USGSBayAreaVM-08.3.0.etree --with-cencal-extmodel-path=model/USGSBayAreaVMExt-08.3.0.etree",

@@ -30,7 +30,7 @@ optional_large_model_size = { 'cvms5':'1.2G',
                               'cs173h':'72G',
                               'cvms4':'326M',
                               'cvms426':'1.6G',
-                              'cencal080':'17M',
+                              'cencal080':'21G',
                               'cvmh-15.1.1':'1.6G',
                               'albacore':'2.3M'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
