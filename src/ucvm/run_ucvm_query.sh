@@ -50,6 +50,6 @@ if [ "$IN" != "" ]; then
       ${SCRIPT_DIR}/ucvm_query ${FLAGS} < $IN
   fi
 else
-      ${SCRIPT_DIR}/ucvm_query ${FLAGS} 
+  ${SCRIPT_DIR}/ucvm_query ${FLAGS} 
 fi
 

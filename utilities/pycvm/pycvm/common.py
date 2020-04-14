@@ -645,7 +645,7 @@ class UCVM:
     #  @param cvm The CVM from which the Vs30 data should be retrieved.
     #  @return An array of floats which correspond to the points provided.
     def vs30(self, point_list, cvm):
-        
+
         proc = Popen([self.binary_dir + "/vs30_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
