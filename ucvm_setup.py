@@ -221,7 +221,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     callAndRecord(["cd", savedPath], True)
 
 
-## create the ucvm.sh that is approriate to go into /etc/profile.d/
+## create the ucvm_bash.sh that is approriate to go into /etc/profile.d/
 ##
 def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
     str= "${UCVM_INSTALL_PATH}/lib/euclid3/lib:" + \
@@ -255,13 +255,15 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     fp.write("## \n")
     fp.write("##  models: [")
     for x in modelsToInstall:
+      fp.write(" ")
       fp.write(x)
-    fp.write("]")
+    fp.write(" ]")
     fp.write("\n")
     fp.write("##  libraries: [")
     for x in librariesToInstall:
+      fp.write(" ")
       fp.write(x)
-    fp.write("]")
+    fp.write(" ]")
     fp.write("\n")
     fp.write("## \n")
     fp.write("\n")
