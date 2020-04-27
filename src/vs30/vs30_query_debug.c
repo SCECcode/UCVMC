@@ -41,6 +41,7 @@ int vs30_query(int points, ucvm_point_t *pnts, double z_inter) {
 
   double vs_sum = 0.0;
   double vs = 0.0;
+  char fname[100]; 
 
   for (p = 0; p < points; p++) {
      vs_sum = 0.0;
@@ -48,7 +49,9 @@ int vs30_query(int points, ucvm_point_t *pnts, double z_inter) {
 
      query_pt.coord[0] = pnts[p].coord[0];
      query_pt.coord[1] = pnts[p].coord[1];
-
+     sprintf(fname,"slowVS30_%d",p);
+     FILE *fp=fopen(fname,"w+");
+     fprintf(fp,"depth(m) vs 1/vs \n");
      for (i = 0; i <= 30; i++) {
        query_pt.coord[2] = i;
        if (ucvm_query(1, &query_pt, &query_data) != UCVM_CODE_SUCCESS) {
@@ -56,10 +59,13 @@ int vs30_query(int points, ucvm_point_t *pnts, double z_inter) {
          exit(-3);
        }
        vs_sum += 1.0/query_data.cmb.vs;
+       fprintf(fp, "%d %10.4lf %10.8lf\n",i, query_data.cmb.vs, 1.0/query_data.cmb.vs);
      }
 
      vs = 31/vs_sum;
      printf(OUTPUT_FMT, pnts[p].coord[0], pnts[p].coord[1], vs);
+     fprintf(fp, "%10.4lf %10.4lf slowness_vs30(%10.5lf)  vs_sum(%10.8lf)\n", pnts[p].coord[0], pnts[p].coord[1], vs, vs_sum);
+     fclose(fp);
   }
   return UCVM_CODE_SUCCESS;
 }
