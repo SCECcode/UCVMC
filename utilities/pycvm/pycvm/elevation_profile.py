@@ -179,7 +179,7 @@ class ElevationProfile:
         else:
           toto=toto+1
 
-        for i in xrange(int(self.startelevation), int(toto), int(self.spacing)):  
+        for i in np.arange(self.startelevation, toto, self.spacing):
             yvals.append(i)       
         
         if customlabels != None and "vp" in self.properties: 
