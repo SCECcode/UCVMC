@@ -6,7 +6,7 @@
 #
 import os
 import sys
-from urllib2 import urlopen
+import urllib.request 
 
 #
 UCVM_Version = "19.4"
@@ -43,7 +43,7 @@ target_large_ref_list = ["test-grid-lib-1d.ref"]
 #
 def download_urlfile(url,fname):
   try:
-    response = urlopen(url)
+    response = urlrequest.urlopen(url)
     CHUNK = 16 * 1024
     with open(fname, 'wb') as f:
       while True:
@@ -76,7 +76,7 @@ else:
 #
 for m in optional_large_model_list:
    print("\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?") 
-   yesmodel = raw_input("Enter yes or no: ")
+   yesmodel = input("Enter yes or no: ")
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
      target_large_model_list.append(model)

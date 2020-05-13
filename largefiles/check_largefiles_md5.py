@@ -17,6 +17,7 @@
 import os
 import sys
 import subprocess
+import pdb
 
 UCVM_Version = "19.4"
 target_large_lib_list = ["proj-5.0.0.tar.gz",
@@ -36,15 +37,15 @@ target_large_ref_list = ["test-grid-lib-1d.ref"]
 #
 #
 def check_md5file(filename,total_ok,total_errs):
-  print("Checking file: %s"%(filename)" 
+  print("Checking file: ",filename) 
   proc = subprocess.Popen(["md5sum", "-c", filename], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = proc.communicate()
   res = out.split()
-  if res[1] == "OK":
-    print("File: %s OK"%(filename)"
+  if res[1].decode("utf-8") == "OK":
+    print("File: %s OK"%(filename))
     total_ok += 1
   else:
-    print("Erorr: %s does not match expected value."%(filename)"
+    print("Erorr: %s does not match expected value."%(filename))
     total_errs += 1
   return total_ok,total_errs
 

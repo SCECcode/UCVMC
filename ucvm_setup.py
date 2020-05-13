@@ -8,12 +8,13 @@
 import os
 import sys
 import getopt
-import urllib2
+import urllib
 from subprocess import call, Popen, PIPE
 import json
 import platform
 import socket
 import shlex
+import pdb
 
 # Variables
 
@@ -117,7 +118,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     
     strip_level = "2"
     if config_data["Path"] == "fftw" or \
-	    config_data["Path"] == "proj-5" or \
+            config_data["Path"] == "proj-5" or \
             config_data["Path"] == "euclid3" or \
             config_data["Path"] == "netcdf" or \
             config_data["Path"] == "hdf5" or \
@@ -220,15 +221,15 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 #
 try:
     opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
-except getopt.GetoptError, err:
-    print(str(err))
+except (getopt.GetoptError, msg):
+    print(msg)
     usage()
     exit(1)
 
 for o, a in opts:
     if o in ('-a', '--all'):
         all_flag = True
-	print("All Flag: True")
+        print("All Flag: True")
     elif o in ('-s', '--static'):
         dynamic_flag = False
         print("static Flag: True")
@@ -256,7 +257,7 @@ try:
     json_string = f.read()
     f.close()
     system_data = json.loads(json_string)
-except StandardError, e:
+except (OSError, e):
     eG(e, "Parsing list of supported systems.")
     
 try:
@@ -266,7 +267,7 @@ try:
             print("\n" + v["message"])
             exec(v["code"])
 
-    print "Now check system specific conditions."
+    print("Now check system specific conditions.")
     for k in system_data:
         print("System_data - k: ", k)
         if k != "all" and k in socket.gethostname():
@@ -291,7 +292,7 @@ try:
                                 exec(k3 + " = " + v3["value"])
                             else:
                                 exec(k3 + " = " + v3)
-except StandardError, e:
+except (Exception, e):
     eG(e, "Checking system conditions.")
 
 if error_out == True:
@@ -299,14 +300,14 @@ if error_out == True:
     exit(1)
     
 print("Using local setup.list file")
-    
+
 try:
     # We now have our list. Parse it.
     f = open("./setup/setup.list", "r")
     json_string = f.read()
     f.close()
     config_data = json.loads(json_string)
-except StandardError, e:
+except (OSError, e):
     eG(e, "Parsing available model list.")
 
 print("\nPlease answer the following questions to install UCVMC.\n")
@@ -314,19 +315,22 @@ print("Note that this install and build process may take up to an hour depending
 print("computer speed.")
 print("Where would you like UCVMC to be installed?")
 
+
 try:
     if ucvmpath[0] == "$":
         # We want to expand that.
         ucvmpath = os.environ(ucvmpath[1:])
-except StandardError, e:
+except Exception:
     # Use default path.
     ucvmpath = os.path.expanduser("~")
 
 # Append the version info to the path.
 ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
 
-print"(Default: " + ucvmpath + ")"
-enteredpath = raw_input("Enter path or blank to use the default path: ")
+print(ucvmpath)
+
+print("(Default: " + ucvmpath + ")")
+enteredpath = input("Enter path or blank to use the default path: ")
 
 if enteredpath.strip() == "":
     enteredpath = ucvmpath
@@ -335,7 +339,7 @@ while enteredpath is not "":
     # Check to see that that path exists and is writable.
     if not os.access(os.path.dirname(enteredpath.rstrip("/")), os.W_OK | os.X_OK):
         print("\n" + enteredpath + " does not exist or is not writable.")
-        enteredpath = raw_input("Exiting:Please enter a different path or blank to use the default path: ")
+        enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
         sys.exit(0)
     else:
         break
@@ -348,8 +352,10 @@ if not os.path.exists(ucvmpath):
   call(["mkdir", "-p", ucvmpath])
   call(["mkdir", "-p", ucvmpath+'/work'])
   call(["mkdir", "-p", ucvmpath+'/lib'])
+
+## XX config_data["models"].iterkeys()
     
-for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data["models"][k]["Order"]):
+for model in sorted(iter(config_data["models"].keys()), key=lambda k: config_data["models"][k]["Order"]):
 
     the_model = config_data["models"][model]
     tarname = the_model["URL"].split("/")[-1]
@@ -363,7 +369,7 @@ for model in sorted(config_data["models"].iterkeys(), key=lambda k: config_data[
 
     if config_data["models"][model]["Ask"] != "no":
         print("\nWould you like to install " + model + "?")
-        dlinstmodel = raw_input("Enter yes or no: ")
+        dlinstmodel = input("Enter yes or no: ")
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
@@ -387,7 +393,7 @@ for library in config_data["libraries"]:
             print("will install correctly on your system if you install it with this library included.")
             
         print("\nWould you like to install support for " + library + "?")
-        dlinstlibrary = raw_input("Enter yes or no: ")
+        dlinstlibrary = input("Enter yes or no: ")
                  
         if dlinstlibrary.strip() != "" and dlinstlibrary.strip().lower()[0] == "y":
             librariesToInstall.append(library)
@@ -407,7 +413,7 @@ try:
     if not os.path.exists("./work") or not os.access("./work", os.W_OK | os.X_OK):
         print("Could not create ./work directory.")
         sys.exit(1)
-except StandardError, e:
+except (OSError, e):
     eG(e, "Could not create ./work directory.")
 
 print("\nNow setting up the required UCVMC libraries...")
@@ -422,7 +428,7 @@ for library in config_data["libraries"]:
                 tarname = config_data["libraries"][the_library["Needs"]]["URL"].split("/")[-1]
                 print("Calling Needs Install with tarname,ucvmpath,library:",tarname,ucvmpath)
                 installConfigMakeInstall(tarname, ucvmpath, "library", config_data["libraries"][the_library["Needs"]])
-            except StandardError, e:
+            except (Exception, e):
                 eG(e, "Error installing library " + the_library["Needs"] + " (needed by " + library + ").")
     
         try:
@@ -430,7 +436,7 @@ for library in config_data["libraries"]:
             tarname = the_library["URL"].split("/")[-1]
             print("Calling URL Install with tarname,ucvmpath,library:",tarname,ucvmpath)
             installConfigMakeInstall(tarname, ucvmpath, "library", the_library)
-        except StandardError, e:
+        except (Exception, e):
             eG(e, "Error installing library " + library + ".")
 
 print("\nNow setting up CVM models...")
@@ -440,7 +446,7 @@ for model in config_data["models"]:
     the_model = config_data["models"][model]
     if model in modelsToInstall:
         try:
-	    #
+           #
             # Currently, this test for existing tar file will always fail because of the
             # recursive directory removal done above
             # TODO: Change this to check for largefiles/file and copy over if it has been downloaded already
@@ -448,14 +454,14 @@ for model in config_data["models"]:
             tarname = the_model["URL"].split("/")[-1]
             ltarname = "./work/model/" + tarname
             print("Preparing to install model with tarname: ",tarname)
-	    if not os.path.isfile(ltarname):
+            if not os.path.isfile(ltarname):
                 print("Model file not found in work directory:",tarname)
                 print("Exiting...")
                 sys.exit(1)
             else:
-		print("Model tar file found in work directory:",ltarname)
+                print("Model tar file found in work directory:",ltarname)
             installConfigMakeInstall(tarname, ucvmpath, "model", the_model)
-        except StandardError, e:
+        except (Exception, e):
             eG(e, "Error installing model " + model + ".")
 
 # Now that the models are installed, we can finally install UCVMC!
@@ -465,7 +471,7 @@ print("\nRunning aclocal")
 callAndRecord(["aclocal", "-I", "./m4"])
 print("\nRunning automake")
 callAndRecord(["automake", "--add-missing", "--force-missing"])
-print "\nRunning autoconf"
+print("\nRunning autoconf")
 callAndRecord(["autoconf"])
  
 print("\nRunning ./configure for UCVMC")
@@ -519,7 +525,7 @@ callAndRecord(["make"])
 print("\nInstalling UCVMC")
 callAndRecord(["make", "install"])
 
-print "\nDone installing UCVMC!"
+print("\nDone installing UCVMC!")
 
 sys.stdout.write("\nThank you for installing UCVMC. ")
 sys.stdout.flush()
@@ -591,7 +597,7 @@ try:
     f = open('./setup_log.sh', 'w')
     f.write(shell_script)
     f.close()
-except StandardError, e:
+except (OSError, e):
     eG(e, "Saving setup_log.sh.")
 
 # Write out a installation json file (expanded from setup.list)
@@ -599,7 +605,7 @@ try:
     f = open('./setup_install.list', 'w')
     f.write(json.dumps(config_data,indent=2,sort_keys=True))
     f.close()
-except StandardError, e:
+except (OSError, e):
     eG(e, "Saving setup_install.list.")
 
 print("\nInstallation complete. Installation log file saved at ./setup_log.sh\n")
