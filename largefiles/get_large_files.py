@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # 
 # Script for downloading UCVM largefiles from remote repository site
 # into the UCVMC/largefiles subdirectory.
