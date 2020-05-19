@@ -6,7 +6,7 @@
 #
 import os
 import sys
-import urllib.request 
+from urllib.request import urlopen 
 
 #
 UCVM_Version = "19.4"
@@ -43,7 +43,7 @@ target_large_ref_list = ["test-grid-lib-1d.ref"]
 #
 def download_urlfile(url,fname):
   try:
-    response = urlrequest.urlopen(url)
+    response = urlopen(url)
     CHUNK = 16 * 1024
     with open(fname, 'wb') as f:
       while True:
