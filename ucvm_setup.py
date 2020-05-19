@@ -325,8 +325,8 @@ except Exception:
     ucvmpath = os.path.expanduser("~")
 
 # Append the version info to the path.
-ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
-
+# XX ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
+ucvmpath = "/usr/local/opt/ucvm"
 print(ucvmpath)
 
 print("(Default: " + ucvmpath + ")")
