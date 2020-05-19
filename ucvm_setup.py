@@ -330,10 +330,11 @@ ucvmpath = "/usr/local/opt/ucvm"
 print(ucvmpath)
 
 print("(Default: " + ucvmpath + ")")
-enteredpath = input("Enter path or blank to use the default path: ")
-
-if enteredpath.strip() == "":
-    enteredpath = ucvmpath
+## XXX enteredpath = input("Enter path or blank to use the default path: ")
+##
+##if enteredpath.strip() == "":
+##    enteredpath = ucvmpath
+enteredpath = ucvmpath
 
 while enteredpath is not "":
     # Check to see that that path exists and is writable.
