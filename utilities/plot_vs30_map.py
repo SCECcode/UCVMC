@@ -30,7 +30,6 @@ def usage():
 
     print("UCVM %s\n" % VERSION)
 
-
 meta = {}
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \

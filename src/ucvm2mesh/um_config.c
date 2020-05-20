@@ -39,7 +39,7 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg, in
 	      myid, cfgfile);
       return(1);
     }
-    
+
     cptr = ucvm_find_name(chead, "ucvmlist");
     if (cptr == NULL) {
       fprintf(stderr, "[%d] Failed to find ucvmlist in config\n", myid);
@@ -66,6 +66,14 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg, in
     } else {
       fprintf(stderr, "[%d] Failed to find gridtype in config\n", myid);
       return(1);
+    }
+
+    cptr = ucvm_find_name(chead, "querymode");
+    cfg->querymode = UCVM_COORD_GEO_DEPTH;
+    if( cptr != NULL) {
+      if (strcmp(cptr->value, "ELEVATION") == 0) {
+        cfg->querymode = UCVM_COORD_GEO_ELEV;
+      }
     }
 
     cptr = ucvm_find_name(chead, "spacing");
@@ -321,6 +329,12 @@ int read_config(int myid, int nproc, const char *cfgfile, mesh_config_t *cfg, in
       fprintf(stderr, "[%d] Failed to broadcast gridtype\n", myid);
       return(1);
     }
+
+    if (MPI_Bcast(&cfg->querymode, 1, MPI_INT, 0, 
+		  MPI_COMM_WORLD) != MPI_SUCCESS) {
+      fprintf(stderr, "[%d] Failed to broadcast querymode\n", myid);
+      return(1);
+    }
     
     if (MPI_Bcast(&cfg->spacing, 1, MPI_DOUBLE, 0, 
 		  MPI_COMM_WORLD) != MPI_SUCCESS) {
@@ -430,6 +444,7 @@ int disp_config(mesh_config_t *cfg) {
   printf("\t[%d] UCVM Model List: %s\n", cfg->rank, cfg->ucvmstr);
   printf("\t[%d] UCVM Conf file: %s\n", cfg->rank, cfg->ucvmconf);
   printf("\t[%d] Gridtype: %d\n", cfg->rank, (int)cfg->gridtype);
+  printf("\t[%d] Querymode: %d\n", cfg->rank, (int)cfg->querymode);
   printf("\t[%d] Spacing: %lf\n", cfg->rank, cfg->spacing);
   printf("\t[%d] Projection: %s\n", cfg->rank, cfg->proj);
   printf("\t\t[%d] Rotation Angle: %lf\n", cfg->rank, cfg->rot);

@@ -13,7 +13,6 @@ import numpy as np
 import sys,getopt
 
 
-
 def usage():
   print("Usage: ./plot_scatter_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)")
   print("Usage: ./plot_scatter_plot.py -i inputfile -d depth -n description")

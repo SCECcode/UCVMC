@@ -32,7 +32,6 @@ def usage():
     print("\t-n, --configfile: optional UCVM configfile")
     print("UCVM %s\n" % VERSION)
 
-
 ret_val = get_user_opts({"s,startingpoint":"lat1,lon1", \
 			 "b,startingelevation":"starting_elevation", \
 			 "e,endingelevation":"ending_elevation", \

@@ -56,6 +56,7 @@ UCVM_CVMS = {"1d":"1D(1d)", \
              "cs173":"CyperShake 17.3(cs173)", \
              "cs173h":"CyperShake 17.3 with San Joaquin and Santa Maria Basins data(cs173h)", \
              "cvmh1511":"CVM-H 15.1.1(cvmh)", \
+             "albacore":"ALBACORE(albacore)", \
              "cencal":"USGS Bay Area Model(cencal)"}
 
 ## Constant for all material properties.
@@ -478,6 +479,9 @@ class UCVM:
         if install_dir != None:
             ## Location of the UCVM binary directory.
             self.binary_dir = install_dir + "/bin"
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.binary_dir = mypath+"/bin"
         else:
             self.binary_dir = "../bin"
         
@@ -487,6 +491,9 @@ class UCVM:
         else:
             if install_dir != None:
                self.config = install_dir + "/conf/ucvm.conf"
+            elif 'UCVM_INSTALL_PATH' in os.environ:
+               mypath=os.environ.get('UCVM_INSTALL_PATH')
+               self.config = mypath+"/conf/ucvm.conf"
             else:
                self.config = "../conf/ucvm.conf"
 
@@ -498,6 +505,9 @@ class UCVM:
         if install_dir != None:
             ## List of all the installed CVMs.
             self.models = [x for x in os.listdir(install_dir + "/model")]
+        elif 'UCVM_INSTALL_PATH' in os.environ:
+            mypath=os.environ.get('UCVM_INSTALL_PATH')
+            self.models = [x for x in os.listdir(mypath + "/model")]
         else:
             self.models = [x for x in os.listdir("../model")]
             
@@ -549,16 +559,16 @@ class UCVM:
             if self.z_range != None :
 #                print("RANGE", self.z_range)
 #                print("CVM", cvm) 
-                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+                proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm, "-c", "ge", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else :
-                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+                proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm, "-c", "ge"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         else :
             if self.z_range != None :
 #                print("RANGE", self.z_range)
 #                print("CVM", cvm) 
-                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+                proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm, "-c", "gd", "-z", self.z_range], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             else:
-                proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm, "-c", "gd" ], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+                proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm, "-c", "gd" ], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -570,6 +580,10 @@ class UCVM:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.elevation)
             else:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
+
+#	fp = open("input_points", 'w') 
+#	fp.write(text_points);
+#	fp.close()
 
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
@@ -631,7 +645,7 @@ class UCVM:
     #  @param cvm The CVM from which the Vs30 data should be retrieved.
     #  @return An array of floats which correspond to the points provided.
     def vs30(self, point_list, cvm):
-        
+
         proc = Popen([self.binary_dir + "/vs30_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
@@ -723,7 +737,7 @@ class UCVM:
             #obj = ctypes.cdll.LoadLibrary(shared_object)
             #print(obj)
         
-        proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -774,7 +788,7 @@ class UCVM:
             #obj = ctypes.cdll.LoadLibrary(shared_object)
             #print(obj)
         
-        proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -821,7 +835,7 @@ class UCVM:
             #obj = ctypes.cdll.LoadLibrary(shared_object)
             #print(obj)
         
-        proc = Popen([self.binary_dir + "/ucvm_query", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        proc = Popen([self.binary_dir + "/run_ucvm_query.sh", "-f", self.config, "-m", cvm], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         
         text_points = ""
         
@@ -883,6 +897,31 @@ class UCVM:
         
         return floats
 
+# import raw floats data from the external file 
+# that is in ascii float format, 1 float per line
+# file name is: filename_data.raw
+#
+    def import_raw_data(self, fname, num_x, num_y):
+        rawfile=fname
+        k = rawfile.rfind(".png")
+        if( k != -1) : 
+            rawfile = rawfile[:k] + "_data.raw"
+        try :
+            fh = open(rawfile, 'r') 
+        except:
+            print "ERROR: binary data does not exist."
+            exit(1)
+            
+        floats=[]
+        sz = (num_x * num_y)
+        dlines = fh.readlines()
+        for oline in dlines :
+          parts = oline.split()
+          floats.append(float(parts[0]))
+        fh.close()
+        return floats
+
+
 #  import meta data as a json blob
 #
     def import_json(self, fname):
@@ -900,7 +939,9 @@ class UCVM:
 	fh.close()
 	return data
 
-#  import raw floats data from the external file 
+#  import raw binary floats data from the external file 
+#
+#  file name is: filename_data.bin
 #
 #  if filename is image.png, look for a matching
 #  image_data.bin

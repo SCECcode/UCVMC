@@ -29,7 +29,6 @@ def usage():
     print("\t-n, --configfile: optional UCVM configfile")
     print("UCVM %s\n" % VERSION)
 
-
 meta = {}
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \

@@ -179,7 +179,7 @@ class DepthProfile:
 
         ### determining the depth interval --
         if self.metadata == None :
-            for i in range(int(self.startingdepth), int(self.todepth + 1), int(self.spacing)):  
+            for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
                 yvals.append(i)       
         else: ## pick up from the the meta data file
             yvals = self.metadata['depth']

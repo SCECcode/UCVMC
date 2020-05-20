@@ -120,8 +120,10 @@ class ElevationProfile:
         else:
           toto = toto+1
 
+        self.meta['elevation'] = []
         for i in np.arange(self.startelevation, toto, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, elevation=i))
+            self.meta['elevation'].append(i)
             
         u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
 
@@ -177,7 +179,7 @@ class ElevationProfile:
         else:
           toto=toto+1
 
-        for i in range(int(self.startelevation), int(toto), int(self.spacing)):  
+        for i in np.arange(self.startelevation, toto, self.spacing):
             yvals.append(i)       
         
         if customlabels != None and "vp" in self.properties: 

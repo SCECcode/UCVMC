@@ -12,7 +12,7 @@
 #define ZRANGE_MAX 350.0
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
 
-#define JSON_OUTPUT_FMT "{ \"lon\":%.4lf,\"lat\":%.4lf,\"Z\":%.3lf,\"surf\":%.3lf,\"vs30\":%.3lf,\"crustal\":\"%s\",\"cr_vp\":%.3lf,\"cr_vs\":%.3lf,\"cr_rho\":%.3lf,\"gtl\":\"%s\",\"gtl_vp\":%.3lf,\"gtl_vs\":%.3lf,\"gtl_rho\":%.3lf,\"cmb_algo\":\"%s\",\"cmb_vp\":%.3lf,\"cmb_vs\":%.3lf,\"cvm_rho\":%.3lf }\n"
+#define JSON_OUTPUT_FMT "{ \"lon\":%.4lf,\"lat\":%.4lf,\"Z\":%.3lf,\"surf\":%.3lf,\"vs30\":%.3lf,\"crustal\":\"%s\",\"cr_vp\":%.3lf,\"cr_vs\":%.3lf,\"cr_rho\":%.3lf,\"gtl\":\"%s\",\"gtl_vp\":%.3lf,\"gtl_vs\":%.3lf,\"gtl_rho\":%.3lf,\"cmb_algo\":\"%s\",\"cmb_vp\":%.3lf,\"cmb_vs\":%.3lf,\"cmb_rho\":%.3lf }\n"
 
 /* Getopt flags */
 extern char *optarg;
@@ -94,9 +94,9 @@ void usage() {
   printf("\t-f Configuration file. Default is ./ucvm.conf.\n");
   printf("\t-p User-defined map to use for elevation and vs30 data.\n");
   printf("\t-v Display model version information only.\n");
-  printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
-  printf("\t-b Optional output in json format\n\n");
-  printf("\t-l Optional input lon,lat,Z(depth/elevation)\n\n");
+  printf("\t-z Optional depth range for gtl/crust interpolation.\n");
+  printf("\t-b Optional output in json format\n");
+  printf("\t-l Optional input lat,lon,Z(depth/elevation)\n");
   exit (0);
 }
 
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
     memset(&(pnts[numread]), 0, sizeof(ucvm_point_t));
     pnts[numread].coord[0]=lvals[1];
     pnts[numread].coord[1]=lvals[0];
-    pnts[numread].coord[2]=lvals[1];
+    pnts[numread].coord[2]=lvals[2];
     numread++;
     process_query(pnts, props, numread, output_json);
 
@@ -362,7 +362,7 @@ int main(int argc, char **argv)
         /* Check for scan failure */
         if ((pnts[numread].coord[0] == 0.0) || 
 	  (pnts[numread].coord[1] == 0.0)) {
-	  continue;
+	  break;
         }
 
         numread++;
