@@ -671,9 +671,9 @@ sys.stdout.flush()
 if platform.system() == "Darwin" or dynamic_flag == True:
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
 
-    print "To try out UCVMC, we recommend adding the content from " + ucvmpath.rstrip("/")  + "/conf/ucvm_bash.sh +" 
-    print "to the end of your ~/.bash_profile file so that"
-    print "they are preserved for the next time you login."
+    print("To try out UCVMC, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_bash.sh ")
+    print("to the end of your ~/.bash_profile file so that")
+    print("they are preserved for the next time you login.")
 
 print("\nOnce you have set these environment variables, return to the UCVMC source directory and type")
 print("make check")
