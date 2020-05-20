@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # 
 # Script for downloading UCVM largefiles from remote repository site
 # into the UCVMC/largefiles subdirectory.
@@ -7,6 +7,9 @@
 import os
 import sys
 from urllib.request import urlopen 
+
+dir(urllib.request)
+dir(urlopen)
 
 #
 UCVM_Version = "19.4"

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This is the install script for the UCVMC software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
@@ -8,7 +8,6 @@
 import os
 import sys
 import getopt
-import urllib
 from subprocess import call, Popen, PIPE
 import json
 import platform

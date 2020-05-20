@@ -117,9 +117,9 @@ class CrossSection:
         
 #        cnt=0
         jstart = self.startingdepth
-        for j in xrange(int(self.startingdepth), int(self.todepth) + 1, int(self.vspacing)):
+        for j in range(int(self.startingdepth), int(self.todepth) + 1, int(self.vspacing)):
             depth_list.append( round(j,3))
-            for i in xrange(0, num_prof + 1):
+            for i in range(0, num_prof + 1):
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
@@ -152,11 +152,11 @@ class CrossSection:
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
 ## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
         ## The 2D array of retrieved material properties.
-            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
             datapoints = data.reshape(self.num_y, self.num_x)
 
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):   
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):   
                     tmp=datapoints[y][x]
                     if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
@@ -176,11 +176,11 @@ class CrossSection:
             self.num_y = (int(self.todepth) - int(self.startingdepth)) / int(self.vspacing) + 1
         
         ## The 2D array of retrieved material properties.
-            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
 
         
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):   
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):   
                     self.materialproperties[y][x] = data[y * self.num_x + x]     
     ## 
     #  Plots the horizontal slice either to an image or a file name.
@@ -285,8 +285,8 @@ class CrossSection:
         datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
 
-        for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):
+        for y in range(0, self.num_y):
+            for x in range(0, self.num_x):
                 if self.datafile != None : 
                     datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
                 elif mproperty != "poisson" :
