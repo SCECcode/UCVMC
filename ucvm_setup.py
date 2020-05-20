@@ -463,16 +463,15 @@ except Exception:
     ucvmpath = os.path.expanduser("~")
 
 # Append the version info to the path.
-# XX ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
-ucvmpath = "/usr/local/opt/ucvm"
-print(ucvmpath)
+ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
+##XXucvmpath = "/usr/local/opt/ucvm"
 
 print("(Default: " + ucvmpath + ")")
-## XXX enteredpath = input("Enter path or blank to use the default path: ")
+enteredpath = input("Enter path or blank to use the default path: ")
 ##
-##if enteredpath.strip() == "":
-##    enteredpath = ucvmpath
-enteredpath = ucvmpath
+if enteredpath.strip() == "":
+    enteredpath = ucvmpath
+##XX enteredpath = ucvmpath
 
 while enteredpath is not "":
     # Check to see that that path exists and is writable.
