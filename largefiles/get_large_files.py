@@ -8,9 +8,6 @@ import os
 import sys
 from urllib.request import urlopen 
 
-dir(urllib.request)
-dir(urlopen)
-
 #
 UCVM_Version = "19.4"
 
