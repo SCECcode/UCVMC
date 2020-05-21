@@ -13,7 +13,6 @@ import json
 import platform
 import socket
 import shlex
-import pdb
 
 # Variables
 
@@ -451,8 +450,6 @@ print("Note that this install and build process may take up to an hour depending
 print("computer speed.")
 print("Where would you like UCVMC to be installed?")
 
-
-pdb.set_trace()
 
 try:
     if ucvmpath[0] == "$":
