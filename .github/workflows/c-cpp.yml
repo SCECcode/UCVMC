@@ -2,9 +2,9 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ toPython3 ]
   pull_request:
-    branches: [ master ]
+    branches: [ toPython3 ]
 
 jobs:
   build:
@@ -13,10 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
+    - name: ci-setup
+      run: ./ci/runner-setup
+    --name: ci-build
+      run: ./ci/runner-build
     - name: make check
       run: make check
     - name: make distcheck
