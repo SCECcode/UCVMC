@@ -1,6 +1,4 @@
-
-
-echo 'pwd'
-ls -1
-ls ./ci
-
+pwd
+ls
+ls ci
+more ci/runner-setup.sh
