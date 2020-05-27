@@ -18,6 +18,9 @@ jobs:
     - uses: actions/checkout@v2
       with: 
         ref: toPython3
+    - nname: test
+      run: ./test.sh
+      shell: bash
     - name: ci-setup
       run: ./ci/runner-setup.sh
       shell: bash
