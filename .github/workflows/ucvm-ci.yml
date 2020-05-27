@@ -22,10 +22,10 @@ jobs:
       run: ./test.sh
       shell: bash
     - name: ci-setup
-      run: ./ci/runner-setup.sh
+      run: ./runner-setup.sh
       shell: bash
     - name: ci-build
-      run: ./ci/runner-build.sh
+      run: ./runner-build.sh
       shell: bash
     - name: make check
       run: make check
