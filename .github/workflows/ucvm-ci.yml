@@ -17,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: ci-setup
-      run: ./ci/runner-setup
+      run: ./ci/runner-setup.sh
     --name: ci-build
-      run: ./ci/runner-build
+      run: ./ci/runner-build.sh
     - name: make check
       run: make check
