@@ -18,11 +18,11 @@ jobs:
     - uses: actions/checkout@v2
       with: 
         ref: toPython3
-    - name: test
-      run: ./test.sh
-      shell: bash
     - name: ci-build
       run: ./ci/runner-build.sh
+      shell: bash
+    - name: look
+      run: ./test.sh
       shell: bash
     - name: make check
       run: make check
