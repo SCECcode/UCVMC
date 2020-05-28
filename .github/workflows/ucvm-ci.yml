@@ -16,8 +16,8 @@ jobs:
 
     steps:
       env:
-        UCVM_SRC_PATH: "$RUNNER_WORKSPACE/UCVMC"
-        UCVM_INSTALL_PATH: "$RUNNER_WORKSPACE/UCVMC/TARGET_UCVMC"
+    - name: set ucvm_src_path
+      run: echo "::set-env name=UCVM_SRC_PATH::$RUNNER_WORKSPACE/UCVMC"
     - name: test env
       run: echo $UCVM_SRC_PATH
       shell: bash
