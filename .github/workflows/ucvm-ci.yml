@@ -18,7 +18,6 @@ jobs:
       env:
         UCVM_SRC_PATH: $RUNNER_WORKSPACE/UCVMC
         UCVM_INSTALL_PATH: $UCVM_SRC_PATH/TARGET_UCVMC
-        LD_LIBRARY_PATH: $UCVM_INSTALL_PATH/lib/euclid3/lib:$UCVM_INSTALL_PATH/lib/proj-5/lib:$UCVM_INSTALL_PATH/model/cvms/lib:$UCVM_INSTALL_PATH/model/cvms5/lib:$UCVM_INSTALL_PATH/model/cvmh1511/lib 
     - name: test env
       run: echo $UCVM_SRC_PATH
       shell: bash
