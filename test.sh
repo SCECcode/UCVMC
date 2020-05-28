@@ -1,3 +1,3 @@
 pwd
-more ci/runner-setup.sh
+ls ci/runner-build.sh
 more ucvm_setup_install.log
