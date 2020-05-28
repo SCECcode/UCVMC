@@ -21,17 +21,14 @@ jobs:
       run: echo "::set-env name=UCVM_INSTALL_PATH::$RUNNER_WORKSPACE/UCVMC_TARGET"
     - name: set LD_LIBRARY_PATH 
       run: echo "::set-env name=LD_LIBRARY_PATH::$UCVM_INSTALL_PATH/lib/euclid3/lib:$UCVM_INSTALL_PATH/lib/proj-5/lib:$UCVM_INSTALL_PATH/model/cvms/lib:$UCVM_INSTALL_PATH/model/cvms5/lib:$UCVM_INSTALL_PATH/model/cvmh1511/lib"
-    - name: test env variables
-      run: echo $UCVM_SRC_PATH
-      shell: bash
     - uses: actions/checkout@v2
       with: 
         ref: toPython3
-    - name: ci-build
+    - name: build ucvm
       run: ./ci/runner-build.sh
       shell: bash
-    - name: look
-      run: ./test.sh
+    - name: debug build
+      run: ./ci/runner-debug.sh
       shell: bash
     - name: make check
       run: make check

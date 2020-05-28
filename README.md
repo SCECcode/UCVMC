@@ -1,3 +1,6 @@
+[![UCVM-ci Actions Status](https://github.com/SCECcode/UCVMC/workfolws/ucvm-ci/badge.svg)](https://github.com/SCECcode/UCVMC/actions)
+
+
 # UCVMC
 
 ## Current UCVM Software Release
