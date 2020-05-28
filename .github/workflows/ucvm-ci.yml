@@ -1,4 +1,4 @@
-name: CI for SCEC UCVM
+name: ucvm-ci
 
 on:
   push:
