@@ -23,6 +23,7 @@ VERSION = "19.4.0"
 # User defined variables.
 all_flag = False
 dynamic_flag = True
+restart_flat = False
 use_iobuf = False
 ## control adding of explicit dynamic linker flag
 user_dynamic_flag = False
@@ -42,6 +43,7 @@ def usage():
     print "\t-s  --static       Use static linking."
     print "\t-d  --dynamic      Use dynamic linking."
     print "\t-a  --all          Use all available models."
+    print "\t-r  --restart      This is a restart of ucvm_setup.py call."
     print ""
     print "UCVMC %s\n" % VERSION
     
@@ -124,6 +126,11 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
             config_data["Path"] == "curl":
         strip_level = "1"
     
+    if(restart_flag) :
+        test_path= workpath + "/" + config_data["Path"];
+        if os.path.exists(test_path):
+            print("\nSkip building " + config_data["Path"]);
+            return
     # 
     # We need to un-tar the file.
     # The strip level determines how much of the path found in the tar file are removed.
@@ -363,6 +370,9 @@ except getopt.GetoptError, err:
     exit(1)
 
 for o, a in opts:
+    if o in ('-r', '--restart'):
+        restart_flag = True
+	print "Restart Flag: True"
     if o in ('-a', '--all'):
         all_flag = True
 	print "All Flag: True"
