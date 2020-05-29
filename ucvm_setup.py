@@ -373,7 +373,7 @@ for o, a in opts:
     if o in ('-r', '--restart'):
         restart_flag = True
 	print "Restart Flag: True"
-    if o in ('-a', '--all'):
+    elif o in ('-a', '--all'):
         all_flag = True
 	print "All Flag: True"
     elif o in ('-s', '--static'):
