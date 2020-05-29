@@ -363,7 +363,7 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
+    opts, args = getopt.getopt(sys.argv[1:], "asdhr", ["all", "static", "dynamic", "help", "restart"])
 except getopt.GetoptError, err:
     print str(err)
     usage()
