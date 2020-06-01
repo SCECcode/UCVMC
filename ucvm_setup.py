@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # This is the install script for the UCVMC software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
@@ -23,7 +23,7 @@ VERSION = "19.4.0"
 # User defined variables.
 all_flag = False
 dynamic_flag = True
-restart_flat = False
+restart_flag = False
 use_iobuf = False
 ## control adding of explicit dynamic linker flag
 user_dynamic_flag = False
