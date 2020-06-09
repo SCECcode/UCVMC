@@ -1,5 +1,5 @@
 
-[![build Actions Status](https://github.com/SCECcode/UCVMC/workflows/ucvm-ci/badge.svg)](https://github.com/SCECcode/UCVMC/actions)
+[![ucvm-ci Actions Status](https://github.com/SCECcode/UCVMC/workflows/ucvm-ci/badge.svg)](https://github.com/SCECcode/UCVMC/actions)
 
 
 # UCVMC
