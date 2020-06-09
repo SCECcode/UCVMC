@@ -24,6 +24,10 @@ int ucvm_bbp1d_id = UCVM_SOURCE_NONE;
 /* Model conf */
 ucvm_modelconf_t ucvm_bbp1d_conf;
 
+/* Model config */
+ucvm_config_t *ucvm_bbp1d_cfg = NULL;
+
+
 ucvm_bbp1d_interpolation_t interptype;
 
 double ucvm_bbp1d_vp(double depth) {
@@ -238,6 +242,7 @@ int ucvm_bbp1d_model_init(int m, ucvm_modelconf_t *conf)
 
   ucvm_bbp1d_id = m;
   ucvm_bbp1d_init_flag = 1;
+  ucvm_bbp1d_cfg = chead;
 
   return(UCVM_CODE_SUCCESS);
 }
@@ -248,6 +253,12 @@ int ucvm_bbp1d_model_finalize()
 {
   ucvm_bbp1d_z_dim = 0;
   ucvm_bbp1d_init_flag = 0;
+
+  /* Free config file parser resources */
+  if (ucvm_bbp1d_cfg != NULL) {
+    ucvm_free_config(ucvm_bbp1d_cfg);
+    ucvm_bbp1d_cfg = NULL;
+  }
   return(UCVM_CODE_SUCCESS);
 }
 
