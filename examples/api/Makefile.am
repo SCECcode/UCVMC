@@ -22,6 +22,9 @@ query_1d_gtl: query_1d_gtl.o
 # Special build targets
 ############################################
 
+check: query_1d_gtl
+	./query_1d_gtl
+
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)
 
