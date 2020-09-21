@@ -12,6 +12,13 @@ int main(int argc, char **argv)
   ucvm_point_t pnts;
   ucvm_data_t data;
   char cmb_label[UCVM_MAX_LABEL_LEN];
+  char configfile[UCVM_MAX_PATH_LEN];
+
+  if(getenv("UCVM_INSTALL_PATH")!= NULL) {
+    snprintf(configfile, UCVM_MAX_PATH_LEN, "%s/conf/ucvm.conf", getenv("UCVM_INSTALL_PATH"));
+    } else {
+      snprintf(configfile, UCVM_MAX_PATH_LEN, "%s", "../conf/ucvm.conf");
+  }
 
   printf("Init\n");
   if (ucvm_init("../conf/test/ucvm.conf") != UCVM_CODE_SUCCESS) {

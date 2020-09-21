@@ -150,6 +150,7 @@ int test_grid_lib_1d()
 
   free(pnts);
   free(data);
+  free(refdata);
 
   /* Finalize UCVM */
   ucvm_finalize();
