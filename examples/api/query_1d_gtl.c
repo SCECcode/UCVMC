@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   }
 
   printf("Init\n");
-  if (ucvm_init("../conf/test/ucvm.conf") != UCVM_CODE_SUCCESS) {
+  if (ucvm_init(configfile) != UCVM_CODE_SUCCESS) {
     fprintf(stderr, "Init failed\n");
     return(1);
   }
