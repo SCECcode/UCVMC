@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# This is the install script for the UCVMC software framework.
+# This is the install script for the UCVM software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
 # the required large files before this ucvm_setup script is run.
 #
@@ -37,20 +37,20 @@ shell_script = ""
 
 # Print usage.
 def usage():
-    print("Automatically sets up UCVMC and alerts the user to potential complications.\n")
+    print("Automatically sets up UCVM and alerts the user to potential complications.\n")
     print("\t-s  --static       Use static linking.")
     print("\t-d  --dynamic      Use dynamic linking.")
     print("\t-a  --all          Use all available models.")
     print("")
-    print("UCVMC %s\n" % VERSION)
+    print("UCVM %s\n" % VERSION)
     
 # Stands for "error gracefully". Prints out a message for the error and asks to contact software@scec.org.
 def eG(err, step):
     print("\nERROR:")
-    print("An error occurred while trying to setup UCVMC. Specifically, the error was:\n")
+    print("An error occurred while trying to setup UCVM. Specifically, the error was:\n")
     print(str(err))
     print("\nAt step: %s\n" % step)
-    print("Please contact software@scec.org for assistance setting up UCVMC. In your message,")
+    print("Please contact software@scec.org for assistance setting up UCVM. In your message,")
     print("please let us know the operating system on which you are running and some")
     print("specifications about your computer.\n")
     exit(1)
@@ -222,31 +222,63 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
 
 ## create the ucvm_bash.sh that is approriate to go into /etc/profile.d/
 ##
-def _formLIBRARYPATH(modelsToInstall, librariesToInstall) :
-    str= "${UCVM_INSTALL_PATH}/lib/euclid3/lib:" + \
-        "${UCVM_INSTALL_PATH}/lib/proj-5/lib"
+def _add2LIBRARYPATH(modelsToInstall, librariesToInstall) :
+    str="_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/euclid3/lib\n"
+    str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/euclid3/lib\n"
+
+    str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/proj-5/lib\n"
+    str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/proj-5/lib\n"
+
     if "CS173" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cs173/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cs173/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cs173/lib\n"
     if "CS173H" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cs173h/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cs173h/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cs173hlib\n"
     if "CVM-H" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cvmh1511/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvmh1511/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvmh1511/lib\n"
     if "CVM-S4" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cvms/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
     if "ALBACORE" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/albacore/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
     if "CVM-S4.26" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cvms5/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms5/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms5/lib\n"
     if "CVM-S4.26.M01" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cvms426/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms426/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms426/lib\n"
     if "CenCalVM" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cencal/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cencal/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cencal/lib\n"
     if "CCA" in modelsToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/model/cca/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cca/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cca/lib\n"
     if "NetCDF" in librariesToInstall:
-        str=str + ":${UCVM_INSTALL_PATH}/lib/netcdf/lib"
-        str=str + ":${UCVM_INSTALL_PATH}/lib/hdf5/lib"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/netcdf/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/netcdf/lib\n"
+        str=str+"_add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/hdf5/lib\n"
+        str=str+"_add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/lib/hdf5/lib\n"
+
     return str
+
+def _add2path(master):
+  str =      "function _add2"+master+"() {\n"
+  str = str +"  if [ \"$"+master+"\" ] ; then\n"
+  str = str +"    if ! echo \"$"+master+"\" | /usr/bin/grep -Eq \"(^|:)$1($|:)\" ; then\n"
+  str = str +"      if [ \"$2\" = \"after\" ] ; then\n"
+  str = str +"        export "+master+"=\"$"+master+":$1\"\n"
+  str = str +"      else\n"
+  str = str +"          export "+master+"=\"$1:$"+master+"\"\n"
+  str = str +"      fi\n"
+  str = str +"    fi\n"
+  str = str +"    else\n"
+  str = str +"       export "+master+"=\"$1\"\n"
+  str = str +"  fi\n"
+  str = str +"}\n"
+  return str
 
 def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="" 
@@ -269,7 +301,7 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="export TOP_UCVM_DIR=" + ucvmsrc 
     fp.write(str)
     fp.write("\n")
-    str="export UCVM_SRC_PATH=${TOP_UCVM_DIR}/UCVMC" 
+    str="export UCVM_SRC_PATH=${TOP_UCVM_DIR}/UCVM" 
     fp.write(str)
     fp.write("\n")
     str="export UCVM_INSTALL_PATH="+ucvmpath.rstrip("/")
@@ -277,79 +309,35 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     fp.write("\n")
     fp.write("\n")
 
+    pstr=_add2path("PATH")
+    fp.write(pstr)
+    fp.write("\n")
+    pstr=_add2path("LD_LIBRARY_PATH")
+    fp.write(pstr)
+    fp.write("\n")
+    pstr=_add2path("DYLD_LIBRARY_PATH")
+    fp.write(pstr)
+    fp.write("\n")
+    pstr=_add2path("PYTHONPATH")
+    fp.write(pstr)
+    fp.write("\n")
+    ldpstr=_add2LIBRARYPATH(modelsToInstall, librariesToInstall)
+    fp.write(ldpstr)
 
-    ldstr=_formLIBRARYPATH(modelsToInstall,librariesToInstall)
-    str="if [ \"$LD_LIBRARY_PATH\" ] ; then"
-    fp.write(str)
-    fp.write("\n")
-    str="   export LD_LIBRARY_PATH=\""+ldstr+":${LD_LIBRARY_PATH}\""
-    fp.write(str)
-    fp.write("\n")
-    str="   else"
-    fp.write(str)
-    fp.write("\n")
-    str="     export LD_LIBRARY_PATH=\""+ldstr+"\""
-    fp.write(str)
-    fp.write("\n")
-    str="fi"
-    fp.write(str)
-    fp.write("\n")
-    fp.write("\n")
-
-    str="if [ \"$DYLD_LIBRARY_PATH\" ] ; then"
-    fp.write(str)
-    fp.write("\n")
-    str="   export DYLD_LIBRARY_PATH=\""+ldstr+":${DYLD_LIBRARY_PATH}\""
-    fp.write(str)
-    fp.write("\n")
-    str="   else"
-    fp.write(str)
-    fp.write("\n")
-    str="     export DYLD_LIBRARY_PATH=\""+ldstr+"\""
-    fp.write(str)
-    fp.write("\n")
-    str="fi"
-    fp.write(str)
-    fp.write("\n")
+## add to PYTHONPATH
+    pstr="_add2PYTHONPATH ${UCVM_INSTALL_PATH}/utilities/pycvm"
+    fp.write(pstr)
     fp.write("\n")
 
-    str="if [ $PYTHONPATH ] ; then"
-    fp.write(str)
+## add to PATH
+    pstr="_add2PATH ${UCVM_INSTALL_PATH}/bin"
+    fp.write(pstr)
     fp.write("\n")
-    str="   export PYTHONPATH=\"$PYTHONPATH:${UCVM_INSTALL_PATH}/utilities/pycvm\""
-    fp.write(str)
-    fp.write("\n")
-    str="   else"
-    fp.write(str)
-    fp.write("\n")
-    str="     export PYTHONPATH=\"" + "${UCVM_INSTALL_PATH}/utilities/pycvm\""
-    fp.write(str)
-    fp.write("\n")
-    str="fi"
-    fp.write(str)
-    fp.write("\n")
-    fp.write("\n")
-
-    str="if [ $PATH ] ; then "
-    fp.write(str)
-    fp.write("\n")
-    str="   export PATH=\"${UCVM_INSTALL_PATH}/bin:${UCVM_INSTALL_PATH}/utilities:${PATH}\""
-    fp.write(str)
-    fp.write("\n")
-    str="   else"
-    fp.write(str)
-    fp.write("\n")
-    str="     export PATH=\"${UCVM_INSTALL_PATH}/bin:${UCVM_INSTALL_PATH}/utilities\""
-    fp.write(str)
-    fp.write("\n")
-    str="fi"
-    fp.write(str)
-    fp.write("\n")
+    pstr="_add2PATH ${UCVM_INSTALL_PATH}/utilities"
+    fp.write(pstr)
     fp.write("\n")
     fp.close();
     
-
-
 #
 # Start of main method.
 # Read in the possible arguments
@@ -382,7 +370,7 @@ for o, a in opts:
             exit(1)
 
 print("")
-print("UCVMC %s Installation" % VERSION)
+print("UCVM %s Installation" % VERSION)
 print("Copyright (C) 20%s SCEC. All rights reserved." % (VERSION.split(".")[0]))
 
 print("Using local setup.list and system.list ....")
@@ -445,10 +433,10 @@ try:
 except (OSError, e):
     eG(e, "Parsing available model list.")
 
-print("\nPlease answer the following questions to install UCVMC.\n")
+print("\nPlease answer the following questions to install UCVM.\n")
 print("Note that this install and build process may take up to an hour depending on your")
 print("computer speed.")
-print("Where would you like UCVMC to be installed?")
+print("Where would you like UCVM to be installed?")
 
 
 try:
@@ -470,7 +458,7 @@ if enteredpath.strip() == "":
     enteredpath = ucvmpath
 ##XX enteredpath = ucvmpath
 
-while enteredpath is not "":
+while enteredpath != "":
     # Check to see that that path exists and is writable.
     if not os.access(os.path.dirname(enteredpath.rstrip("/")), os.W_OK | os.X_OK):
         print("\n" + enteredpath + " does not exist or is not writable.")
@@ -479,7 +467,7 @@ while enteredpath is not "":
     else:
         break
     
-# Copy final selected path back to the UCVMC path variable.
+# Copy final selected path back to the UCVM path variable.
 ucvmpath = enteredpath
 
 # Create necessary directories
@@ -517,14 +505,14 @@ for library in config_data["libraries"]:
     if the_library["Ask"] == "yes" or library.lower() in unsupported_features:
         if the_library["Prerequisites"] != "":
             if "Dynamic" in the_library["Prerequisites"] and dynamic_flag == False:
-                print(library + " requires UCVMC to be linked dynamically. If you would like " + library)
+                print(library + " requires UCVM to be linked dynamically. If you would like " + library)
                 print("to be included, please re-run ucvm_setup.py with the '-d' flag.")
             if "Static" in the_library["Prerequisites"] and dynamic_flag == True:
-                print(library + " requires UCVMC to be linked statically. If you would like " + library)
+                print(library + " requires UCVM to be linked statically. If you would like " + library)
                 print("to be included, please re-run ucvm_setup.py without the '-d' flag.")            
         
         if library.lower() in unsupported_features:
-            print("WARNING: " + library + " is unsupported and we cannot guarantee that UCVMC")
+            print("WARNING: " + library + " is unsupported and we cannot guarantee that UCVM")
             print("will install correctly on your system if you install it with this library included.")
             
         print("\nWould you like to install support for " + library + "?")
@@ -551,7 +539,7 @@ try:
 except (OSError, e):
     eG(e, "Could not create ./work directory.")
 
-print("\nNow setting up the required UCVMC libraries...")
+print("\nNow setting up the required UCVM libraries...")
 
 for library in config_data["libraries"]:
     the_library = config_data["libraries"][library]
@@ -599,8 +587,8 @@ for model in config_data["models"]:
         except (Exception, e):
             eG(e, "Error installing model " + model + ".")
 
-# Now that the models are installed, we can finally install UCVMC!
-print("\nInstalling UCVMC software...")
+# Now that the models are installed, we can finally install UCVM!
+print("\nInstalling UCVM software...")
 
 print("\nRunning aclocal")
 callAndRecord(["aclocal", "-I", "./m4"])
@@ -609,7 +597,7 @@ callAndRecord(["automake", "--add-missing", "--force-missing"])
 print("\nRunning autoconf")
 callAndRecord(["autoconf"])
  
-print("\nRunning ./configure for UCVMC")
+print("\nRunning ./configure for UCVM")
  
 ucvm_conf_command = ["./configure", "--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include", \
                      "--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib", \
@@ -654,29 +642,29 @@ if "NetCDF" in librariesToInstall:
     
 callAndRecord(ucvm_conf_command)
 
-print("\nMaking UCVMC")
+print("\nMaking UCVM")
 callAndRecord(["make", "clean"])
 callAndRecord(["make"])
-print("\nInstalling UCVMC")
+print("\nInstalling UCVM")
 callAndRecord(["make", "install"])
 
-print("\nDone installing UCVMC!")
+print("\nDone installing UCVM!")
 
-sys.stdout.write("\nThank you for installing UCVMC. ")
+sys.stdout.write("\nThank you for installing UCVM. ")
 sys.stdout.flush()
 
 if platform.system() == "Darwin" or dynamic_flag == True:
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
 
-    print("To try out UCVMC, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_bash.sh ")
+    print("To try out UCVM, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_bash.sh ")
     print("to the end of your ~/.bash_profile file so that")
     print("they are preserved for the next time you login.")
 
-print("\nOnce you have set these environment variables, return to the UCVMC source directory and type")
+print("\nOnce you have set these environment variables, return to the UCVM source directory and type")
 print("make check")
-print("This will run the UCVMC unite and acceptance tests. If all tests pass. UCVMC is correctly installed")
+print("This will run the UCVM unite and acceptance tests. If all tests pass. UCVM is correctly installed")
 print("and ready to use on your computer.")
-print("\nTo try out ucvm, once the tests pass, move to the UCVMC installation directory, and run an example query.")
+print("\nTo try out ucvm, once the tests pass, move to the UCVM installation directory, and run an example query.")
 print("\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/inputs/test_latlons.txt")
 print("You will then see the following output:\nUsing Geo Depth coordinates as default mode.")
 print(" -118.0000    34.0000      0.000    280.896    390.000       cvms    696.491    213.000   1974.976       none      0.000      0.000      0.000      crust    696.491    213.000   1974.976")
