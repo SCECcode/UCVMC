@@ -650,7 +650,7 @@ print("\nDone installing UCVM!")
 sys.stdout.write("\nThank you for installing UCVM. ")
 sys.stdout.flush()
 
-if platform.system() == "Darwin" or dynamic_flag == True:
+if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag == True:
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
 
     print("To try out UCVM, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_bash.sh ")
