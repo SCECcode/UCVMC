@@ -1,7 +1,7 @@
 ############################################
 # Special build targets
 ############################################
-SUBDIRS = api
+SUBDIRS = api programs
 
 install:
 	mkdir -p ${prefix}/examples

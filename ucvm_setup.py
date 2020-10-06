@@ -298,10 +298,7 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     fp.write("\n")
     fp.write("## \n")
     fp.write("\n")
-    str="export TOP_UCVM_DIR=" + ucvmsrc 
-    fp.write(str)
-    fp.write("\n")
-    str="export UCVM_SRC_PATH=${TOP_UCVM_DIR}/UCVM" 
+    str="export UCVM_SRC_PATH=" +ucvmsrc
     fp.write(str)
     fp.write("\n")
     str="export UCVM_INSTALL_PATH="+ucvmpath.rstrip("/")

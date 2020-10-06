@@ -1,4 +1,5 @@
 # GNU Automake config
+#
 
 EXTRA_DIST = configure LICENSE
 
@@ -9,6 +10,13 @@ SUBDIRS = aux-config conf \
 	src/ssh src/vs30 \
 	utilities
 
+TEST_SUBDIRS = test examples
+
 INCLUDES = $(default_includes)
+
+runcheck: $(TEST_SUBDIRS)
+	@for i in $(TEST_SUBDIRS); do \
+	  (cd $${i}; make -s check;) \
+	done
 
 

@@ -1,13 +1,10 @@
 # Autoconf/Automake binaries and headers
 
-noinst_PROGRAMS = query_1d_gtl
-query_1d_gtl_SOURCES = *.c
+LIST = query_1d_gtl
 
 # General compiler/linker flags
 AM_CFLAGS = -I../../src/ucvm
 AM_LDFLAGS = -L../../src/ucvm -lucvm $(LDFLAGS)
-
-all: $(noinst_PROGRAMS)
 
 
 ############################################
@@ -22,8 +19,10 @@ query_1d_gtl: query_1d_gtl.o
 # Special build targets
 ############################################
 
-check: query_1d_gtl
-	./query_1d_gtl
+check: $(LIST)
+	@for i in $(LIST); do \
+	  ./run_$${i}; \
+	done
 
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)
