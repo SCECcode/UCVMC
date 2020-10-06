@@ -2,7 +2,8 @@
 
 AC_INIT([UCVM], [19.4.0], [software@scec.org])
 AC_CONFIG_AUX_DIR([./aux-config])
-AM_INIT_AUTOMAKE()
+AM_INIT_AUTOMAKE([no-exeext],[silent-rules])
+AM_SILENT_RULES([yes])
 AC_PROG_RANLIB
 
 # Determine platform
