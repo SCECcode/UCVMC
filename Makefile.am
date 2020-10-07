@@ -12,7 +12,9 @@ SUBDIRS = aux-config conf \
 
 TEST_SUBDIRS = test examples
 
-INCLUDES = $(default_includes)
+#INCLUDES = $(default_includes)
+AM_CPPFLAGS = $(default_includes)
+
 
 runcheck: $(TEST_SUBDIRS)
 	@for i in $(TEST_SUBDIRS); do \

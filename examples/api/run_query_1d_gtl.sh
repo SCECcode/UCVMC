@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/sh
 
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1) 
@@ -16,7 +16,7 @@ Results:
 	source=crust, vp=5125.000000, vs=2958.920130, rho=2674.237500
 EOF_EXPECTED_RESULT
 
-echo "Running api_test query_1d_gtl"
+echo "Running examples_api query_1d_gtl"
 if diff $result $expect > /dev/null 2>&1
 then
   echo [SUCCESS]

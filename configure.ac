@@ -2,8 +2,7 @@
 
 AC_INIT([UCVM], [19.4.0], [software@scec.org])
 AC_CONFIG_AUX_DIR([./aux-config])
-AM_INIT_AUTOMAKE([no-exeext],[silent-rules])
-AM_SILENT_RULES([yes])
+AM_INIT_AUTOMAKE([no-exeext])
 AC_PROG_RANLIB
 
 # Determine platform
@@ -720,7 +719,7 @@ if test "x$enable_static" = xno; then
    LDFLAGS="$LDFLAGS -ldl"
 fi
 
-AC_CONFIG_FILES([Makefile aux-config/Makefile conf/Makefile model/ucvm/Makefile model/1d/Makefile src/ucvm/Makefile src/ucvm2etree/Makefile src/ucvm2mesh/Makefile src/grd/Makefile src/grd2etree/Makefile src/patch/Makefile src/ecoalesce/Makefile src/ecompact/Makefile src/basin/Makefile test/Makefile examples/Makefile examples/api/Makefile man/Makefile src/ssh/Makefile src/vs30/Makefile utilities/Makefile])
+AC_CONFIG_FILES([Makefile aux-config/Makefile conf/Makefile model/ucvm/Makefile model/1d/Makefile src/ucvm/Makefile src/ucvm2etree/Makefile src/ucvm2mesh/Makefile src/grd/Makefile src/grd2etree/Makefile src/patch/Makefile src/ecoalesce/Makefile src/ecompact/Makefile src/basin/Makefile test/Makefile examples/Makefile examples/api/Makefile examples/programs/basin/Makefile man/Makefile src/ssh/Makefile src/vs30/Makefile utilities/Makefile])
 
 AC_OUTPUT
 
