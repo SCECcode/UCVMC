@@ -655,11 +655,12 @@ if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag
 
     print("To try out UCVM, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_bash.sh ")
     print("to the end of your ~/.bash_profile file so that")
-    print("they are preserved for the next time you login.")
+    print("they are preserved for the next time you login or")
+    print("source the script as needed")
 
 print("\nOnce you have set these environment variables, return to the UCVM source directory and type")
 print("make check")
-print("This will run the UCVM unite and acceptance tests. If all tests pass. UCVM is correctly installed")
+print("This will run the UCVM unit and acceptance tests. If all tests pass. UCVM is correctly installed")
 print("and ready to use on your computer.")
 print("\nTo try out ucvm, once the tests pass, move to the UCVM installation directory, and run an example query.")
 print("\nAs an example:\ncd " + ucvmpath + "\n./bin/ucvm_query -f ./conf/ucvm.conf -m cvms < ./tests/inputs/test_latlons.txt")
