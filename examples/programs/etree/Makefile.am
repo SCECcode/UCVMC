@@ -20,6 +20,6 @@ check: $(bin_PROGRAMS)
 	done
 
 clean: 
-	rm -f *.o *~ *.conf
+	rm -f *.o *~ *.conf *.e *.conf
 
 

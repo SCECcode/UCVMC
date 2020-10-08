@@ -16,6 +16,7 @@ result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
 ${BIN_DIR}/ucvm_query -m ${MODEL} -f ${CONF_DIR}/ucvm.conf < ${TEST_DIR}/test_latlonsonly_cencal_cvms_or_cvms5.txt > $result 2>&1
 
 cat > $expect << EOF_EXPECTED_RESULT
+Using Geo Depth coordinates as default mode.
  -122.5000    35.0000      0.000  -4074.558    180.000       cvms   5000.000   2886.751   2654.500       none      0.000      0.000      0.000      crust   5000.000   2886.751   2654.500
  -122.4000    35.0000      0.000  -4068.468    180.000       cvms   5000.000   2886.751   2654.500       none      0.000      0.000      0.000      crust   5000.000   2886.751   2654.500
  -122.3000    35.0000      0.000  -4027.267    180.000       cvms   5000.000   2886.751   2654.500       none      0.000      0.000      0.000      crust   5000.000   2886.751   2654.500
@@ -203,6 +204,4 @@ else
 fi
 
 trap 'rm -f "$expect" "$result"' exit
-
-cencal_cvms_ucvm_query.txt
 
