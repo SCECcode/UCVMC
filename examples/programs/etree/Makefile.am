@@ -5,7 +5,7 @@ bin_PROGRAMS=
 
 if UCVM_AM_ENABLE_CVMH
 bin_PROGRAMS += run_ucvm2etree_cvmh.sh
-run_ucvm_query_cvmh_sh_SOURCES = run_ucvm2etree_cvmh.sh
+run_ucvm2etree_cvmh_sh_SOURCES = run_ucvm2etree_cvmh.sh
 endif
 
 run_ucvm2etree_cvmh.sh:
