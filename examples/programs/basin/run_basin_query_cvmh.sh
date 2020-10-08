@@ -22,7 +22,7 @@ cat > $expect << EOF_EXPECTED_RESULT_Z2500
  -120.0000    33.0000      0.000      0.000      0.000
 EOF_EXPECTED_RESULT_Z2500
 
-echo "Running examples_programs_basin basin_query_cvmh z2500 "
+echo "Running examples_programs_basin z2500 basin_query_cvmh"
 if diff $result $expect > /dev/null 2>&1
 then
   echo [SUCCESS]
@@ -44,7 +44,7 @@ cat > $expect << EOF_EXPECTED_RESULT_Z1000
  -120.0000    33.0000      0.000      0.000      0.000
 EOF_EXPECTED_RESULT_Z1000
 
-echo "Running examples_programs_basin basin_query_cvmh z10000 "
+echo "Running examples_programs_basin z1000 basin_query_cvmh"
 if diff $result $expect > /dev/null 2>&1
 then
   echo [SUCCESS]

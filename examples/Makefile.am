@@ -1,7 +1,7 @@
 ############################################
 # Special build targets
 ############################################
-SUBDIRS = api programs/basin
+SUBDIRS = api programs/basin programs/ucvm
 
 install:
 	mkdir -p ${prefix}/examples
