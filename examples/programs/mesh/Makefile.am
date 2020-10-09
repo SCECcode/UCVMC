@@ -1,7 +1,6 @@
 # Autoconf/Automake binaries and headers
 #
 #
-run_ucvm2mesh_mpi_layer_cvms.sh
 bin_PROGRAMS=
 
 if UCVM_AM_ENABLE_CVMH

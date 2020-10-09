@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Script for checking downloaded UCVM Files. This script should be run
 # after the UCVM largefiles have been retrieved from their respository
