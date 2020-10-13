@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1) 

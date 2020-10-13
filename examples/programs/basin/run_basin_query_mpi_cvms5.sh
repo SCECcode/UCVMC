@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 ## 
 ## example of running on usc/hpc cluster
 ##
