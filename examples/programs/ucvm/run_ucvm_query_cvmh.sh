@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 
 if [ -z "$UCVM_INSTALL_PATH" ]; then
   echo "Need to set UCVM_INSTALL_PATH to run >" ${0##*/} 
