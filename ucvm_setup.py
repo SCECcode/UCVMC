@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 #
 # This is the install script for the UCVM software framework.
@@ -22,6 +23,7 @@ VERSION = "19.4.0"
 # User defined variables.
 all_flag = False
 dynamic_flag = True
+restart_flag = False
 use_iobuf = False
 ## control adding of explicit dynamic linker flag
 user_dynamic_flag = False
@@ -37,12 +39,13 @@ shell_script = ""
 
 # Print usage.
 def usage():
-    print("Automatically sets up UCVM and alerts the user to potential complications.\n")
-    print("\t-s  --static       Use static linking.")
-    print("\t-d  --dynamic      Use dynamic linking.")
-    print("\t-a  --all          Use all available models.")
-    print("")
-    print("UCVM %s\n" % VERSION)
+    print "Automatically sets up UCVMC and alerts the user to potential complications.\n"
+    print "\t-s  --static       Use static linking."
+    print "\t-d  --dynamic      Use dynamic linking."
+    print "\t-a  --all          Use all available models."
+    print "\t-r  --restart      This is a restart of ucvm_setup.py call."
+    print ""
+    print "UCVMC %s\n" % VERSION
     
 # Stands for "error gracefully". Prints out a message for the error and asks to contact software@scec.org.
 def eG(err, step):
@@ -123,6 +126,11 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
             config_data["Path"] == "curl":
         strip_level = "1"
     
+    if(restart_flag) :
+        test_path= workpath + "/" + config_data["Path"];
+        if os.path.exists(test_path):
+            print("\nSkip building " + config_data["Path"]);
+            return
     # 
     # We need to un-tar the file.
     # The strip level determines how much of the path found in the tar file are removed.
@@ -340,14 +348,17 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
 # Read in the possible arguments
 #
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "asdh", ["all", "static", "dynamic", "help"])
-except (getopt.GetoptError, msg):
-    print(msg)
+    opts, args = getopt.getopt(sys.argv[1:], "asdhr", ["all", "static", "dynamic", "help", "restart"])
+except getopt.GetoptError, err:
+    print str(err)
     usage()
     exit(1)
 
 for o, a in opts:
-    if o in ('-a', '--all'):
+    if o in ('-r', '--restart'):
+        restart_flag = True
+	print "Restart Flag: True"
+    elif o in ('-a', '--all'):
         all_flag = True
         print("All Flag: True")
     elif o in ('-s', '--static'):
@@ -434,7 +445,6 @@ print("\nPlease answer the following questions to install UCVM.\n")
 print("Note that this install and build process may take up to an hour depending on your")
 print("computer speed.")
 print("Where would you like UCVM to be installed?")
-
 
 try:
     if ucvmpath[0] == "$":

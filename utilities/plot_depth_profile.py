@@ -10,6 +10,7 @@
 
 from pycvm import DepthProfile, UCVM, VERSION, UCVM_CVMS, Point, ask_number, ask_path, ask_file, get_user_opts
 import getopt, sys, os
+import pdb
 
 ## Prints usage statement.
 def usage():

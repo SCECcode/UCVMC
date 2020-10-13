@@ -26,7 +26,14 @@ do
 done
 shift $(($OPTIND - 1))
 
-SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+### run_ucvm_query.sh can be run with 'absolute' path to installed
+### location 
+
+if [ "$UCVM_INSTALL_PATH" ] ; then
+  SCRIPT_DIR="$UCVM_INSTALL_PATH"/bin
+  else
+    SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+fi
 
 ## 
 export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
