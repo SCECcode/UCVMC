@@ -52,6 +52,9 @@ int vs30_query(int points, ucvm_point_t *pnts, float *outvs30) {
 
   double vs_sum = 0.0;
   double vs = 0.0;
+  float f_step = 0.5;
+  float f_end = 29.5;
+  float f_start = 0.5;
         
   for (p = 0; p < points; p++) {
      vs_sum = 0.0;
@@ -60,15 +63,16 @@ int vs30_query(int points, ucvm_point_t *pnts, float *outvs30) {
      query_pt.coord[0] = pnts[p].coord[0];
      query_pt.coord[1] = pnts[p].coord[1];
 
-     for (i = 0; i <= 30; i++) {
+     for (i = f_start; i <= f_end; i++) {
        query_pt.coord[2] = i;
        if (ucvm_query(1, &query_pt, &query_data) != UCVM_CODE_SUCCESS) {
          fprintf(stderr, "UCVM query failed.\n");
          exit(-3);
        }                
-     vs_sum += 1.0/query_data.cmb.vs;
+       vs_sum += 1.0/query_data.cmb.vs;
+       i = i + f_step;
      }                          
-     vs = 31/vs_sum;
+     vs = 30/vs_sum;
      printf(OUTPUT_FMT, pnts[p].coord[0], pnts[p].coord[1], vs);
   }
   return UCVM_CODE_SUCCESS;
