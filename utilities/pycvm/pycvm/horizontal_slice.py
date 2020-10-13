@@ -81,7 +81,7 @@ class HorizontalSlice:
             ## The spacing for the plot, defined in degrees. If meters specified, it's converted to degrees.
             self.spacing = float(self.spacing)
         except Exception:
-            print "TODO"
+            print("TODO")
         
         ## The community velocity model from which the data should be retrieved.
         if 'cvm' in self.meta:
@@ -127,7 +127,7 @@ class HorizontalSlice:
            self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
         ## The 2D array of retrieved material properties.
-        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
         
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
@@ -137,13 +137,13 @@ class HorizontalSlice:
                 data = u.import_data(self.datafile, self.num_x, self.num_y)
             else:
                 data = u.import_binary(self.datafile, self.num_x, self.num_y)
-            print "\nUsing --> "+self.datafile 
-            print "expecting x ",self.num_x," y ",self.num_y
+            print("\nUsing --> "+self.datafile) 
+            print("expecting x ",self.num_x," y ",self.num_y)
 	else: 
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))
@@ -240,9 +240,9 @@ class HorizontalSlice:
         nancnt=0
         zerocnt=0
         negcnt=0
-        print ("total cnt is ",self.num_x * self.num_y)
-        for i in xrange(0, self.num_y):
-            for j in xrange(0, self.num_x):
+        print("total cnt is ",self.num_x * self.num_y)
+        for i in range(0, self.num_y):
+            for j in range(0, self.num_x):
                 if (self.datafile != None) :
                     datapoints[i][j] = self.materialproperties[i][j].getProperty(mproperty)
                 elif mproperty != "poisson":
@@ -269,9 +269,9 @@ class HorizontalSlice:
                 else :
                     datapoints[i][j] = u.poisson(self.materialproperties[i][j].vs, self.materialproperties[i][j].vp) 
 
-#        print (" total number of nancnt is ", nancnt)
-#        print (" total number of zerocnt is ", zerocnt)
-#        print (" total number of negcnt is ", negcnt)
+#        print(" total number of nancnt is ", nancnt)
+#        print(" total number of zerocnt is ", zerocnt)
+#        print(" total number of negcnt is ", negcnt)
 
         myInt=1000
         if mproperty == "poisson": ## no need to reduce.. should also be using sd or dd
@@ -325,7 +325,7 @@ class HorizontalSlice:
 #            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         else:
-            print "ERROR: unknown option for colorscale."
+            print("ERROR: unknown option for colorscale.")
 
         if( self.datafile == None ):
           self.meta['num_x'] = self.num_x
@@ -347,8 +347,8 @@ class HorizontalSlice:
         img = m.imshow(t, cmap=colormap, norm=norm)
 
        
-#        print "MIN is ", np.nanmin(datapoints)
-#        print "MAX is ", np.nanmax(datapoints)
+#        print("MIN is ", np.nanmin(datapoints))
+#        print("MAX is ", np.nanmax(datapoints))
 #        img=m.scatter(xlist, ylist, c=dlist, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
 #        img=m.scatter(xcoords, ycoords, c=datapoints, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
     

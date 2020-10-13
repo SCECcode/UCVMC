@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: ExtractUCVMDataSets.py
@@ -77,29 +77,29 @@ class ExtractUCVMDataSets:
         proj = ProjUCVM(self.proj_str, self.origin, self.rot, self.size)
         self.dims = [int(self.size[0]/self.spacing), \
                            int(self.size[1]/self.spacing)]
-        print "Dims: ", self.dims
+        print("Dims: ", self.dims)
 
         fp = open(self.gridfile, 'w')
 
         extents = [int(self.dims[0] * self.spacing), \
                        int(self.dims[1] * self.spacing)]
-        print "Extents: ", extents
+        print("Extents: ", extents)
 
-        print "Four corners of projection:"
-        print "\tNW: ", proj.xy2geo(0.0, 0.0)
-        print "\tNE: ", proj.xy2geo(0.0, self.size[1])
-        print "\tSW: ", proj.xy2geo(self.size[0], 0.0)
-        print "\tSE: ", proj.xy2geo(self.size[0], self.size[1])
+        print("Four corners of projection:")
+        print("\tNW: ", proj.xy2geo(0.0, 0.0))
+        print("\tNE: ", proj.xy2geo(0.0, self.size[1]))
+        print("\tSW: ", proj.xy2geo(self.size[0], 0.0))
+        print("\tSE: ", proj.xy2geo(self.size[0], self.size[1]))
 
-        print "Google Format:"
+        print("Google Format:")
         lon,lat = proj.xy2geo(0.0, 0.0)
-        print "\tNW: %lf,%lf" % (lat,lon)
+        print("\tNW: %lf,%lf" % (lat,lon))
         lon,lat = proj.xy2geo(0.0, self.size[1])
-        print "\tNE: %lf,%lf" % (lat,lon)
+        print("\tNE: %lf,%lf" % (lat,lon))
         lon,lat = proj.xy2geo(self.size[0], 0.0)
-        print "\tSW: %lf,%lf" % (lat,lon)
+        print("\tSW: %lf,%lf" % (lat,lon))
         lon,lat = proj.xy2geo(self.size[0], self.size[1])
-        print "\tSE: %lf,%lf" % (lat,lon)
+        print("\tSE: %lf,%lf" % (lat,lon))
 
         # Generate cell vertex grid
         #start = int(self.spacing / 2.0)
@@ -109,8 +109,8 @@ class ExtractUCVMDataSets:
             for x in xrange(start, extents[0], int(self.spacing)):
                 retval = proj.xy2geo(x, y)
                 if (retval == None):
-                    print "Failed to convert %lf, %lf" % (x * self.spacing, \
-                                                              y * self.spacing)
+                    print("Failed to convert %lf, %lf" % (x * self.spacing, \
+                                                              y * self.spacing))
                     return(None)
                 #val = struct.pack('ff', lon, lat)
                 #fp.write(val)
@@ -151,8 +151,8 @@ class ExtractUCVMDataSets:
                 if (flag):
                     data[y][x] = elev
                 else:
-                    print "No data for point %lf, %lf" % \
-                        (lon, lat)
+                    print("No data for point %lf, %lf" % \
+                        (lon, lat))
                     return(None)
 
         return(data)
@@ -161,32 +161,32 @@ class ExtractUCVMDataSets:
     def main(self):
 
         # Parse LT model
-        print "Parsing model config"
+        print("Parsing model config")
         self._parseModel()
 
         # Generate grid in desired projection
-        print "Generating 2D grid"
+        print("Generating 2D grid")
         gridfile = self._getGrid()
         if (gridfile == None):
-            print "No points to extract"
+            print("No points to extract")
             return(1)
 
         # Query DEM
-        print "Querying DEM"
+        print("Querying DEM")
         dem_data = self._queryGRD('DEM')
         if (dem_data == None):
-            print "No DEM data found"
+            print("No DEM data found")
             return(1)
 
         # Query Vs30
-        print "Querying DEM"
+        print("Querying DEM")
         vs30_data = self._queryGRD('Vs30')
         if (vs30_data == None):
-            print "No Vs30 data found"
+            print("No Vs30 data found")
             return(1)
 
         # Write topo file, x-fast
-        print "Writing DEM %s" % (self.demfile)
+        print("Writing DEM %s" % (self.demfile))
         fp = open(self.demfile, 'wb')
         for y in xrange(0, self.dims[1]):
             for x in xrange(0, self.dims[0]):
@@ -194,7 +194,7 @@ class ExtractUCVMDataSets:
                 fp.write(val)
         fp.close()
 
-        print "Writing Vs30 %s" % (self.vs30file)
+        print("Writing Vs30 %s" % (self.vs30file))
         fp = open(self.vs30file, 'wb')
         for y in xrange(0, self.dims[1]):
             for x in xrange(0, self.dims[0]):
@@ -205,7 +205,7 @@ class ExtractUCVMDataSets:
 
 
 def usage():
-    print "usage: %s <ucvm conf> <neddir> <bathdir> <willsdir> <walddir> <demfile> <vs30file>" % (sys.argv[0])
+    print("usage: %s <ucvm conf> <neddir> <bathdir> <willsdir> <walddir> <demfile> <vs30file>" % (sys.argv[0]))
     return
 
 

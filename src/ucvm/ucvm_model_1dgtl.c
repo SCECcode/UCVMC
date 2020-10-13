@@ -22,6 +22,8 @@ int ucvm_1dgtl_id = UCVM_SOURCE_NONE;
 /* Model conf */
 ucvm_modelconf_t ucvm_1dgtl_conf;
 
+/* Model config */
+ucvm_config_t *ucvm_1dgtl_cfg = NULL;
 
 /* Determine vp by depth */
 double ucvm_1dgtl_scec_vp(double depth) {
@@ -185,6 +187,7 @@ int ucvm_1dgtl_model_init(int m, ucvm_modelconf_t *conf)
 
   ucvm_1dgtl_id = m;
   ucvm_1dgtl_init_flag = 1;
+  ucvm_1dgtl_cfg = chead;
 
   return(UCVM_CODE_SUCCESS);
 }
@@ -195,6 +198,13 @@ int ucvm_1dgtl_model_finalize()
 {
   ucvm_1dgtl_z_dim = 0;
   ucvm_1dgtl_init_flag = 0;
+
+  /* Free config file parser resources */
+  if (ucvm_1dgtl_cfg != NULL) {
+    ucvm_free_config(ucvm_1dgtl_cfg);
+    ucvm_1dgtl_cfg = NULL;
+  }
+
   return(UCVM_CODE_SUCCESS);
 }
 

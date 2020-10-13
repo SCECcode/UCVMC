@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Basic modules
 import os
@@ -66,7 +66,7 @@ class PlotZMapCVM:
         config = p.getDict()
  
         if (config['datatype'] != 'z_map_cvm'):
-            print "Invalid file datatype: %s" % (config['datatype'])
+            print("Invalid file datatype: %s" % (config['datatype']))
             return(1)
 
         self.source = config['source']
@@ -87,7 +87,7 @@ class PlotZMapCVM:
 
         self.format = config['format'].split(',')
         if (self.value not in self.format):
-            print "Specified value %s not in data file" % (self.value)
+            print("Specified value %s not in data file" % (self.value))
             return(1)
 
         return(0)
@@ -95,7 +95,7 @@ class PlotZMapCVM:
 
     def _getPlotPointsArray(self):
         if (not os.path.exists(self.infile)):
-            print "File %s does not exist" % (self.infile)
+            print("File %s does not exist" % (self.infile))
             return(None, None, None)
 
         fp = open(self.infile, 'r')
@@ -114,7 +114,7 @@ class PlotZMapCVM:
 
         num_points = self.dims[0]*self.dims[1]
         #if (num_points != len(data)):
-        #    print "Data length mismatch, expected %d points" %(num_points)
+        #    print("Data length mismatch, expected %d points" %(num_points))
         #    return(None, None, None)
 
         # Find index position of column
@@ -140,10 +140,10 @@ class PlotZMapCVM:
 
         for x in xrange(1, self.dims[0]):
             if (lons[x] <= lons[x-1]):
-                print "Out of order (x=%d): %lf %lf" % (x, lons[x], lons[x-1])
+                print("Out of order (x=%d): %lf %lf" % (x, lons[x], lons[x-1]))
         for y in xrange(1, self.dims[1]):
             if (lats[y] <= lats[y-1]):
-                print "Out of order (y=%d): %lf %lf" % (x, lats[y], lats[y-1])
+                print("Out of order (y=%d): %lf %lf" % (x, lats[y], lats[y-1]))
 
         # Mask array to hide negative depth values
         masked = np.ma.masked_less(points, 0.0)
@@ -161,14 +161,14 @@ class PlotZMapCVM:
         points,lons,lats = self._getPlotPointsArray()
         try:
             if (points == None):
-                print "Failed to get plot points"
+                print("Failed to get plot points")
                 return(1)       
         except:
-            print "WARNING: Update numpy to fix masked array bug"
+            print("WARNING: Update numpy to fix masked array bug")
 
         value_min = self.scale[0]
         value_max = self.scale[1]
-        print "Colorbar range: %f to %f" % (value_min, value_max)
+        print("Colorbar range: %f to %f" % (value_min, value_max))
 
         if (self.color == None):
             cmap = cm.Spectral
@@ -177,7 +177,7 @@ class PlotZMapCVM:
 
         # Discrete intervals
         if (self.discretize[0]):
-            print "Converting continuous color scale to discrete"
+            print("Converting continuous color scale to discrete")
             cmap = PlotUtils().plotCmapDiscretize(cmap, self.discretize[1])
 
         norm = mcolors.Normalize(vmin=value_min,vmax=value_max)
@@ -195,7 +195,7 @@ class PlotZMapCVM:
                                      value_min, value_max, \
                                      self.discretize[1])
 
-        print "Saving plot file %s" % (self.outfile)
+        print("Saving plot file %s" % (self.outfile))
         plt.savefig(self.outfile)
         plt.show()
 
@@ -208,15 +208,15 @@ class PlotZMapCVMScript:
         self.argv = argv
 
     def usage(self):
-        print "Usage: " + sys.argv[0] + " [-c color] [-d bool,#] [-s] <outfile> infile> <title>"
-        print "Example: " + sys.argv[0] + " test.png data.in Test\n"
-        print "\t[-h]: This help message"
-        print "\t[-c]: Set custom color bar (default: Spectral)"
-        print "\t[-d]: Set color bar discretization (default: false,10)"
-        print "\t[-s]: Set custom scale"
-        print "\t<outfile>: Filename for plot"
-        print "\t<infile>: Data source"
-        print "\t<title>: Title for plot\n"
+        print("Usage: " + sys.argv[0] + " [-c color] [-d bool,#] [-s] <outfile> infile> <title>")
+        print("Example: " + sys.argv[0] + " test.png data.in Test\n")
+        print("\t[-h]: This help message")
+        print("\t[-c]: Set custom color bar (default: Spectral)")
+        print("\t[-d]: Set color bar discretization (default: false,10)")
+        print("\t[-s]: Set custom scale")
+        print("\t<outfile>: Filename for plot")
+        print("\t<infile>: Data source")
+        print("\t<title>: Title for plot\n")
         sys.exit(1)
 
 
@@ -228,7 +228,7 @@ class PlotZMapCVMScript:
                                            ["help", "colorbar", \
                                                 "discretize", "scale"])
         except getopt.GetoptError, err:
-            print str(err)
+            print(str(err))
             self.usage()
             return(1)
 
@@ -253,7 +253,7 @@ class PlotZMapCVMScript:
                 self.usage()
                 return(0)
             else:
-                print "Invalid option %s" % (o)
+                print("Invalid option %s" % (o))
                 return(1)
 
         # Check command line arguments

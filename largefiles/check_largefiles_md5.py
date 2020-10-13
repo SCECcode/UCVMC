@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # Script for checking downloaded UCVM Files. This script should be run
 # after the UCVM largefiles have been retrieved from their respository
@@ -17,6 +17,7 @@
 import os
 import sys
 import subprocess
+import pdb
 
 UCVM_Version = "19.4"
 target_large_lib_list = ["proj-5.0.0.tar.gz",
@@ -37,21 +38,21 @@ target_large_ref_list = ["test-grid-lib-1d.ref"]
 #
 #
 def check_md5file(filename,total_ok,total_errs):
-  print "Checking file: %s"%(filename) 
+  print("Checking file: ",filename) 
   proc = subprocess.Popen(["md5sum", "-c", filename], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
   out,err = proc.communicate()
   res = out.split()
-  if res[1] == "OK":
-    print "File: %s OK"%(filename)
+  if res[1].decode("utf-8") == "OK":
+    print("File: %s OK"%(filename))
     total_ok += 1
   else:
-    print "Erorr: %s does not match expected value."%(filename)
+    print("Erorr: %s does not match expected value."%(filename))
     total_errs += 1
   return total_ok,total_errs
 
 #
 #
-print "Checking largefiles for UCVMC version: %s"%(UCVM_Version)
+print("Checking largefiles for UCVMC version: %s"%(UCVM_Version))
 total_ok = 0
 total_errs = 0
 
@@ -94,14 +95,14 @@ for ref in target_large_ref_list :
 #
 # All largefiles checked
 #
-print "Checked %d UCVM large files with: %d OK, and: %d errors\n"%((total_ok+total_errs),total_ok,total_errs)
-print "Next, run ./stage_large_files.py to move the largefiles in the source code subdirectories."
-print "Next, cd .. to move into the parent directory, the UCVM source home directory."
-print "Next, run ./ucvm_setup.py which will start the configure, make, install process."
-print "This script will ask the user several questions:"
-print "First, it will ask the user to enter a path to the UCVM installation directory."
-print "The user should specify a path to a directory that has at least 20GB of free disk space."
-print "Next, it will ask the user which models to install. The user will enter: yes (y), or no (n) to each model."
-print "We recommend saying yes (y) to CVM-S4 and CVM-H, so all tests and examples in the distribution will work."
-print "You may want to exclude some models to save disk space or installation time."
+print("Checked %d UCVM large files with: %d OK, and: %d errors\n"%((total_ok+total_errs),total_ok,total_errs))
+print("Next, run ./stage_large_files.py to move the largefiles in the source code subdirectories.")
+print("Next, cd .. to move into the parent directory, the UCVM source home directory.")
+print("Next, run ./ucvm_setup.py which will start the configure, make, install process.")
+print("This script will ask the user several questions:")
+print("First, it will ask the user to enter a path to the UCVM installation directory.")
+print("The user should specify a path to a directory that has at least 20GB of free disk space.")
+print("Next, it will ask the user which models to install. The user will enter: yes (y), or no (n) to each model.")
+print("We recommend saying yes (y) to CVM-S4 and CVM-H, so all tests and examples in the distribution will work.")
+print("You may want to exclude some models to save disk space or installation time.")
 sys.exit(0)

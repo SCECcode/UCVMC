@@ -1,4 +1,5 @@
 ##
+#
 #  @file basin_slice.py
 #  @brief Gets the Z1.0, Z2.5, or other thresholds from a specified velocity model.
 #  @author David Gill - SCEC <davidgil@usc.edu>
@@ -64,23 +65,23 @@ class BasinSlice(HorizontalSlice):
         self.min_val = 0
 
         ## The 2D array of retrieved Vs30 values.
-        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
         
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 ### MEI
         if (self.datafile != None) :
-#            print "\nUsing --> "+datafile
+#            print("\nUsing --> "+datafile)
             data = u.import_binary(self.datafile, self.num_x, self.num_y)
-#            print "Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y
+#            print("Total points imported is ", len(data), "for ", self.num_x, " and ", self.num_y)
         else:
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))
-#            print "Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y
+#            print("Total points extracted is ", len(ucvmpoints), "for ", self.num_x, " and ", self.num_y)
             data = u.basin_depth(ucvmpoints, self.cvm, self.vs_threshold)
 
         i = 0

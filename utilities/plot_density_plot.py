@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 #  plot_density_plot.py
 #
@@ -16,11 +16,11 @@ from pycvm import nafe_drake
 #
 
 def usage():
-  print "Usage: ./plot_density_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)"
-  print "Usage: ./plot_density_plot.py -i inputfile -d depth -n description"
-  print "input file is a list of text file lines as returned by ucvm_query"
-  print "-i inputfilename -e depth(meters) -n String describing data being plotted" 
-  print "./plot_density_plot.py -i map_pts.txt -e 0.0 -n Density(CCA)(X) Density(Algo)(Y)"
+  print("Usage: ./plot_density_plot.py -i <inputfile> -d 100 -n Density(CCA)(x) Density(Algo)(Y)"
+  print("Usage: ./plot_density_plot.py -i inputfile -d depth -n description"
+  print("input file is a list of text file lines as returned by ucvm_query"
+  print("-i inputfilename -e depth(meters) -n String describing data being plotted" 
+  print("./plot_density_plot.py -i map_pts.txt -e 0.0 -n Density(CCA)(X) Density(Algo)(Y)"
   sys.exit(2)
 
 def main(argv):
@@ -48,11 +48,11 @@ def main(argv):
   if (len(inputfile)<1):
     usage()
 
-  print "\n"
-  print "Input CVM file is: ", inputfile
-  print "Output Image file is: ", outputfile
-  print "Slice Depth:",depth
-  print "Description:",descript
+  print("\n"
+  print("Input CVM file is: ", inputfile
+  print("Output Image file is: ", outputfile
+  print("Slice Depth:",depth
+  print("Description:",descript
 
   list_of_datafiles = inputfile
   list_of_colors = "blue"
@@ -78,9 +78,9 @@ def main(argv):
     parts = oneline.split()
     x.append(float(parts[16]))
     vp = (float(parts[15]))
-    # print "vp from model:",vp
+    # print("vp from model:",vp)
     rho = nafe_drake.vs_2_density(vp)
-    # print "rho from vs:",rho
+    # print("rho from vs:",rho)
     y.append(rho)
 
   ax.scatter(x,y,color=list_of_colors,s=5,edgecolor='none')

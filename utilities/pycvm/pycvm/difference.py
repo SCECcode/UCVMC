@@ -64,11 +64,11 @@ class Difference:
             raise TypeError("Number of Y points is not the same in each plot.")   
         
         ##  Initialize the difference holder.
-        self.difference_values = [[MaterialProperties(-1, -1, -1) for x in xrange(firstplot.num_x)] for x in xrange(firstplot.num_y)]
+        self.difference_values = [[MaterialProperties(-1, -1, -1) for x in range(firstplot.num_x)] for x in range(firstplot.num_y)]
         
         #  Get the difference and save it.
-        for y in xrange(0, firstplot.num_y):
-            for x in xrange(0, firstplot.num_x):
+        for y in range(0, firstplot.num_y):
+            for x in range(0, firstplot.num_x):
                  self.difference_values[y][x] = firstplot.materialproperties[y][x] - secondplot.materialproperties[y][x]
         
     ##
@@ -118,8 +118,8 @@ class Difference:
             datapoints = np.arange(self.plot_specs.num_x * self.plot_specs.num_y, \
                                    dtype=np.float32).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
         
-            for i in xrange(0, self.plot_specs.num_y):
-                for j in xrange(0, self.plot_specs.num_x):
+            for i in range(0, self.plot_specs.num_y):
+                for j in range(0, self.plot_specs.num_x):
                     datapoints[i][j] = self.difference_values[i][j].getProperty(property) / 1000.0
                     
             t = m.transform_scalar(datapoints, lons, lats, len(lons), len(lats))
@@ -193,8 +193,8 @@ class Difference:
     
             datapoints = np.arange(self.plot_specs.num_x * self.plot_specs.num_y,dtype=np.float32).reshape(self.plot_specs.num_y, self.plot_specs.num_x)
             
-            for i in xrange(0, self.plot_specs.num_y):
-                for j in xrange(0, self.plot_specs.num_x):   
+            for i in range(0, self.plot_specs.num_y):
+                for j in range(0, self.plot_specs.num_x):   
                     datapoints[i][j] = self.difference_values[i][j].getProperty(property) / 1000          
     
             img = plt.imshow(datapoints, cmap=colormap)

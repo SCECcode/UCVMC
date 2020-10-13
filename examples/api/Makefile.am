@@ -1,5 +1,6 @@
 # Autoconf/Automake binaries and headers
-
+#
+#
 noinst_PROGRAMS = query_1d_gtl
 query_1d_gtl_SOURCES = *.c
 
@@ -7,8 +8,7 @@ query_1d_gtl_SOURCES = *.c
 AM_CFLAGS = -I../../src/ucvm
 AM_LDFLAGS = -L../../src/ucvm -lucvm $(LDFLAGS)
 
-all: $(noinst_PROGRAMS)
-
+LIST = query_1d_gtl
 
 ############################################
 # Executables
@@ -21,6 +21,11 @@ query_1d_gtl: query_1d_gtl.o
 ############################################
 # Special build targets
 ############################################
+
+check: $(LIST)
+	@for i in $(LIST); do \
+	  ./run_$${i}.sh; \
+	done
 
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)

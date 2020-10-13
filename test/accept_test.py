@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import inspect
 import os
@@ -17,13 +17,13 @@ def test_vs30_query(dir):
     
     proc = Popen(["../bin/vs30_query", "-f", "../conf/ucvm.conf", "-m", "bbp1d", \
                   "-i", "0.1"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-    output = proc.communicate(input="-118 34\n-117 35")[0]
+    output = proc.communicate(input=b"-118 34\n-117 35")[0]
     
-    expected_output =  " -118.0000    34.0000    777.764\n -117.0000    35.0000    777.764\n"
+    expected_output = b" -118.0000    34.0000    777.764\n -117.0000    35.0000    777.764\n"
     
     if not output == expected_output:
-        print "Error: Vs30 expected output not equal to actual output.\n"
-        print "Expected output:\n%s\n\nActual output:\n%s\n" % (expected_output, output)
+        print("Error: Vs30 expected output not equal to actual output.\n")
+        print("Expected output:\n%s\n\nActual output:\n%s\n" % (expected_output, output))
         return 1
     
     return 0
@@ -51,7 +51,7 @@ def test_ssh_generate(dir):
     validfloats.fromfile(f, 100 * 100 * 100)
     f.close()
     
-    for i in xrange(0, len(generatedfloats)):
+    for i in range(0, len(generatedfloats)):
         if not generatedfloats[i] == validfloats[i]:
             return 1
     
@@ -64,14 +64,14 @@ if __name__ == "__main__":
     passed = 1
 
     for func in func_list:
-        print "Runnning test %s" % func
+        print("Runnning test %s" % func)
     
         if eval("%s('%s')" % (func, sys.argv[1])) == 0:
-            print "[SUCCESS]"
+            print("[SUCCESS]")
         else:
             passed = 0
-            print "[FAIL]"
+            print("[FAIL]")
     
     if not passed:
-        print "Some tests failed. Please try re-compiling UCVM. If that doesn't work"
-        print "please contact software@scec.org."
+        print("Some tests failed. Please try re-compiling UCVM. If that doesn't work")
+        print("please contact software@scec.org.")

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # 
 # Script for downloading UCVM largefiles from remote repository site
 # into the UCVMC/largefiles subdirectory.
@@ -6,7 +6,7 @@
 #
 import os
 import sys
-from urllib2 import urlopen
+from urllib.request import urlopen 
 
 #
 UCVM_Version = "19.4"
@@ -55,7 +55,7 @@ def download_urlfile(url,fname):
         f.write(chunk)
   except:
     e = sys.exc_info()[0]
-    print "Exception retrieving and saving largefile:",e
+    print("Exception retrieving and saving largefile:",e)
     raise
   return True
 
@@ -64,33 +64,33 @@ def download_urlfile(url,fname):
 #
 curdir = os.getcwd()
 if os.path.basename(os.path.normpath(curdir)) == "largefiles":
-  print "Running in UCVMC/largefiles source directory. "
-  print "This script will download and install ucvm.e and several other files."
-  print "Due to the size of the files, this download could take minutes to hours to complete."
+  print("Running in UCVMC/largefiles source directory. ")
+  print("This script will download and install ucvm.e and several other files.")
+  print("Due to the size of the files, this download could take minutes to hours to complete.")
 else:
-  print "Run this script in the directory that contains the UCVMC/largefiles src directory."
-  print "This script will download and install ucvm.e and several other files."
-  print "Due to the size of the files, this download could take minutes to hours to complete."
+  print("Run this script in the directory that contains the UCVMC/largefiles src directory.")
+  print("This script will download and install ucvm.e and several other files.")
+  print("Due to the size of the files, this download could take minutes to hours to complete.")
   sys.exit(0)
 
 ######################################################################
 #
 #
 for m in optional_large_model_list:
-   print "\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?" 
-   yesmodel = raw_input("Enter yes or no: ")
+   print("\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?") 
+   yesmodel = input("Enter yes or no: ")
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
      target_large_model_list.append(model)
 
-print "Retrieving files from: %s"%(ucvmc_largefile_repository)
-print "Installing files in: %s"%(curdir)
+print("Retrieving files from: %s"%(ucvmc_largefile_repository))
+print("Installing files in: %s"%(curdir))
 
 #
 # First, download the required library files
 #
 for m in target_large_lib_list:
-  print "Retrieving: ",m
+  print("Retrieving: ",m)
   outfilename = "./%s"%(m)
   scec_url = "%s/lib/%s"%(ucvmc_largefile_repository,m)
   #
@@ -101,18 +101,18 @@ for m in target_large_lib_list:
     try:
       download_urlfile(scec_url,outfilename)
     except:
-      print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
+      print("Error downloading (%s), or writing file (%s)" % (scec_url,outfilename))
       break
-    print "Finished downloading: ",m
+    print("Finished downloading: ",m)
   else:
-    print "Required largefile already exists in UCVMC/largefile directory",outfilename
-    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+    print("Required largefile already exists in UCVMC/largefile directory",outfilename)
+    print("If new version is required, delete current local copy (%s) and re-run this script"%(outfilename))
 
 #
 # Second download the CVM model files
 #
 for m in target_large_model_list:
-  print "Retrieving: ",m
+  print("Retrieving: ",m)
   outfilename = "./%s"%(m)
   scec_url = "%s/model/%s"%(ucvmc_largefile_repository,m)
   #
@@ -123,19 +123,19 @@ for m in target_large_model_list:
     try:
       download_urlfile(scec_url,outfilename)
     except:
-      print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
+      print("Error downloading (%s), or writing file (%s)" % (scec_url,outfilename))
       break
-    print "Finished downloading: ",m
+    print("Finished downloading: ",m)
   else:
-    print "Required largefile already exists in UCVMC/largefile directory",outfilename
-    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+    print("Required largefile already exists in UCVMC/largefile directory",outfilename)
+    print("If new version is required, delete current local copy (%s) and re-run this script"%(outfilename))
 
 #
 # Next download the topography and vs30 etree files
 #
 
 for m in target_large_etree_list:
-  print "Retrieving: ",m
+  print("Retrieving: ",m)
   outfilename = "./%s"%(m)
   scec_url = "%s/etree/%s"%(ucvmc_largefile_repository,m)
   #
@@ -146,18 +146,18 @@ for m in target_large_etree_list:
     try:
       download_urlfile(scec_url,outfilename)
     except:
-      print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
+      print("Error downloading (%s), or writing file (%s)" % (scec_url,outfilename))
       break
-    print "Finished downloading: ",m
+    print("Finished downloading: ",m)
   else:
-    print "Required largefile already exists in UCVMC/largefile directory",outfilename
-    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+    print("Required largefile already exists in UCVMC/largefile directory",outfilename)
+    print("If new version is required, delete current local copy (%s) and re-run this script"%(outfilename))
 
 #
 # Download the large reference result file
 #
 for m in target_large_ref_list:
-  print "Retrieving: ",m
+  print("Retrieving: ",m)
   outfilename = "./%s"%(m)
   scec_url = "%s/ref/%s"%(ucvmc_largefile_repository,m)
   #
@@ -168,22 +168,22 @@ for m in target_large_ref_list:
     try:
       download_urlfile(scec_url,outfilename)
     except:
-      print "Error downloading (%s), or writing file (%s)" % (scec_url,outfilename)
+      print("Error downloading (%s), or writing file (%s)" % (scec_url,outfilename))
       break
-    print "Finished downloading: ",m
+    print("Finished downloading: ",m)
   else:
-    print "Required largefile already exists in UCVMC/largefile directory",outfilename
-    print "If new version is required, delete current local copy (%s) and re-run this script"%(outfilename)
+    print("Required largefile already exists in UCVMC/largefile directory",outfilename)
+    print("If new version is required, delete current local copy (%s) and re-run this script"%(outfilename))
 
-print "Completed all required downloads to build the UCVMC programs.\n"
-print "Next, run ./check_largefiles_md5.py to verify the largefiles downloaded without errors."
-print "Next, run ./stage_large_files.py to move the largefiles in the source code subdirectories."
-print "Next, cd .. to move into the parent directory, the UCVM source home directory."
-print "Next, run ./ucvm_setup.py which will start the configure, make, install process."
-print "This script will ask the user several questions:"
-print "First, it will ask the user to enter a path to the UCVM installation directory." 
-print "The user should specify a path to a directory that has at least 20GB of free disk space."
-print "Next, it will ask the user which models to install. The user will enter: yes (y), or no (n) to each model."
-print "We recommend saying yes (y) to CVM-S4 and CVM-H, so all tests and examples in the distribution will work."
-print "You may want to exclude some models to save disk space or installation time."
+print("Completed all required downloads to build the UCVMC programs.\n")
+print("Next, run ./check_largefiles_md5.py to verify the largefiles downloaded without errors.")
+print("Next, run ./stage_large_files.py to move the largefiles in the source code subdirectories.")
+print("Next, cd .. to move into the parent directory, the UCVM source home directory.")
+print("Next, run ./ucvm_setup.py which will start the configure, make, install process.")
+print("This script will ask the user several questions:")
+print("First, it will ask the user to enter a path to the UCVM installation directory.") 
+print("The user should specify a path to a directory that has at least 20GB of free disk space.")
+print("Next, it will ask the user which models to install. The user will enter: yes (y), or no (n) to each model.")
+print("We recommend saying yes (y) to CVM-S4 and CVM-H, so all tests and examples in the distribution will work.")
+print("You may want to exclude some models to save disk space or installation time.")
 sys.exit(0)

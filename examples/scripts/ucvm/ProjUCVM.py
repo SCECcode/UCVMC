@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: ProjUCVM.py
@@ -81,7 +81,7 @@ class ProjUCVM:
 
 
 def usage():
-    print "usage: %s" % (sys.argv[0])
+    print("usage: %s" % (sys.argv[0]))
     return
 
 
@@ -93,12 +93,12 @@ if __name__ == '__main__':
     dims = [1800000.0,900000.0]
     prog = ProjUCVM(pstr, origin, rot, dims)
     dims = prog.getDims()
-    print "Four corners of AEQD projection:"
-    print "NW: ", prog.xy2geo(0.0, 0.0)
-    print "NE: ", prog.xy2geo(0.0, dims[1])
-    print "SW: ", prog.xy2geo(dims[0], 0.0)
-    print "SE: ", prog.xy2geo(dims[0], dims[1])
-    print ""
+    print("Four corners of AEQD projection:")
+    print("NW: ", prog.xy2geo(0.0, 0.0))
+    print("NE: ", prog.xy2geo(0.0, dims[1]))
+    print("SW: ", prog.xy2geo(dims[0], 0.0))
+    print("SE: ", prog.xy2geo(dims[0], dims[1]))
+    print("")
 
     # UTM-11 projection
     pstr = "+proj=utm +datum=WGS84 +zone=11"
@@ -107,11 +107,11 @@ if __name__ == '__main__':
     dims = [900000.0, 1800000.0]
     prog = ProjUCVM(pstr, origin, rot, dims)
     dims = prog.getDims()
-    print "Four corners of UTM-11 projection:"
-    print "SW: ", prog.xy2geo(0.0, 0.0)
-    print "NW: ", prog.xy2geo(0.0, dims[1])
-    print "SE: ", prog.xy2geo(dims[0], 0.0)
-    print "NE: ", prog.xy2geo(dims[0], dims[1])
+    print("Four corners of UTM-11 projection:")
+    print("SW: ", prog.xy2geo(0.0, 0.0))
+    print("NW: ", prog.xy2geo(0.0, dims[1]))
+    print("SE: ", prog.xy2geo(dims[0], 0.0))
+    print("NE: ", prog.xy2geo(dims[0], dims[1]))
 
 
     sys.exit(0)

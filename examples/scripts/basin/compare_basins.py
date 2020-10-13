@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -33,7 +33,7 @@ for model in ['cvmh', 'cvms']:
         ip.close()
 
         if (len(lines) != len(values)):
-            print "Output length mismatch"
+            print("Output length mismatch")
             sys.exit(1)
 
         i = 0
@@ -61,9 +61,9 @@ for model in ['cvmh', 'cvms']:
                     modelmax = values[i][9]
 
             if (abs(modelmin - umin) > 1.0) or (abs(modelmax - umax) > 1.0):
-                print "Mismatch line %d, %s, z=%d: rob=%.1lf/%.1lf ucvm=%.1lf/%.1lf" % (i+1, model, vel, modelmin, modelmax, umin, umax)
-                print "\tName: %s, %lf %lf" % (str(' '.join(values[i][10])), \
-                                                   values[i][1], values[i][0])
+                print("Mismatch line %d, %s, z=%d: rob=%.1lf/%.1lf ucvm=%.1lf/%.1lf" % (i+1, model, vel, modelmin, modelmax, umin, umax))
+                print("\tName: %s, %lf %lf" % (str(' '.join(values[i][10])), \
+                                                   values[i][1], values[i][0]))
             i = i + 1
 
 sys.exit(0)

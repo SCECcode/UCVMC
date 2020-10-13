@@ -57,14 +57,14 @@ class ElevationSlice(HorizontalSlice):
            self.num_y = int(math.ceil(self.plot_height / self.spacing)) + 1
         
         ## The 2D array of retrieved Vs30 values.
-        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+        self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
         
         u = UCVM(install_dir=self.installdir, config_file=self.configfile)
 
 
         ###MEI
         if (self.datafile != None) :
-            print "\nUsing --> "+self.datafile
+            print("\nUsing --> "+self.datafile)
         # print "expecting x ",self.num_x," y ",self.num_y
             if self.datafile.rfind(".raw") :
                 data = u.import_data(self.datafile, self.num_x, self.num_y)
@@ -73,8 +73,8 @@ class ElevationSlice(HorizontalSlice):
         else:
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):
                     ucvmpoints.append(Point(self.upperleftpoint.longitude + x * self.spacing, \
                                             self.bottomrightpoint.latitude + y * self.spacing, \
                                             self.upperleftpoint.depth))

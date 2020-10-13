@@ -13,24 +13,24 @@ import getopt, sys, os
 
 ## Prints usage of this utility.
 def usage():
-    print "Plots a elevation horizontal slice given two bounding latitude and longitude co-ordinates,"
-    print "the CVM to plot, and a couple of other settings."
-    print "\nValid arguments:"
-    print "\t-b, --bottomleft: bottom-left latitude, longitude (e.g. 34,-118)"
-    print "\t-u, --upperright: upper-right latitude, longitude (e.g. 35,-117)"
-    print "\t-s, --spacing: grid spacing in degrees (typically 0.01)"
-    print "\t-e, --elevation: elevation for horizontal slice in meters (e.g. 1000)"
-    print "\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks"
-    print "\t-c, --cvm: one of the installed velocity models"
-    print "\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes"
-    print "\t-g, --gate: optional gate value for bi-color scale gate"
-    print "\t-f, --datafile: optional binary input data filename"
-    print "\t-o, --outfile: optional png output filename"
-    print "\t-t, --title: optional plot title"
-    print "\t-H, --help: optional display usage information"
-    print "\t-i, --installdir: optional UCVM isntall directory"
-    print "\t-n, --configfile: optional UCVM configfile"
-    print "UCVM %s\n" % VERSION
+    print("Plots a elevation horizontal slice given two bounding latitude and longitude co-ordinates,")
+    print("the CVM to plot, and a couple of other settings.")
+    print("\nValid arguments:")
+    print("\t-b, --bottomleft: bottom-left latitude, longitude (e.g. 34,-118)")
+    print("\t-u, --upperright: upper-right latitude, longitude (e.g. 35,-117)")
+    print("\t-s, --spacing: grid spacing in degrees (typically 0.01)")
+    print("\t-e, --elevation: elevation for horizontal slice in meters (e.g. 1000)")
+    print("\t-d, --datatype: either 'vs', 'vp', 'density', or 'poisson', without quotation marks")
+    print("\t-c, --cvm: one of the installed velocity models")
+    print("\t-a, --scale: color scale, either 's' for smooth, 'd' for discretized or 'b' for bi-color scale, without quotes")
+    print("\t-g, --gate: optional gate value for bi-color scale gate")
+    print("\t-f, --datafile: optional binary input data filename")
+    print("\t-o, --outfile: optional png output filename")
+    print("\t-t, --title: optional plot title")
+    print("\t-H, --help: optional display usage information")
+    print("\t-i, --installdir: optional UCVM isntall directory")
+    print("\t-n, --configfile: optional UCVM configfile")
+    print("UCVM %s\n" % VERSION)
 
 ret_val = get_user_opts({"b,bottomleft":"lat1,lon1", \
                          "u,upperright":"lat2,lon2", \

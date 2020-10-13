@@ -1,4 +1,4 @@
-##
+#
 #  @file depth_profile.py
 #  @brief Plots a 1D depth profile to an image or a pre-existing plot.
 #  @author David Gill - SCEC <davidgil@usc.edu>
@@ -126,7 +126,7 @@ class DepthProfile:
         point_list = []
 
         # Generate the list of points.
-        # for i in xrange(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):
+        # for i in range(int(self.startingpoint.depth), int(self.todepth + 1), int(self.spacing)):
         self.meta['depth'] = []
         for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
             point_list.append(Point(self.startingpoint.longitude, self.startingpoint.latitude, i))
@@ -135,14 +135,14 @@ class DepthProfile:
         u = UCVM(install_dir=self.installdir, config_file=self.configfile, z_range=self.z_range)
 
         if (self.datafile != None) :
-            print "\nUsing --> "+self.datafile
+            print("\nUsing --> "+self.datafile)
             data = u.import_matprops(self.datafile)
             if len(data) == 0 :
-                print "ERROR: no matprops plot data."
+                print("ERROR: no matprops plot data.")
                 exit(1)
         else:
             data = u.query(point_list, self.cvm)
-#        print "NUMBER of data found ", len(data)
+#        print("NUMBER of data found ", len(data))
         
         tmp = []
         for matprop in data:
@@ -179,7 +179,6 @@ class DepthProfile:
 
         ### determining the depth interval --
         if self.metadata == None :
-##            for i in xrange(int(self.startingdepth), int(self.todepth + 1), int(self.spacing)):  
             for i in np.arange(self.startingpoint.depth, self.todepth + 1, self.spacing):
                 yvals.append(i)       
         else: ## pick up from the the meta data file

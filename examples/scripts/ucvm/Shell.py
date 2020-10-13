@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 
 # Imports
@@ -26,8 +26,8 @@ class Shell:
             self.retcode = self.p.returncode
             #self.output = output.splitlines()
         except:
-            print sys.exc_info()
-            print "Failed: " + str(cmd)
+            print(sys.exc_info())
+            print("Failed: " + str(cmd))
             self.stdout = None
             self.stderr = None
             self.retcode = None

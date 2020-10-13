@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ##########################################################
 #
 # Script: dumpgrid.py
@@ -33,7 +33,7 @@ class DumpGrid:
             for x in xrange(0, self.dims[0]):
                 buf = ip.read(size)
                 point = struct.unpack(GRD_FORMAT, buf)
-                print '%d, %d : %f, %f' % (x, y, point[0], point[1])
+                print('%d, %d : %f, %f' % (x, y, point[0], point[1]))
  
         ip.close()
 
@@ -41,7 +41,7 @@ class DumpGrid:
 
 
 def usage():
-    print "usage: %s <gridfile> <nx> <ny>" % (sys.argv[0])
+    print("usage: %s <gridfile> <nx> <ny>" % (sys.argv[0]))
     return
 
 

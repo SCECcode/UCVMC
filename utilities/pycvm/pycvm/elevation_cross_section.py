@@ -19,7 +19,7 @@ import string
 try:
     import pyproj
 except StandardError, e:
-    print "ERROR: PyProj must be installed for this script to work."
+    print("ERROR: PyProj must be installed for this script to work.")
     exit(1)
 
 ##
@@ -124,9 +124,9 @@ class ElevationCrossSection:
         else:
           toto = toto+1
 
-        for j in xrange(int(self.startelevation), toto, int(self.vspacing)):
+        for j in range(int(self.startelevation), toto, int(self.vspacing)):
             elevation_list.append( round(j,3))
-            for i in xrange(0, num_prof + 1):
+            for i in range(0, num_prof + 1):
                 x = x1 + i*(x2-x1)/float(num_prof)
                 y = y1 + i*(y2-y1)/float(num_prof)
                 lon, lat = proj(x, y, inverse=True)
@@ -147,9 +147,9 @@ class ElevationCrossSection:
             self.num_x = num_prof +1
             ## Private number of y points.
             self.num_y = abs((int(self.toelevation) - int(self.startelevation)) / int(self.vspacing)) +1
-            print "\nUsing -->"+self.datafile
-            print "expecting x ",self.num_x," y ",self.num_y
 
+            print("\nUsing -->"+self.datafile)
+            print("expecting x ",self.num_x," y ",self.num_y)
             if self.datafile.rfind(".raw") :
                 data = u.import_data(self.datafile, self.num_x, self.num_y)
             else:
@@ -157,11 +157,11 @@ class ElevationCrossSection:
 
 ## this set of data is only for --datatype: either 'vs', 'vp', 'rho', or 'poisson'
         ## The 2D array of retrieved material properties.
-            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
             datapoints = data.reshape(self.num_y, self.num_x)
 
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):   
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):   
                     tmp=datapoints[y][x]
                     if(mproperty == 'vp'):
                       self.materialproperties[y][x].setProperty('Vp',tmp)
@@ -182,13 +182,13 @@ class ElevationCrossSection:
 
         
         ## The 2D array of retrieved material properties.
-            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in xrange(self.num_x)] for x in xrange(self.num_y)] 
+            self.materialproperties = [[MaterialProperties(-1, -1, -1) for x in range(self.num_x)] for x in range(self.num_y)] 
 
         
-            for y in xrange(0, self.num_y):
-                for x in xrange(0, self.num_x):   
+            for y in range(0, self.num_y):
+                for x in range(0, self.num_x):   
                     self.materialproperties[y][x] = data[y * self.num_x + x]     
-#            print "outputting num_x ",self.num_x," num_y ",self.num_y
+#            print("outputting num_x ",self.num_x," num_y ",self.num_y)
 
     ## 
     #  Plots the horizontal slice either to an image or a file name.
@@ -292,8 +292,8 @@ class ElevationCrossSection:
     
         datapoints = np.arange(self.num_x * self.num_y,dtype=np.float32).reshape(self.num_y, self.num_x)
             
-        for y in xrange(0, self.num_y):
-            for x in xrange(0, self.num_x):
+        for y in range(0, self.num_y):
+            for x in range(0, self.num_x):
                 if self.datafile != None :
                     datapoints[y][x] = self.materialproperties[y][x].getProperty(mproperty)
                 elif mproperty != "poisson" :
@@ -317,9 +317,9 @@ class ElevationCrossSection:
         self.min_val=np.nanmin(newdatapoints)
         self.mean_val=np.mean(newdatapoints)
 
-#        print "max_val ", self.max_val
-#        print "min_val ", self.min_val
-#        print "mean_val", self.mean_val
+#        print("max_val ", self.max_val)
+#        print("min_val ", self.min_val)
+#        print("mean_val", self.mean_val)
 
         BOUNDS = u.makebounds()
         TICKS = u.maketicks()
@@ -369,7 +369,7 @@ class ElevationCrossSection:
             colormap = pycvm_cmapDiscretize(basemap.cm.GMT_seis, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)  
         else:
-            print "ERROR: unknown option for colorscale."
+            print("ERROR: unknown option for colorscale.")
 
 
 ## MEI, TODO this is a temporary way to generate an output of a cross_section input file

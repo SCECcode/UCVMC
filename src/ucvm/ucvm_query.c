@@ -94,9 +94,9 @@ void usage() {
   printf("\t-f Configuration file. Default is ./ucvm.conf.\n");
   printf("\t-p User-defined map to use for elevation and vs30 data.\n");
   printf("\t-v Display model version information only.\n");
-  printf("\t-z Optional depth range for gtl/crust interpolation.\n");
-  printf("\t-b Optional output in json format\n");
-  printf("\t-l Optional input lat,lon,Z(depth/elevation)\n");
+  printf("\t-z Optional depth range for gtl/crust interpolation.\n\n");
+  printf("\t-b Optional output in json format\n\n");
+  printf("\t-l Optional input lat,lon,Z(depth/elevation)\n\n");
   exit (0);
 }
 

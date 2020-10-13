@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Basic modules
 import os
@@ -27,7 +27,7 @@ class DEM:
         startdir = os.getcwd()
 
         # Change dir to the GRD codes
-        print "Changing dir to %s" % (self.workdir)
+        print("Changing dir to %s" % (self.workdir))
         os.chdir(self.workdir)
 
         # Execute GRD codes
@@ -38,20 +38,20 @@ class DEM:
         else:
             cmd = ['./%s' % (self.executable), '-e', '-d', self.neddir,\
                        inputpath, outputpath,]
-        print "Executing cmd: %s" % (str(cmd))
+        print("Executing cmd: %s" % (str(cmd)))
         shell = Shell(cmd)
         shell.runCommand()
         retcode = shell.getReturnCode()
         output = shell.getOutput()
 
         # Change dir to start dir
-        print "Changing dir back to %s" % (startdir)
+        print("Changing dir back to %s" % (startdir))
         os.chdir(startdir)
         if (output != None):
             output = output.splitlines()
         if (retcode != 0):
-            print "Failed to generate GRD outputfile"
-            print "Output: %s" % (str(output))
+            print("Failed to generate GRD outputfile")
+            print("Output: %s" % (str(output)))
             return 1
 
         return 0
