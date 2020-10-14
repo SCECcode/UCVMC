@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 #
 # This is the install script for the UCVM software framework.
@@ -39,13 +38,12 @@ shell_script = ""
 
 # Print usage.
 def usage():
-    print "Automatically sets up UCVMC and alerts the user to potential complications.\n"
-    print "\t-s  --static       Use static linking."
-    print "\t-d  --dynamic      Use dynamic linking."
-    print "\t-a  --all          Use all available models."
-    print "\t-r  --restart      This is a restart of ucvm_setup.py call."
-    print ""
-    print "UCVMC %s\n" % VERSION
+    print("Automatically sets up UCVMC and alerts the user to potential complications.\n")
+    print("\t-s  --static       Use static linking.")
+    print("\t-d  --dynamic      Use dynamic linking.")
+    print("\t-a  --all          Use all available models.")
+    print("\t-r  --restart      This is a restart of ucvm_setup.py call.\n")
+    print("UCVMC %s\n" % VERSION)
     
 # Stands for "error gracefully". Prints out a message for the error and asks to contact software@scec.org.
 def eG(err, step):
@@ -349,15 +347,15 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
 #
 try:
     opts, args = getopt.getopt(sys.argv[1:], "asdhr", ["all", "static", "dynamic", "help", "restart"])
-except getopt.GetoptError, err:
-    print str(err)
+except getopt.GetoptError as err:
+    print(str(err))
     usage()
     exit(1)
 
 for o, a in opts:
     if o in ('-r', '--restart'):
         restart_flag = True
-	print "Restart Flag: True"
+	print("Restart Flag: True")
     elif o in ('-a', '--all'):
         all_flag = True
         print("All Flag: True")
