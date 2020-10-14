@@ -355,7 +355,7 @@ except getopt.GetoptError as err:
 for o, a in opts:
     if o in ('-r', '--restart'):
         restart_flag = True
-	print("Restart Flag: True")
+        print("Restart Flag: True")
     elif o in ('-a', '--all'):
         all_flag = True
         print("All Flag: True")
