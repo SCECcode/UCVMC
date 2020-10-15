@@ -54,6 +54,6 @@ check: $(bin_PROGRAMS)
 	done
 
 clean: 
-	rm -f *.o *~
+	rm -f *.o *~ basin_query_mpi*
 
 

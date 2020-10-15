@@ -48,6 +48,6 @@ check: $(bin_PROGRAMS)
 	done
 
 clean: 
-	rm -f *.o *~
+	rm -f *.o *~ *.conf *.grid *.media ucvm2mesh_mpi*
 
 
