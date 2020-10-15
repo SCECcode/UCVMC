@@ -22,9 +22,9 @@ cp ${CONF_DIR}/ucvm.conf .
 
 sed 's ${CONF_DIR} '$CONF_DIR' ' la_habra_cvms.conf_template | sed 's ${SCRATCH} '$SCRATCH' '  > la_habra_cvms.conf
 
-salloc -N 2 --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_1.srun.out -v ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 1 -c 3
-salloc --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_2.srun.out -v ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 4 -c 3 
-salloc --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_3.srun.out -v ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 7 -c 4 
+salloc -N 2 --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_1.srun.out ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 1 -c 3
+salloc --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_2.srun.out ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 4 -c 3 
+salloc --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_3.srun.out ./ucvm2mesh_mpi_layer -f la_habra_cvms.conf -l 7 -c 4 
 
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
