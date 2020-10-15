@@ -20,6 +20,12 @@ endif
 
 if UCVM_AM_ENABLE_CENCAL
 
+if UCVM_AM_ENABLE_CVMS
+bin_PROGRAMS += run_basin_query_mpi_complete_cencal_cvms.sh
+run_basin_query_mpi_complete_cencal_cvms_sh_SOURCES = run_basin_query_mpi_complete_cencal_cvms.sh
+run_basin_query_mpi_complete_cencal_cvms.sh:
+endif
+
 if UCVM_AM_ENABLE_CVMS5
 bin_PROGRAMS += run_basin_query_mpi_complete_cencal_cvms5.sh
 run_basin_query_mpi_complete_cencal_cvms5_sh_SOURCES = run_basin_query_mpi_complete_cencal_cvms5.sh
