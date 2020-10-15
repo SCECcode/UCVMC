@@ -16,8 +16,9 @@ fi
 
 BIN_DIR=${UCVM_INSTALL_PATH}/bin
 CONF_DIR=${UCVM_INSTALL_PATH}/conf
+TEST=mpi_cvms5_z2.5
 
-salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -v ${BIN_DIR}/basin_query_mpi -b hpc_cvms5_z2.5.simple -f ${CONF_DIR}/ucvm.conf -m cvms5 -i 20 -v 2500 -l 35.0,-122.5 -s 0.1 -x 16 -y 11
+salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -v ${BIN_DIR}/basin_query_mpi -b ${TEST}.simple -f ${CONF_DIR}/ucvm.conf -m cvms5 -i 20 -v 2500 -l 35.0,-122.5 -s 0.1 -x 16 -y 11
 
 
 

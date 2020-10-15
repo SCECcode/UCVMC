@@ -16,8 +16,9 @@ fi
 
 BIN_DIR=${UCVM_INSTALL_PATH}/bin
 CONF_DIR=${UCVM_INSTALL_PATH}/conf
+TEST=mpi_cencal_cvmsi_z2.5x
 
-salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -v ${BIN_DIR}/basin_query_mpi_complete -b hpc_cencal_cvmsi_z2.5x.first,hpc_cencal_cvmsi_z2.5x.firstOrSecond,hpc_cencal_cvmsi_z2.5x.last,$hpc_cencal_cvmsi_z2.5x.secondOnly,hpc_cencal_cvmsi_z2.5x.threeLast -o hpc_cencal_cvmsi_z2.5x.result,hpc_cencal_cvmsi_z2.5x.meta.json -f ${CONF_DIR}/ucvm.conf -m cencal,cvmsi -i 20 -v 2500 -l 35,-122.5 -s 0.1 -x 16 -y 11 
+salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -v ${BIN_DIR}/basin_query_mpi_complete -b ${TEST}.first,${TEST}.firstOrSecond,${TEST}.last,${TEST}.secondOnly,${TEST}.threeLast -o ${TEST}.result,${TEST}.meta.json -f ${CONF_DIR}/ucvm.conf -m cencal,cvmsi -i 20 -v 2500 -l 35,-122.5 -s 0.1 -x 16 -y 11 
 
 
 
