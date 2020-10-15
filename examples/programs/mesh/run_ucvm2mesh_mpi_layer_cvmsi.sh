@@ -29,7 +29,7 @@ salloc -Q --ntasks=4 --time=00:30:00 srun -Q --ntasks=4 -o ${TEST}_3.srun.out ./
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
 
-od ${TEST}.grid |head -20 > $result 2>& 1
+od la_habra_cvmsi.grid |head -20 > $result 2>& 1
 
 cat > $expect << EOF_EXPECTED_RESULT
 0000000 174435 077113 106520 140135 102123 164263 166405 040100
