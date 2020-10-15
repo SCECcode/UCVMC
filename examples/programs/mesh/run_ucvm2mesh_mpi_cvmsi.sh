@@ -6,12 +6,10 @@ if [ -z "$UCVM_INSTALL_PATH" ]; then
 fi
 
 if ! [ -f "/usr/usc/openmpi/default/setup.sh" ]; then
-  echo "Need to be on usc hpc cluster to run >" ${0##*/} 
-  exit
+## setup hpc mpi environment
+  source /usr/usc/openmpi/default/setup.sh
+  echo "Running on usc hpc cluster >" ${0##*/}             
 fi
-
-## setup mpi environment
-source /usr/usc/openmpi/default/setup.sh
 
 rm -rf ucvm2mesh_mpi ucvm.conf small-cvmsi.conf small_cvmsi.grid small_cvmsi.media
 
@@ -25,6 +23,6 @@ cp ${CONF_DIR}/ucvm.conf .
 sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmsi.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmsi.conf
 
 
-salloc -N 4 --ntasks=8 --time=00:30:00 srun --ntasks=8 -v --mpi=pmi2 ${BIN_DIR}/ucvm2mesh_mpi -f small_cvmsi.conf
+salloc -N 4 --ntasks=8 --time=00:30:00 srun --ntasks=8 -v ${BIN_DIR}/ucvm2mesh_mpi -f small_cvmsi.conf
 
 
