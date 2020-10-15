@@ -37,6 +37,7 @@ cat > $expect << EOF_EXPECTED_RESULT
 0001300
 EOF_EXPECTED_RESULT
 
+echo "Running examples_programs_basin basin_query_mpi_cvms5"
 if diff $result $expect > /dev/null 2>&1
 then
   echo [SUCCESS]
@@ -44,6 +45,7 @@ else
   echo [FAILURE]
 fi
                                
+trap 'rm -f "$expect" "$result"' exit
 
 
 
