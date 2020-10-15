@@ -63,4 +63,3 @@ else
 fi
 
 trap 'rm -f "$expect" "$result"' exit
-echo "DONE"
