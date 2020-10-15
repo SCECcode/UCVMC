@@ -35,7 +35,7 @@ void usage() {
 
 int vs30_query(int points, ucvm_point_t *pnts, double z_inter) {
   int p = 0;
-  int i = 0;
+  float i = 0;
   ucvm_point_t query_pt;
   ucvm_data_t query_data;
 
@@ -200,7 +200,8 @@ int main(int argc, char **argv) {
 		if (fscanf(stdin,"%lf %lf", &(pnts[numread].coord[0]), &(pnts[numread].coord[1])) == 2) {
 			/* Check for scan failure */
 			if ((pnts[numread].coord[0] == 0.0) || (pnts[numread].coord[1] == 0.0)) {
-				continue;
+//				continue;
+                                break;
 			}
 
 			numread++;
