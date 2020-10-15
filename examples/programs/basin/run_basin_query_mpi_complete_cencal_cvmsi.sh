@@ -22,7 +22,7 @@ salloc --ntasks=2 --time=00:10:00 srun --ntasks=2 -o ${TEST}.srun.out -v ${BIN_D
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
 
-cat ${TEST}.first > $result 2>& 1
+od ${TEST}.first > $result 2>& 1
 
 cat > $expect << EOF_EXPECTED_RESULT
 0000000 000000 000000 000000 000000 000000 000000 000000 000000
