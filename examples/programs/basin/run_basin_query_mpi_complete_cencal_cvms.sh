@@ -8,8 +8,7 @@ if [ -z "$UCVM_INSTALL_PATH" ]; then
   exit
 fi
 
-if ! [ -f "/usr/usc/openmpi/default/setup.sh" ]; then
-## setup hpc mpi environment
+if [ -f "/usr/usc/openmpi/default/setup.sh" ]; then
   source /usr/usc/openmpi/default/setup.sh
   echo "Running on usc hpc cluster >" ${0##*/} 
 fi
