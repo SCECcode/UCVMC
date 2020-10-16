@@ -11,7 +11,7 @@ SCRATCH=./scratch
 
 sed 's ${CONF_DIR} '$CONF_DIR' ' small_cvmh.conf_template | sed 's ${SCRATCH} '$SCRATCH' ' > small_cvmh.conf
 
-${BIN_DIR}/ucvm2mesh -f small_cvmh.conf 
+${BIN_DIR}/ucvm2mesh -f small_cvmh.conf > small_cvmh.out 2>& 1 
 
 expect=$(mktemp) || exit 1
 result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
