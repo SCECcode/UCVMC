@@ -13,8 +13,6 @@ result=$(mktemp) || (trap 'rm -f "$expect"'; exit 1)
 
 sed 's ${CONF_DIR} '$CONF_DIR' ' garnervalley_cvmh.conf_template > garnervalley_cvmh.conf
 
-${BIN_DIR}/ucvm2etree -f ./garnervalley_cvmh.conf > $result 2>&1
-
 ${BIN_DIR}/ucvm2etree -f ./garnervalley_cvmh.conf > garnervalley_cvmh.out
 
 od garnervalley_cvmh_nogtl_0.5hz_10pts_1000ms.e |head -20 > $result
