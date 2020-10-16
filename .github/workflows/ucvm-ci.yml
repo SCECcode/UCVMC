@@ -31,4 +31,4 @@ jobs:
       run: ./ci/runner-debug.sh
       shell: bash
     - name: make check
-      run: make check
+      run: make runcheck
