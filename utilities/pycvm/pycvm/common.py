@@ -581,9 +581,9 @@ class UCVM:
             else:
               text_points += "%.5f %.5f %.5f\n" % (point.longitude, point.latitude, point.depth)
 
-#	fp = open("input_points", 'w') 
-#	fp.write(text_points);
-#	fp.close()
+#       fp = open("input_points", 'w') 
+#       fp.write(text_points);
+#       fp.close()
 
         output = proc.communicate(input=text_points)[0]
         output = self.checkUCVMoutput(1,output)
@@ -930,14 +930,14 @@ class UCVM:
         if( k == -1) : 
             print("Supplied ",fname," did not have .json suffix\n")
         try :
-	    fh = open(rawfile, 'r') 
+            fh = open(rawfile, 'r') 
         except :
             print("ERROR: json meta data does not exist.")
             exit(1)
 
-	data = json.load(fh)
-	fh.close()
-	return data
+        data = json.load(fh)
+        fh.close()
+        return data
 
 #  import raw binary floats data from the external file 
 #
