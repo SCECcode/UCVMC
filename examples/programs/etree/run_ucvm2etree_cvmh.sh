@@ -15,7 +15,7 @@ sed 's ${CONF_DIR} '$CONF_DIR' ' garnervalley_cvmh.conf_template > garnervalley_
 
 ${BIN_DIR}/ucvm2etree -f ./garnervalley_cvmh.conf > garnervalley_cvmh.out
 
-od garnervalley_cvmh_nogtl_0.5hz_10pts_1000ms.e |head -20 > $result
+head -1 garnervalley_cvmh_nogtl_0.5hz_10pts_1000ms.e |od |head -20 > $result
 
 cat > $expect << EOF_EXPECTED_RESULT
 0000000 000514 000000 001400 000000 000000 000000 146400 000000
