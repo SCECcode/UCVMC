@@ -99,7 +99,7 @@ def ask_path(question,target):
         temp_val = target
         return temp_val
 
-    while temp_val is not "":
+    while temp_val != "":
     # Check to see that that path exists
         if os.exists(temp_val) and os.isdir(tmp_val) :
             return temp_val
@@ -117,7 +117,7 @@ def ask_file(question,target):
         temp_val = target
         return temp_val
 
-    while temp_val is not "":
+    while temp_val != "":
     # Check to see that that file exists
         if os.exists(temp_val) and os.isfile(tmp_val) :
             return temp_val
