@@ -18,7 +18,7 @@ import string
 
 try:
     import pyproj
-except StandardError, e:
+except Exception:
     print("ERROR: PyProj must be installed for this script to work.")
     exit(1)
 

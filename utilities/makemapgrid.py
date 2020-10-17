@@ -51,7 +51,7 @@ elif len(ret_val) > 0:
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
-        except StandardError, e:
+        except Exception:
             if value is None:
                 exec("%s = %s" % (key, value))
             else:
