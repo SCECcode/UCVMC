@@ -909,7 +909,7 @@ class UCVM:
         try :
             fh = open(rawfile, 'r') 
         except:
-            print "ERROR: binary data does not exist."
+            print("ERROR: binary data does not exist.")
             exit(1)
             
         floats=[]

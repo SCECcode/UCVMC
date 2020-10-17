@@ -81,7 +81,7 @@ class ElevationHorizontalSlice:
             ## The spacing for the plot, defined in degrees. If meters specified, it's converted to degrees.
             self.spacing = float(self.spacing)
         except Exception:
-            print "TODO"
+            print("TODO")
         
         ## The community velocity model from which the data should be retrieved.
         if 'cvm' in self.meta:
@@ -137,8 +137,8 @@ class ElevationHorizontalSlice:
                 data = u.import_data(self.datafile, self.num_x, self.num_y)
             else:
                 data = u.import_binary(self.datafile, self.num_x, self.num_y)
-            print "\nUsing --> "+self.datafile 
-            print "expecting x ",self.num_x," y ",self.num_y
+            print("\nUsing --> ",self.datafile) 
+            print("expecting x ",self.num_x," y ",self.num_y)
 	else: 
             #  Generate a list of points to pass to UCVM.
             ucvmpoints = []
@@ -240,7 +240,7 @@ class ElevationHorizontalSlice:
         nancnt=0
         zerocnt=0
         negcnt=0
-        print ("total cnt is ",self.num_x * self.num_y)
+        print("total cnt is ",self.num_x * self.num_y)
         for i in xrange(0, self.num_y):
             for j in xrange(0, self.num_x):
                 if (self.datafile != None) :
@@ -269,9 +269,9 @@ class ElevationHorizontalSlice:
                 else :
                     datapoints[i][j] = u.poisson(self.materialproperties[i][j].vs, self.materialproperties[i][j].vp) 
 
-#        print (" total number of nancnt is ", nancnt)
-#        print (" total number of zerocnt is ", zerocnt)
-#        print (" total number of negcnt is ", negcnt)
+#        print(" total number of nancnt is ", nancnt)
+#        print(" total number of zerocnt is ", zerocnt)
+#        print(" total number of negcnt is ", negcnt)
 
         myInt=1000
         if mproperty == "poisson": ## no need to reduce.. should also be using sd or dd
@@ -325,7 +325,7 @@ class ElevationHorizontalSlice:
 #            colormap = pycvm_cmapDiscretize(basemap.cm.GMT_globe, len(BOUNDS) - 1)
             norm = mcolors.BoundaryNorm(BOUNDS, colormap.N)
         else:
-            print "ERROR: unknown option for colorscale."
+            print("ERROR: unknown option for colorscale.")
 
         if( self.datafile == None ):
           self.meta['num_x'] = self.num_x
@@ -347,8 +347,8 @@ class ElevationHorizontalSlice:
         img = m.imshow(t, cmap=colormap, norm=norm)
 
        
-#        print "MIN is ", np.nanmin(datapoints)
-#        print "MAX is ", np.nanmax(datapoints)
+#        print("MIN is ", np.nanmin(datapoints))
+#        print("MAX is ", np.nanmax(datapoints))
 #        img=m.scatter(xlist, ylist, c=dlist, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
 #        img=m.scatter(xcoords, ycoords, c=datapoints, cmap=colormap, norm=norm, s=1, edgecolor='',marker='o')      
     
