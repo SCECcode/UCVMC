@@ -61,7 +61,7 @@ if ret_val == "bad":
     exit(1)
 elif len(ret_val) > 0:
     print("Using parameters:\n")
-    for key, value in ret_val.iteritems():
+    for key, value in ret_val.items():
         print(key , " = " , value)
         try:
             float(value)
