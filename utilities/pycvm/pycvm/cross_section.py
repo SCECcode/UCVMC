@@ -7,10 +7,13 @@
 #  Allows for generation of a cross section between two points.
 
 #  Imports
+
 from mpl_toolkits import basemap
-from mpl_toolkits.basemap import cm
+#XXX from mpl_toolkits.basemap import cm
+from matplotlib import cm
+
 from common import Plot, Point, MaterialProperties, UCVM, UCVM_CVMS, \
-                   math, pycvm_cmapDiscretize, cm, mcolors, basemap, np, plt
+                   math, pycvm_cmapDiscretize, cm, mcolors, np, plt
 
 import pdb
 import random

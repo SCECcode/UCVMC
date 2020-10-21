@@ -36,11 +36,11 @@ except:
     print("ERROR: Matplotlib must be installed on your system in order to generate these plots.")
     exit(1)    
 
-#  Basemap is required.
+#  Cartopy is required.
 try:
-    from mpl_toolkits import basemap
+    import cartopy.crs as ccrs
 except Exception:
-    print("ERROR: Basemap Toolkit must be installed on your system in order to generate these plots.")
+    print("ERROR: Cartopy Toolkit must be installed on your system in order to generate these plots.")
     exit(1)
 
 #  Constants
@@ -146,7 +146,7 @@ def get_user_opts(options):
     optional_opts = []
     ret_val = {}
 
-    for key, value in options.iteritems():
+    for key, value in options.items():
         items=key.split(",")
         short_opt_string = short_opt_string + items[0] 
         if value != "" :
@@ -170,7 +170,7 @@ def get_user_opts(options):
         if o == "-H" or o == "--help" :
             return "help"
 ## regular case
-        for key, value in options.iteritems():
+        for key, value in options.items():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
                 if "," in value:
