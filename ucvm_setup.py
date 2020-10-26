@@ -386,7 +386,7 @@ try:
     json_string = f.read()
     f.close()
     system_data = json.loads(json_string)
-except (OSError, e):
+except OSError as e:
     eG(e, "Parsing list of supported systems.")
     
 try:
@@ -421,7 +421,7 @@ try:
                                 exec(k3 + " = " + v3["value"])
                             else:
                                 exec(k3 + " = " + v3)
-except (Exception, e):
+except Exception as e:
     eG(e, "Checking system conditions.")
 
 if error_out == True:
@@ -436,7 +436,7 @@ try:
     json_string = f.read()
     f.close()
     config_data = json.loads(json_string)
-except (OSError, e):
+except OSError as e:
     eG(e, "Parsing available model list.")
 
 print("\nPlease answer the following questions to install UCVM.\n")
@@ -541,7 +541,7 @@ try:
     if not os.path.exists("./work") or not os.access("./work", os.W_OK | os.X_OK):
         print("Could not create ./work directory.")
         sys.exit(1)
-except (OSError, e):
+except OSError as e:
     eG(e, "Could not create ./work directory.")
 
 print("\nNow setting up the required UCVM libraries...")
@@ -556,7 +556,7 @@ for library in config_data["libraries"]:
                 tarname = config_data["libraries"][the_library["Needs"]]["URL"].split("/")[-1]
                 print("Calling Needs Install with tarname,ucvmpath,library:",tarname,ucvmpath)
                 installConfigMakeInstall(tarname, ucvmpath, "library", config_data["libraries"][the_library["Needs"]])
-            except (Exception, e):
+            except Exception as e:
                 eG(e, "Error installing library " + the_library["Needs"] + " (needed by " + library + ").")
     
         try:
@@ -564,7 +564,7 @@ for library in config_data["libraries"]:
             tarname = the_library["URL"].split("/")[-1]
             print("Calling URL Install with tarname,ucvmpath,library:",tarname,ucvmpath)
             installConfigMakeInstall(tarname, ucvmpath, "library", the_library)
-        except (Exception, e):
+        except Exception as e:
             eG(e, "Error installing library " + library + ".")
 
 print("\nNow setting up CVM models...")
@@ -589,7 +589,7 @@ for model in config_data["models"]:
             else:
                 print("Model tar file found in work directory:",ltarname)
             installConfigMakeInstall(tarname, ucvmpath, "model", the_model)
-        except (Exception, e):
+        except Exception as e:
             eG(e, "Error installing model " + model + ".")
 
 # Now that the models are installed, we can finally install UCVM!
@@ -685,7 +685,7 @@ try:
     f = open('./setup_log.sh', 'w')
     f.write(shell_script)
     f.close()
-except (OSError, e):
+except OSError as e:
     eG(e, "Saving setup_log.sh.")
 
 # Write out a installation json file (expanded from setup.list)
@@ -693,7 +693,7 @@ try:
     f = open('./setup_install.list', 'w')
     f.write(json.dumps(config_data,indent=2,sort_keys=True))
     f.close()
-except (OSError, e):
+except OSError as e:
     eG(e, "Saving setup_install.list.")
 
 print("\nInstallation complete. Installation log file saved at ./setup_log.sh\n")
