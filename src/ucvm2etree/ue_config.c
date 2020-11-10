@@ -21,6 +21,8 @@ int read_config(int myid, int nproc, const char *cfgfile, ue_cfg_t *cfg)
   /* Set rank,nproc to -1 to disable MPI */
   cfg->rank = myid;
   cfg->nproc = nproc;
+  cfg->ucvm_zrange[0] =0.0;
+  cfg->ucvm_zrange[1] =0.0;
 
   if (myid == 0) {
     printf("[%d] Using config file %s\n", myid, cfgfile);
