@@ -99,10 +99,11 @@ install:
 	cp *.py ${prefix}/tests/.
 
 check: unittest accepttest
-	cd ${prefix}/tests
-	./unittest
-	./accepttest
-	./accept_test.py ${prefix}/tests
+	( cd ${prefix}/tests; source ../conf/ucvm_bash.sh;\
+		./unittest;\
+		./accepttest;\
+		./accept_test.py ${prefix}/tests;\
+	)
 
 clean:
 	rm -rf *~ *.o unittest accepttest

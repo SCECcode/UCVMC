@@ -79,9 +79,7 @@ install:
 	mkdir -p ${prefix}/conf
 	if ! test . -ef ${prefix}/conf; then \
                 cp ucvm.conf ${prefix}/conf; \
-        fi
-	if test -e ucvm_bash.sh; then \
-                cp ucvm_bash.sh ${prefix}/conf; \
+                cp ucvm_bash.conf ${prefix}/conf; \
         fi
 
 clean:
