@@ -27,8 +27,3 @@ cd $UCVM_SRC_PATH
 $UCVM_INSTALL_PATH
 EOF
 
-if [ -e $UCVM_SRC_PATH/bash_ucvm.sh ] 
-then
-  cp $UCVM_SRC_PATH/bash_ucvm.sh $UCVM_INSTALL_PATH/conf
-fi
-
