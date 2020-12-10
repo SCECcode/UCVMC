@@ -651,17 +651,7 @@ callAndRecord(ucvm_conf_command)
 print("\nMaking UCVM")
 callAndRecord(["make", "clean"])
 callAndRecord(["make"])
-print("\nInstalling UCVM")
-callAndRecord(["make", "install"])
 
-print("\nDone installing UCVM!")
-
-sys.stdout.write("\nThank you for installing UCVM. ")
-sys.stdout.flush()
-
-print(platform.system())
-print(dynamic_flag)
-print("====")
 if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag == True:
     print("\n MAKING ucvm_bash.sh!")
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
@@ -670,6 +660,13 @@ if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag
     print("to the end of your ~/.bash_profile file so that")
     print("they are preserved for the next time you login or")
     print("source the script as needed")
+
+print("\nInstalling UCVM")
+callAndRecord(["make", "install"])
+print("\nDone installing UCVM!")
+
+sys.stdout.write("\nThank you for installing UCVM. ")
+sys.stdout.flush()
 
 print("\nOnce you have set these environment variables, return to the UCVM source directory and type")
 print("make check")
