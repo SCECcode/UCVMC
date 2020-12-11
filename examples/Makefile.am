@@ -4,8 +4,8 @@
 SUBDIRS = api programs/basin programs/ucvm programs/etree programs/mesh
 
 install:
-	mkdir -p ${prefix}/examples
+	mkdir -p ${prefix}/tests
 	@for i in $(SUBDIRS); do \
-		${prefix}/tests/basin/$${i}; \
+		(cd $${i}; make -s install;) \
 	done
 
