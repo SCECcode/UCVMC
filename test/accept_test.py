@@ -63,6 +63,10 @@ if __name__ == "__main__":
 
     passed = 1
 
+    sys.path.append("../conf/")
+    from ucvm_env import *
+    setup_ucvm_env()
+
     for func in func_list:
         print("Runnning test %s" % func)
     

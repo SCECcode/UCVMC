@@ -78,10 +78,13 @@ cvms5_model: ucvm.conf
 install:
 	mkdir -p ${prefix}/conf
 	if ! test . -ef ${prefix}/conf; then \
-                cp ucvm.conf ${prefix}/conf; \
-		if test -e ucvm_bash.sh; then \
-                	cp ucvm_bash.sh ${prefix}/conf; \
-        	fi \
+		cp ucvm.conf ${prefix}/conf; \
+		if test -e ucvm_env.sh; then \
+			cp ucvm_env.sh ${prefix}/conf; \
+		fi; \
+		if test -e ucvm_env.py; then \
+			cp ucvm_env.py ${prefix}/conf; \
+		fi \
         fi
 
 clean:
