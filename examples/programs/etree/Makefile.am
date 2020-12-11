@@ -16,8 +16,12 @@ all: $(bin_PROGRAMS)
 ############################################
 check: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
-		${prefix}/examples/programs/etree/$${i}; \
+		${prefix}/tests/etree/$${i}; \
 	done
+
+install: $(bin_PROGRAMS)
+	mkdir -p ${prefix}/tests/etree
+	cp $(bin_PROGRAMS) ${prefix}/tests/etree
 
 clean: 
 	rm -f *.o *~ *.conf *.e *.conf *.out

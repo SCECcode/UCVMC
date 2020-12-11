@@ -32,8 +32,12 @@ all: $(bin_PROGRAMS)
 ############################################
 check: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
-		${prefix}/examples/programs/ucvm/$${i}; \
+		${prefix}/tests/ucvm/$${i}; \
 	done
+
+install: $(bin_PROGRAMS)
+        mkdir -p ${prefix}/tests/ucvm
+        cp $(bin_PROGRAMS) ${prefix}/tests/ucvm
 
 clean: 
 	rm -f *.o *~

@@ -8,7 +8,7 @@ query_1d_gtl_SOURCES = *.c
 AM_CFLAGS = -I../../src/ucvm
 AM_LDFLAGS = -L../../src/ucvm -lucvm $(LDFLAGS)
 
-LIST = query_1d_gtl
+bin_PROGRAMS = query_1d_gtl
 
 ############################################
 # Executables
@@ -22,10 +22,14 @@ query_1d_gtl: query_1d_gtl.o
 # Special build targets
 ############################################
 
-check: $(LIST)
-	@for i in $(LIST); do \
-		${prefix}/examples/api/run_$${i}.sh; \
+check: $(bin_PROGRAMS)
+	@for i in $(bin_PROGRAMS); do \
+		${prefix}/tests/api/run_$${i}.sh; \
 	done
+
+install: $(bin_PROGRAMS)
+	mkdir -p ${prefix}/tests/api
+	cp $(bin_PROGRAMS) ${prefix}/tests/api
 
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)

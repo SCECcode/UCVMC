@@ -50,8 +50,12 @@ all: $(bin_PROGRAMS)
 ############################################
 check: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
-		${prefix}/examples/programs/basin/$${i}; \
+		${prefix}/tests/basin/$${i}; \
 	done
+
+install: $(bin_PROGRAMS)
+	mkdir -p ${prefix}/tests/basin
+	cp $(bin_PROGRAMS) ${prefix}/tests/basin
 
 clean: 
 	rm -f *.o *~ basin_query_mpi*

@@ -44,8 +44,12 @@ all: $(bin_PROGRAMS)
 ############################################
 check: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
-		${prefix}/examples/programs/mesh/$${i}; \
+		${prefix}/tests/mesh/$${i}; \
 	done
+
+install: $(bin_PROGRAMS)
+	mkdir -p ${prefix}/tests/mesh
+	cp $(bin_PROGRAMS) ${prefix}/tests/mesh
 
 clean: 
 	rm -f *.o *~ *.conf *.grid *.media ucvm2mesh_mpi*
