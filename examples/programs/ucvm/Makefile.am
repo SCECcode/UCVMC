@@ -36,8 +36,8 @@ check: $(bin_PROGRAMS)
 	done
 
 install: $(bin_PROGRAMS)
-        mkdir -p ${prefix}/tests/ucvm
-        cp $(bin_PROGRAMS) ${prefix}/tests/ucvm
+	mkdir -p ${prefix}/tests/ucvm
+	cp $(bin_PROGRAMS) ${prefix}/tests/ucvm
 
 clean: 
 	rm -f *.o *~
