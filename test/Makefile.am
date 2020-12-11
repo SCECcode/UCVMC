@@ -99,7 +99,7 @@ install:
 	cp *.py ${prefix}/tests/.
 
 check: unittest accepttest
-	( cd ${prefix}/tests; source ../conf/ucvm_bash.sh;\
+	( cd ${prefix}/tests;\
 		./unittest;\
 		./accepttest;\
 		./accept_test.py ${prefix}/tests;\
