@@ -43,9 +43,11 @@ all: $(bin_PROGRAMS)
 # Special build targets
 ############################################
 check: $(bin_PROGRAMS)
+	( cd ${prefix}/tests/mesh; \
 	@for i in $(bin_PROGRAMS); do \
-		${prefix}/tests/mesh/$${i}; \
+		./$${i}; \
 	done
+	)
 
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/mesh

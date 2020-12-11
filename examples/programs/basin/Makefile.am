@@ -49,9 +49,11 @@ all: $(bin_PROGRAMS)
 # Special build targets
 ############################################
 check: $(bin_PROGRAMS)
-	@for i in $(bin_PROGRAMS); do \
-		${prefix}/tests/basin/$${i}; \
+	( cd ${prefix}/tests/basin; \
+	for i in $(bin_PROGRAMS); do \
+		./$${i}; \
 	done
+	)
 
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/basin
