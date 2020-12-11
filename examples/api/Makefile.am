@@ -24,7 +24,7 @@ query_1d_gtl: query_1d_gtl.o
 
 check: $(LIST)
 	@for i in $(LIST); do \
-	  ./run_$${i}.sh; \
+		${prefix}/examples/api/run_$${i}.sh; \
 	done
 
 clean: 

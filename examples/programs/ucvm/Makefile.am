@@ -32,7 +32,7 @@ all: $(bin_PROGRAMS)
 ############################################
 check: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
-	  ./$${i}; \
+		${prefix}/examples/programs/ucvm/$${i}; \
 	done
 
 clean: 
