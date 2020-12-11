@@ -29,7 +29,10 @@ check: $(bin_PROGRAMS)
 
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/api
-	cp $(bin_PROGRAMS) ${prefix}/tests/api
+	@for i in $(bin_PROGRAMS); do \
+		cp ${prefix}/tests/api/run_$${i}.sh ${prefix}/tests/api; \
+		cp ${prefix}/tests/api/$${i} ${prefix}/tests/api; \
+        done
 
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)
