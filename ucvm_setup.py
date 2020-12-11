@@ -345,11 +345,11 @@ def makeBashScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
 ## LD_LIBRARY_PATH and DYLD_LIBRARY_PATH is setup up
 ##
 def _add2LIBRARYPATH_python(modelsToInstall, librariesToInstall) :
-    str="  add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH +\"/lib/euclid3/lib\")\n"
-    str=str+"  add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"/lib/euclid3/lib\")\n"
+    str="   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH +\"/lib/euclid3/lib\")\n"
+    str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"/lib/euclid3/lib\")\n"
 
-    str=str+"add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"lib/proj-5/lib\")\n"
-    str=str+"add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"lib/proj-5/lib\")\n"
+    str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"lib/proj-5/lib\")\n"
+    str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"lib/proj-5/lib\")\n"
 
     if "CS173" in modelsToInstall:
         str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cs173/lib\")\n"
@@ -439,9 +439,9 @@ def makePythonScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     fp.write(ldpstr)
 
 ## add to PATH
-    pstr="add2PATH(UCVM_INSTALL_PATH + \"bin\")\n"
+    pstr="   add2PATH(UCVM_INSTALL_PATH + \"bin\")\n"
     fp.write(pstr)
-    pstr="add2PATH(UCVM_INSTALL_PATH + \"utilities\")\n"
+    pstr="   add2PATH(UCVM_INSTALL_PATH + \"utilities\")\n"
     fp.write(pstr)
     fp.close();
     
