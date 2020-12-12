@@ -31,7 +31,7 @@ all: $(bin_PROGRAMS)
 # Special build targets
 ############################################
 check: $(bin_PROGRAMS)
-	( cd ${prefix}/tests/ucvm; \
+	@( cd ${prefix}/tests/ucvm; \
 	for i in $(bin_PROGRAMS); do \
 		./$${i}; \
 	done \
@@ -40,7 +40,7 @@ check: $(bin_PROGRAMS)
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/ucvm
 	for i in $(bin_PROGRAMS); do \
-		cp $${i}; cp $(bin_PROGRAMS); \
+		cp $${i} ${prefix}/tests/ucvm; \
 	done
 
 clean: 

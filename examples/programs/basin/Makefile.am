@@ -49,7 +49,7 @@ all: $(bin_PROGRAMS)
 # Special build targets
 ############################################
 check: $(bin_PROGRAMS)
-	( cd ${prefix}/tests/basin; \
+	@( cd ${prefix}/tests/basin; \
 	for i in $(bin_PROGRAMS); do \
 		./$${i}; \
 	done \
