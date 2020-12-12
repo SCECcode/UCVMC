@@ -23,10 +23,10 @@ query_1d_gtl: query_1d_gtl.o
 ############################################
 
 check: $(bin_PROGRAMS)
-	( cd ${prefix}/tests/api; \
-	@for i in $(bin_PROGRAMS); do \
+	@( cd ${prefix}/tests/api; \
+	for i in $(bin_PROGRAMS); do \
 		./run_$${i}.sh; \
-	done
+	done \
 	)
 
 install: $(bin_PROGRAMS)
