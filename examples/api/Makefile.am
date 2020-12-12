@@ -24,7 +24,7 @@ query_1d_gtl: query_1d_gtl.o
 
 check: $(bin_PROGRAMS)
 	( cd ${prefix}/tests/api; \
-	for i in $(bin_PROGRAMS); do \
+	@for i in $(bin_PROGRAMS); do \
 		./run_$${i}.sh; \
 	done
 	)
