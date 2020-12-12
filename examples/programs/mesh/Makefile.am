@@ -51,7 +51,10 @@ check: $(bin_PROGRAMS)
 
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/mesh
-	cp $(bin_PROGRAMS) ${prefix}/tests/mesh
+	@for i in $(bin_PROGRAMS); do \
+		./$${i}; \
+		cp $${i} ${prefix}/tests/mesh \
+	done
 
 clean: 
 	rm -f *.o *~ *.conf *.grid *.media ucvm2mesh_mpi*

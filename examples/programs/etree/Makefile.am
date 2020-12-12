@@ -23,7 +23,9 @@ check: $(bin_PROGRAMS)
 
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/etree
-	cp $(bin_PROGRAMS) ${prefix}/tests/etree
+	for i in $(bin_PROGRAMS); do \
+		cp $${i} ${prefix}/tests/etree \
+	done
 
 clean: 
 	rm -f *.o *~ *.conf *.e *.conf *.out
