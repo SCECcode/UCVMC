@@ -18,7 +18,7 @@ check: $(bin_PROGRAMS)
 	( cd ${prefix}/tests/etree; \
 	for i in $(bin_PROGRAMS); do \
 		./$${i}; \
-	done
+	done \
 	)
 
 install: $(bin_PROGRAMS)

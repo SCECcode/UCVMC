@@ -52,7 +52,7 @@ check: $(bin_PROGRAMS)
 	( cd ${prefix}/tests/basin; \
 	for i in $(bin_PROGRAMS); do \
 		./$${i}; \
-	done
+	done \
 	)
 
 install: $(bin_PROGRAMS)

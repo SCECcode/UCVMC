@@ -46,7 +46,7 @@ check: $(bin_PROGRAMS)
 	( cd ${prefix}/tests/mesh; \
 	@for i in $(bin_PROGRAMS); do \
 		./$${i}; \
-	done
+	done \
 	)
 
 install: $(bin_PROGRAMS)
