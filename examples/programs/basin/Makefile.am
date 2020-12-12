@@ -58,7 +58,7 @@ check: $(bin_PROGRAMS)
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/basin
 	for i in $(bin_PROGRAMS); do \
-		cp $${i} ${prefix}/tests/basin \
+		cp $${i} ${prefix}/tests/basin; \
 	done
 
 clean: 
