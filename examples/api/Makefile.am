@@ -34,7 +34,7 @@ install: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
 		cp run_$${i}.sh ${prefix}/tests/api; \
 		cp $${i} ${prefix}/tests/api; \
-        done
+	done
 
 clean: 
 	rm -f *.o *~ $(noinst_PROGRAMS)
