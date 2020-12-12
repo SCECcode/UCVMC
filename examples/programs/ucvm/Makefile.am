@@ -40,7 +40,7 @@ check: $(bin_PROGRAMS)
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/ucvm
 	for i in $(bin_PROGRAMS); do \
-		cp $${i}; cp $(bin_PROGRAMS) \
+		cp $${i}; cp $(bin_PROGRAMS); \
 	done
 
 clean: 

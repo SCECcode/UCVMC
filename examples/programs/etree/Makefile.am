@@ -24,7 +24,7 @@ check: $(bin_PROGRAMS)
 install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/etree
 	for i in $(bin_PROGRAMS); do \
-		cp $${i} ${prefix}/tests/etree \
+		cp $${i} ${prefix}/tests/etree; \
 	done
 
 clean: 

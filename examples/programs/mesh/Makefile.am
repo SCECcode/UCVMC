@@ -53,7 +53,7 @@ install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/mesh
 	@for i in $(bin_PROGRAMS); do \
 		./$${i}; \
-		cp $${i} ${prefix}/tests/mesh \
+		cp $${i} ${prefix}/tests/mesh; \
 	done
 
 clean: 
