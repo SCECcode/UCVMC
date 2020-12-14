@@ -15,12 +15,14 @@ jobs:
         python-version: [3.7]
 
     steps:
+    - name: set dummy
+      run: echo "DUMMY=dumdum" >> $GITHUB_ENV
     - name: set UCVM_SRC_PATH 
-      run: echo "{UCVM_SRC_PATH}={$RUNNER_WORKSPACE/UCVMC}" >> $GITHUB_ENV
+      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
     - name: set UCVM_INSTALL_PATH 
-      run: echo "{UCVM_INSTALL_PATH}={$RUNNER_WORKSPACE/UCVMC_TARGET}" >> $GITHUB_ENV
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/UCVMC_TARGET" >> $GITHUB_ENV
     - name: set LD_LIBRARY_PATH 
-      run: echo "{LD_LIBRARY_PATH}={$UCVM_INSTALL_PATH/lib/euclid3/lib:$UCVM_INSTALL_PATH/lib/proj-5/lib:$UCVM_INSTALL_PATH/model/cvms/lib:$UCVM_INSTALL_PATH/model/cvms5/lib:$UCVM_INSTALL_PATH/model/cvmh1511/lib}" >> $GITHUB_ENV
+      run: echo "LD_LIBRARY_PATH=$UCVM_INSTALL_PATH/lib/euclid3/lib:$UCVM_INSTALL_PATH/lib/proj-5/lib:$UCVM_INSTALL_PATH/model/cvms/lib:$UCVM_INSTALL_PATH/model/cvms5/lib:$UCVM_INSTALL_PATH/model/cvmh1511/lib" >> $GITHUB_ENV
     - name: show env
       run: more $GITHUB_ENV
     - uses: actions/checkout@v2
