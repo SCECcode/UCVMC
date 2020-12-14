@@ -273,7 +273,7 @@ def _add2LIBRARYPATH_bash(modelsToInstall, librariesToInstall) :
 def _add2path_bash(master):
   str =      "function add2"+master+"() {\n"
   str = str +"  if [ \"$"+master+"\" ] ; then\n"
-  str = str +"    if ! echo \"$"+master+"\" | /usr/bin/grep -Eq \"(^|:)$1($|:)\" ; then\n"
+  str = str +"    if ! echo \"$"+master+"\" | grep -Eq \"(^|:)$1($|:)\" ; then\n"
   str = str +"      if [ \"$2\" = \"after\" ] ; then\n"
   str = str +"        export "+master+"=\"$"+master+":$1\"\n"
   str = str +"      else\n"
