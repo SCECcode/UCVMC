@@ -386,15 +386,12 @@ def _add2LIBRARYPATH_python(modelsToInstall, librariesToInstall) :
 
     return str
 
-def _add2path_python(add_to):
+def _add2path_python():
   str =      "def _add2env(PNAME, path) :\n"
   str = str +"  my_path=my_env.get(PNAME,False)\n"
   str = str +"  if my_path != False :\n"
   str = str +"    if my_path.find(path) != -1 :\n"
-  str = str +"      if add_to == \"after\" :\n"
   str = str +"        my_path = my_path + \":\" + path\n"
-  str = str +"      else :\n"
-  str = str +"        my_path = path + \":\" + my_path\n"
   str = str +"  else :\n"
   str = str +"    my_path = path\n"
   str = str +"  my_env[PNAME] = my_path\n\n"
@@ -431,7 +428,7 @@ def makePythonScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     str="my_env=os.environ\n\n"
     fp.write(str)
 
-    pstr=_add2path_python("after")
+    pstr=_add2path_python()
     fp.write(pstr)
     str="def setup_ucvm_env():\n"
     fp.write(str)
