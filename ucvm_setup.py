@@ -556,14 +556,13 @@ except Exception:
 
 # Append the version info to the path.
 ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
-##XXucvmpath = "/usr/local/opt/ucvm"
 
 print("(Default: " + ucvmpath + ")")
 enteredpath = input("Enter path or blank to use the default path: ")
-##
+## python2, enteredpath = raw_input("Enter path or blank to use the default path: ")
+
 if enteredpath.strip() == "":
     enteredpath = ucvmpath
-##XX enteredpath = ucvmpath
 
 while enteredpath != "":
     # Check to see that that path exists and is writable.
