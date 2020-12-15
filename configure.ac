@@ -34,7 +34,7 @@ if test "x$ac_compiler_gnu" = "xno"; then
 AC_MSG_ERROR(["GNU C compiler or MPI wrapper based on GNU is required. Please check your programming environment."])
 fi
 
-# Set MPI flag
+# Set UCVM_HAVE_MPI flag
 AM_CONDITIONAL(UCVM_HAVE_MPI, [test x"$use_mpi" = xyes])
 
 # Parse command-line arguments
