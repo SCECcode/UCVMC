@@ -34,6 +34,7 @@ install: $(bin_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
 		cp run_$${i}.sh ${prefix}/tests/api; \
 		cp $${i} ${prefix}/tests/api; \
+		echo "(cd api; ./$${i})" >> ${prefix}/tests/run-testing;\
 	done
 
 clean: 

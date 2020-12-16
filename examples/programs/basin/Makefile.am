@@ -54,6 +54,7 @@ install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/basin
 	for i in $(bin_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/basin; \
+		echo "(cd basin; ./$${i})" >> ${prefix}/tests/run-testing;\
 	done
 
 clean: 

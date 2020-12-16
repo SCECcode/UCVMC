@@ -49,6 +49,7 @@ install: $(bin_PROGRAMS)
 	cp *_template ${prefix}/tests/mesh
 	for i in $(bin_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/mesh; \
+		echo "(cd mesh; ./$${i})" >> ${prefix}/tests/run-testing; \ 
 	done
 
 clean: 

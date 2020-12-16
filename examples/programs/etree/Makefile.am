@@ -26,6 +26,7 @@ install: $(bin_PROGRAMS)
 	cp *_template ${prefix}/tests/etree
 	for i in $(bin_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/etree; \
+		echo "(cd etree; ./$${i})" >> ${prefix}/tests/run-testing; \
 	done
 
 clean: 

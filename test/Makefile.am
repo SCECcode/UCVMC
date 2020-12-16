@@ -97,6 +97,11 @@ install:
 	cp -R ref ${prefix}/tests
 	cp $(bin_PROGRAMS) ${prefix}/tests
 	cp *.py ${prefix}/tests/.
+	echo "#!/bin/bash " > ${prefix}/tests/run-testing 
+	echo "source ../conf/ucvm_env.sh" >> ${prefix}/tests/run-testing 
+	echo "./unittest" >> ${prefix}/tests/run-testing 
+	echo "./accepttest" >> ${prefix}/tests/run-testing 
+	echo "./accept_test.py ." >> ${prefix}/tests/run-testing 
 
 check: unittest accepttest
 	@( cd ${prefix}/tests; source ../conf/ucvm_env.sh; \
