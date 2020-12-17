@@ -558,7 +558,7 @@ except Exception:
 ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
 
 print("(Default: " + ucvmpath + ")")
-if sys.version_info >= (3) :
+if sys.version_info.major >= (3) :
     enteredpath = input("Enter path or blank to use the default path: ")
 else:
     enteredpath = raw_input("Enter path or blank to use the default path: ")

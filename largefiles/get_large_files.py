@@ -7,7 +7,8 @@
 import os
 import sys
 
-if sys.version_info >= (3) :
+print sys.version_info.major
+if sys.version_info.major >= (3) :
   from urllib.request import urlopen 
 else:
   from urllib2 import urlopen
