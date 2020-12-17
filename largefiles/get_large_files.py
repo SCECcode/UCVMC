@@ -7,7 +7,6 @@
 import os
 import sys
 
-print sys.version_info.major
 if sys.version_info.major >= (3) :
   from urllib.request import urlopen 
 else:
@@ -83,7 +82,11 @@ else:
 #
 for m in optional_large_model_list:
    print("\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?") 
-   yesmodel = input("Enter yes or no: ")
+   if sys.version_info.major >= (3) :
+     yesmodel = input("Enter yes or no: ")
+   else"
+     yesmodel = raw_input("Enter yes or no: ")
+
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
      target_large_model_list.append(model)
