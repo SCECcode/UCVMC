@@ -84,7 +84,7 @@ for m in optional_large_model_list:
    print("\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?") 
    if sys.version_info.major >= (3) :
      yesmodel = input("Enter yes or no: ")
-   else"
+   else:
      yesmodel = raw_input("Enter yes or no: ")
 
    if yesmodel != "" and yesmodel.lower()[0] == "y":
