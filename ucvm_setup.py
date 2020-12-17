@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # This is the install script for the UCVM software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
@@ -558,8 +558,10 @@ except Exception:
 ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
 
 print("(Default: " + ucvmpath + ")")
-enteredpath = input("Enter path or blank to use the default path: ")
-## python2, enteredpath = raw_input("Enter path or blank to use the default path: ")
+if sys.version_info >= (3) :
+    enteredpath = input("Enter path or blank to use the default path: ")
+else:
+    enteredpath = raw_input("Enter path or blank to use the default path: ")
 
 if enteredpath.strip() == "":
     enteredpath = ucvmpath
