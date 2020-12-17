@@ -6,7 +6,11 @@
 #
 import os
 import sys
-from urllib.request import urlopen 
+
+if sys.version_info >= (3) :
+  from urllib.request import urlopen 
+else:
+  from urllib2 import urlopen
 
 #
 UCVM_Version = "19.4"
