@@ -35,7 +35,7 @@ install: $(bin_PROGRAMS) $(check_PROGRAMS)
 	@for i in $(bin_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/api; \
 	done
-	@for i in ${check_PROGRAMS); do \
+	@for i in $(check_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/api; \
 		echo "(cd api; ./$${i})" >> ${prefix}/tests/run-testing;\
 	done
