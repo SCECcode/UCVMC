@@ -9,6 +9,7 @@ AM_CFLAGS = -I../../src/ucvm
 AM_LDFLAGS = -L../../src/ucvm -lucvm $(LDFLAGS)
 
 check_PROGRAMS = run_query_1d_gtl.sh
+run_query_1d_gtl_sh_SOURCES = run_query_1d_gtl.sh
 
 ############################################
 # Executables
