@@ -1,14 +1,14 @@
 # Autoconf/Automake binaries and headers
 #
 #
-noinst_PROGRAMS = query_1d_gtl
+bin_PROGRAMS = query_1d_gtl
 query_1d_gtl_SOURCES = *.c
 
 # General compiler/linker flags
 AM_CFLAGS = -I../../src/ucvm
 AM_LDFLAGS = -L../../src/ucvm -lucvm $(LDFLAGS)
 
-bin_PROGRAMS = query_1d_gtl
+check_PROGRAMS = run_query_1d_gtl.sh
 
 ############################################
 # Executables
@@ -22,17 +22,19 @@ query_1d_gtl: query_1d_gtl.o
 # Special build targets
 ############################################
 
-check: $(bin_PROGRAMS)
+check: $(check_PROGRAMS)
 	@( cd ${prefix}/tests/api; \
-	for i in $(bin_PROGRAMS); do \
-		./run_$${i}.sh; \
+	for i in $(check_PROGRAMS); do \
+		./$${i}; \
 	done \
 	)
 
-install: $(bin_PROGRAMS)
+install: $(bin_PROGRAMS) $(check_PROGRAMS)
 	mkdir -p ${prefix}/tests/api
 	@for i in $(bin_PROGRAMS); do \
-		cp run_$${i}.sh ${prefix}/tests/api; \
+		cp $${i} ${prefix}/tests/api; \
+	done
+	@for i in ${check_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/api; \
 		echo "(cd api; ./$${i})" >> ${prefix}/tests/run-testing;\
 	done
