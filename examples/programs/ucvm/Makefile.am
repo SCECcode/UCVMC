@@ -38,7 +38,7 @@ install: $(bin_PROGRAMS)
 	mkdir -p ${prefix}/tests/ucvm
 	for i in $(bin_PROGRAMS); do \
 		cp $${i} ${prefix}/tests/ucvm; \
-		echo "(cd ucvm; ./$${i})" >> ${prefix}/tests/run-testing; \ 
+		echo "(cd ucvm; ./$${i})" >> ${prefix}/tests/run-testing; \
 	done
 
 clean: 
