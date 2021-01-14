@@ -93,8 +93,8 @@ accepttest: accepttest.o test_defs.o accepttest_suite_grid.o
 
 install:
 	mkdir -p ${prefix}/tests
-	cp -R inputs ${prefix}/tests
-	cp -R ref ${prefix}/tests
+	cp -R -L inputs ${prefix}/tests
+	cp -R -L ref ${prefix}/tests
 	cp $(bin_PROGRAMS) ${prefix}/tests
 	cp *.py ${prefix}/tests/.
 	echo "#!/bin/bash " > ${prefix}/tests/run-testing 
