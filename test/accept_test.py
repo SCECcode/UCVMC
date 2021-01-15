@@ -19,7 +19,8 @@ def test_vs30_query(dir):
                   "-i", "0.1"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
     output = proc.communicate(input=b"-118 34\n-117 35")[0]
     
-    expected_output = b" -118.0000    34.0000    777.764\n -117.0000    35.0000    777.764\n"
+## OLD one    expected_output = b" -118.0000    34.0000    777.764\n -117.0000    35.0000    777.764\n"
+    expected_output = b" -118.0000    34.0000    399.698\n -117.0000    35.0000    399.698\n"
     
     if not output == expected_output:
         print("Error: Vs30 expected output not equal to actual output.\n")
