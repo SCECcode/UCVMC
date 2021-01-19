@@ -27,12 +27,6 @@ if(mypath == None) :
     print("Need to set UCVM_INSTALL_PATH to run > ucvm_models.py")
     exit(1)
 
-# make out.grd
-cmd="$UCVM_INSTALL_PATH/utilities/makegrid.sh"
-os.system(cmd)
-print("Create grid file: %s (out.grd)"%cmd)
-#
-
 CMD=mypath+"/bin/run_ucvm_query.sh"
 proc = Popen([CMD, "-H"], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 rawoutput = proc.communicate()[0]
@@ -58,16 +52,3 @@ for line in lines:
 
 print(target_models)
 
-# Call each of the installed crustal models and time how
-# long it takes to populate the models
-#
-
-for model_string in target_mnodels :
-  start = time.time()
-  cmd="$UCVM_INSTALL_PATH/bin/run_ucvm_query.sh -f $UCVM_INSTALL_PATH/conf/ucvm.conf -m %s < ./out.grd > mesh_%s.out"%(model_string,model_string)
-  print(cmd)
-  os.system(cmd)
-  end = time.time()
-  print("Mesh extraction for model %s : %d seconds"%(model_string,(end-start)))
-
-sys.exit(0)
