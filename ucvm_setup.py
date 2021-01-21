@@ -442,7 +442,14 @@ def makePythonScript(ucvmsrc, ucvmpath, modelsToInstall, librariesToInstall) :
     fp.write(pstr)
     fp.close();
     
-    
+## link proj-5's library to PROJ_LIB location if PROJ_LIB is defined
+def linkPROJ_5(ucvmpath) :
+   try :
+      proj_lib = os.environ['PROJ_LIB']
+   except:
+      return 
+   call(["ln", "-p", ucvmpath+"/lib/proj-5/lib/*", proj_loc])
+
 #
 # Start of main method.
 # Read in the possible arguments
@@ -758,6 +765,7 @@ callAndRecord(["make"])
 if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag == True:
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     makePythonScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
+    linkPROJ_5(ucvmpath)
 
     print("To try out UCVM, we recommend adding the content from " + ucvmpath.rstrip("/") + "/conf/ucvm_env.sh ")
     print("to the end of your ~/.bash_profile file so that")
