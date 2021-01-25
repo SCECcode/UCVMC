@@ -448,7 +448,7 @@ def linkPROJ_5(ucvmpath) :
       proj_lib = os.environ['PROJ_LIB']
    except:
       return 
-   call(["ln", "-p", ucvmpath+"/lib/proj-5/lib/*", proj_loc])
+   call(["ln", "-p", ucvmpath+"/lib/proj-5/lib/*", proj_lib])
 
 #
 # Start of main method.
