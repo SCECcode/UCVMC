@@ -102,6 +102,7 @@ install:
 	echo "./unittest" >> ${prefix}/tests/run-testing 
 	echo "./accepttest" >> ${prefix}/tests/run-testing 
 	echo "./accept_test.py ." >> ${prefix}/tests/run-testing 
+	chmod +x ${prefix}/tests/run-testing
 
 check: unittest accepttest
 	@( cd ${prefix}/tests; source ../conf/ucvm_env.sh; \
