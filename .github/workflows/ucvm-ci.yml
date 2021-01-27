@@ -23,8 +23,8 @@ jobs:
       with: 
         ref: toPython3
     - name: build ucvm
-      run: ./ci/runner-build.sh
+      run: ./ci/ucvm-build.sh
       shell: bash
     - name: test ucvm
-      run: ./ci/runner-ci.sh
+      run: ./ci/ucvm-ci.sh
       shell: bash
