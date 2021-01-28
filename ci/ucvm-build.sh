@@ -1,7 +1,6 @@
 #!/bin/bash
 
-sudo apt-get install gfortran
-
+#sudo apt-get install gfortran
 mkdir $UCVM_INSTALL_PATH
 
 ##["cvms5", "cca", "cs173", "cs173h", "cvms4", "cvms426", "cencal080", "cvmh-15.1.1", "albacore"]
