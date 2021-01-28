@@ -41,6 +41,7 @@ jobs:
         ref: toPython3
     - name: build ucvm with cvmh
       run: ./ci/ucvm-build-cvmh.sh
+      run: pwd
       shell: bash
     - name: test ucvm with cvmh
       run: ./ci/ucvm-test.sh
