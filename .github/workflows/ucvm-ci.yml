@@ -3,8 +3,6 @@ name: ucvm-ci
 on:
   push:
     branches: [ toPython3 ]
-  pull_request:
-    branches: [ toPython3 ]
 
 jobs:
   build:
