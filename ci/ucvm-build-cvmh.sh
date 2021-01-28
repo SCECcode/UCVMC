@@ -17,7 +17,11 @@ n
 y
 n
 EOF
-cd $UCVM_SRC_PATH/largefiles; ./check_largefiles_md5.py
+
+tmp=`uname -s`
+fi [ $tmp != 'Darwin' ]; then
+  cd $UCVM_SRC_PATH/largefiles; ./check_largefiles_md5.py
+fi
 cd $UCVM_SRC_PATH/largefiles; ./stage_large_files.py
 
 cd $UCVM_SRC_PATH
