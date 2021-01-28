@@ -40,8 +40,7 @@ jobs:
       with: 
         ref: toPython3
     - name: build ucvm with cvmh
-      run: ./ci/ucvm-build-cvmh.sh
-      run: pwd
+      run: ./ci/ucvm-build-cvmh.sh ; pwd; tail $RUNNER_WORKSPACE/UCVMC/ucvm_setup_install.log
       shell: bash
     - name: test ucvm with cvmh
       run: ./ci/ucvm-test.sh
