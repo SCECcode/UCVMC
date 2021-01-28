@@ -5,13 +5,11 @@ on:
     branches: [ toPython3 ]
 
 jobs:
-  build:
-
+  ucvm-build-cvms-cvmh:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
-
     steps:
     - name: set UCVM_SRC_PATH 
       run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
@@ -20,9 +18,29 @@ jobs:
     - uses: actions/checkout@v2
       with: 
         ref: toPython3
-    - name: build ucvm
-      run: ./ci/ucvm-build.sh
+    - name: build ucvm with cvms and cvmh
+      run: ./ci/ucvm-build-cvms-cvmh.sh
       shell: bash
-    - name: test ucvm
-      run: ./ci/ucvm-ci.sh
+    - name: test ucvm with cvms and cvmh
+      run: ./ci/ucvm-test.sh
+      shell: bash
+
+  ucvm-build-cvmh:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: set UCVM_SRC_PATH 
+      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
+    - name: set UCVM_INSTALL_PATH 
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+      with: 
+        ref: toPython3
+    - name: build ucvm with cvmh
+      run: ./ci/ucvm-build-cvmh.sh
+      shell: bash
+    - name: test ucvm with cvmh
+      run: ./ci/ucvm-test.sh
       shell: bash
