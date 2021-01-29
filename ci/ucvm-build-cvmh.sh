@@ -1,6 +1,14 @@
 #!/bin/bash
 
+tmp=`uname -s`
+
 #sudo apt-get install gfortran
+
+if [ $tmp == 'Darwin' ]; then
+## make sure have automake/aclocal
+  brew install automake
+fi
+
 mkdir $UCVM_INSTALL_PATH
 
 ##["cvms5", "cca", "cs173", "cs173h", "cvms4", "cvms426", "cencal080", "cvmh-15.1.1", "albacore"]
