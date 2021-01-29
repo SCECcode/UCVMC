@@ -21,6 +21,3 @@ jobs:
     - name: build ucvm with cvmh
       run: ./ci/ucvm-build-cvmh.sh 
       shell: bash
-    - name: more log
-      run: more $UCVM_SRC_PATH/ucvm_setup_install.log
-      shell: bash
