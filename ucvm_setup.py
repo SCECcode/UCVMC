@@ -14,6 +14,7 @@ import platform
 import socket
 import shlex
 
+
 # Variables
 
 # Set the version number for the installation script.
