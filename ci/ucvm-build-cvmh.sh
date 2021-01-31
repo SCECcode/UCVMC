@@ -26,10 +26,12 @@ y
 n
 EOF
 
-tmp=`uname -s`
 if [ $tmp != 'Darwin' ]; then
   cd $UCVM_SRC_PATH/largefiles; ./check_largefiles_md5.py
+else
+  curl http://hypocenter.usc.edu/research/ucvmc/PARK/cvmh-15.1.1.tar.gz --output $UCVM_SRC_PATH/largefiles/cvmh-15.1.1.tar.gz
 fi
+
 cd $UCVM_SRC_PATH/largefiles; ./stage_large_files.py
 
 cd $UCVM_SRC_PATH
