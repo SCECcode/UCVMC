@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # This is the install script for the UCVMC software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
