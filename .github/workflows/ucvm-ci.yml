@@ -40,9 +40,9 @@ jobs:
       with: 
         ref: toPython3
     - name: build ucvm with cvms and cvmh
-      run: ./ci/ucvm-build-cvms-cvmh.sh
+      run: ./.github/scripts/ucvm-build-cvms-cvmh.sh
       shell: bash
     - name: test ucvm with cvms and cvmh
-      run: ./ci/ucvm-test.sh
+      run: ./.github/scripts/ucvm-test.sh
       shell: bash
 
