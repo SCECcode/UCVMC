@@ -1,8 +1,8 @@
 name: 'To build UCVM'
-description: "build UCVM with supplied model input'
+description: 'build UCVM with supplied model input'
 inputs:
   model-to-build: 
-    description: "which models to build"
+    description: 'which models to build'
     required: true
     default: "cvms"
 ucvm-build-cvmh-py2:
