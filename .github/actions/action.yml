@@ -1,26 +1,23 @@
-name: 'To build UCVM'
-description: 'build UCVM with supplied model input'
+name: 'Hello World'
+description: 'Greet someone'
 inputs:
-  model-to-build: 
-    description: 'which models to build'
+  who-to-greet:  # id of input
+    description: 'Who to greet'
     required: true
-    default: 'cvms'
+    default: 'World'
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-id }}
 runs:
   using: "composite"
-  runs-on: ubuntu-latest
-  strategy:
-      matrix:
-        python-version: [2.7.16]
   steps:
-    - name: set UCVM_SRC_PATH 
-      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
-    - name: set UCVM_INSTALL_PATH 
-      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
-    - name: checkout ucvm toPython3
-      uses: actions/checkout@v2
-      with: 
-        ref: toPython3
-    - name: build ucvm with cvmh
-      run: ./.github/scripts/ucvm-build-cvmh.sh
+    - run: echo Hello from inside action.yml ${{ inputs.who-to-greet }}.
       shell: bash
-
+    - id: random-number-generator
+      run: echo "::set-output name=random-id::$(echo $RANDOM)"
+      shell: bash
+    - run: echo ${{ github.action_path }}
+      shell: bash
+    - run: ${{ github.action_path }}/goodbye.sh
+      shell: bash
