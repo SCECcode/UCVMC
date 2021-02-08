@@ -4,13 +4,14 @@ inputs:
   model-to-build: 
     description: 'which models to build'
     required: true
-    default: "cvms"
-ucvm-build-cvmh-py2:
-    runs-on: ubuntu-latest
-    strategy:
+    default: 'cvms'
+runs:
+  using: "composite"
+  runs-on: ubuntu-latest
+  strategy:
       matrix:
         python-version: [2.7.16]
-    steps:
+  steps:
     - name: set UCVM_SRC_PATH 
       run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
     - name: set UCVM_INSTALL_PATH 
