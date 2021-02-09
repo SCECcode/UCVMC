@@ -39,3 +39,5 @@ runs:
       shell: bash
     - run: echo " UCVM_INSTALL_PATH =>" $UCVM_SRC_PATH
       shell: bash
+    - run: which export
+      shell: bash
