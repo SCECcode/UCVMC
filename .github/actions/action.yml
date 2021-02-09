@@ -34,9 +34,9 @@ runs:
     - name: build ucvm with cvmh
       run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-test.sh)
       shell: bash
-    - run: pwd
-      shell: bash
-    - run: env
-      shell: bash
+#    - run: pwd
+#      shell: bash
+#    - run: env
+#      shell: bash
 
   
