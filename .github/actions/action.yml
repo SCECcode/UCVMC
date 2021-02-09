@@ -34,3 +34,8 @@ runs:
     - run: export UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM
       shell: bash
     - run: echo " UCVM_SRC_PATH =>" $UCVM_SRC_PATH
+      shell: bash
+    - run: export UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/TARGET
+      shell: bash
+    - run: echo " UCVM_INSTALL_PATH =>" $UCVM_SRC_PATH
+      shell: bash
