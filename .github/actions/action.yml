@@ -22,10 +22,10 @@ runs:
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
       shell: bash
-    - run: |
-      echo " RUNNER_WORKSPACE =>"$RUNNER_WORKSPACE
-      echo " github.action_path =>"${{ github.action_path }}
-      ls $RUNNER_WORKSPACE/*/ucvmSpace
+    - run:
+      ( echo " RUNNER_WORKSPACE =>"$RUNNER_WORKSPACE;
+      echo " github.action_path =>"${{ github.action_path }};
+      ls $RUNNER_WORKSPACE/*/ucvmSpace )
       shell: bash
     - run: |
       echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM" >> $GITHUB_ENV
