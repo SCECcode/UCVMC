@@ -31,3 +31,6 @@ runs:
       shell: bash
     - run: ls $RUNNER_WORKSPACE/*/ucvmSpace
       shell: bash
+    - run: export UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM
+      shell: bash
+    - run: echo " UCVM_SRC_PATH =>" $UCVM_SRC_PATH
