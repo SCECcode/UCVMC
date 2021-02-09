@@ -16,10 +16,9 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: |
-      /bin/mkdir ucvmSpace 
-      /bin/mkdir ucvmSpace/TARGET 
-      /bin/ln -s ${{ github.action_path }}/../.. ucvmSpace/UCVM 
+    - run: /bin/mkdir ucvmSpace ucvmSpace/TARGET 
+      shell: bash
+    - run: /bin/ln -s ${{ github.action_path }}/../.. ucvmSpace/UCVM 
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
