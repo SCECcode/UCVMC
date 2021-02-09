@@ -16,7 +16,8 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: mkdir ucvmSPACE 
+    - run: |
+      mkdir ucvmSPACE 
       cd ucvmSPACE
       ln -s ${{ github.action_path }}/../.. UCVMC
       cd ..
