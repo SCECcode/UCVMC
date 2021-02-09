@@ -1,21 +1,21 @@
 name: 'Hello World'
 description: 'Greet someone'
 inputs:
-  who-to-greet:  # id of input
-    description: Who to greet
+  target-models:  
+    description: 'What to includ'
     required: true
-    default: 'World'
+    default: 'cvms'
 outputs:
-  random-number:
-    description: Random number
-    value: ${{ steps.random-number-generator.outputs.random-id }}
+  build-log:
+    description: "build log"
+    value: ${{ steps.random-number-generator.outputs.build-log }}
 runs:
   using: "composite"
   steps:
-    - run: echo Hello from inside action.yml ${{ inputs.who-to-greet }}.
+    - run: echo Hello from UCVM toPython3 action.yml ${{ inputs.target-models }}.
       shell: bash
-    - id: random-number-generator
-      run: echo "::set-output name=random-id::$(echo $RANDOM)"
+    - id: build
+      run: echo "::set-output name=build-log::$(echo $RANDOM)"
       shell: bash
     - run: echo ${{ github.action_path }}
       shell: bash
