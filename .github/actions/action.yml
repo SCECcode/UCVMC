@@ -16,16 +16,10 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: |
-      mkdir WORKSPACE
-      cd WORKSPACE
-      mkdir target
+    - run: mkdir ucvmSPACE 
+      cd ucvmSPACE
       ln -s ${{ github.action_path }}/../.. UCVMC
       cd ..
-      shell: bash
-    - run: |
-      pwd
-      ls TARGET 
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
@@ -34,19 +28,8 @@ runs:
          echo ${{ github.action_path }}
          ls ${{ github.action_path }}/../..
       shell: bash
-    - name: set UCVM_SRC_PATH,UCVM_INSTALL_PATH 
-      run:  |
-         echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/WORKSPACE/UCVMC" >> $GITHUB_ENV
-         echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/WORKSPACE/TARGET" >> $GITHUB_ENV
+    - run: echo $RUNNER_WORKSPACE
       shell: bash
     - run: echo ${{ github.action_path }}
-      shell: bash
-    - run: |
-       export UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/WORKSPACE/TARGET
-       export UCVM_SRC_PATH=$RUNNER_WORKSPACE/WORKSPACE/UCVMC
-       env $UCVM_INSTALL_PATH
-       env $UCVM_SRC_PATH
-      shell: bash
-    - run: env $GITHUB_ENV
       shell: bash
 
