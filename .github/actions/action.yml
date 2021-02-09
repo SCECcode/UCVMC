@@ -16,20 +16,18 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: /bin/mkdir ucvmSpace 
-      shell: bash
-    - run: /bin/mkdir ucvmSpace/TARGET 
-      shell: bash
-    - run: /bin/ln -s ${{ github.action_path }}/../.. ucvmSpace/UCVM 
+    - run: |
+      /bin/mkdir ucvmSpace 
+      /bin/mkdir ucvmSpace/TARGET 
+      /bin/ln -s ${{ github.action_path }}/../.. ucvmSpace/UCVM 
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
       shell: bash
-    - run: echo " RUNNER_WORKSPACE =>"$RUNNER_WORKSPACE
-      shell: bash
-    - run: echo " github.action_path =>"${{ github.action_path }}
-      shell: bash
-    - run: ls $RUNNER_WORKSPACE/*/ucvmSpace
+    - run: |
+      echo " RUNNER_WORKSPACE =>"$RUNNER_WORKSPACE
+      echo " github.action_path =>"${{ github.action_path }}
+      ls $RUNNER_WORKSPACE/*/ucvmSpace
       shell: bash
     - run: |
         echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM" >> $GITHUB_ENV
