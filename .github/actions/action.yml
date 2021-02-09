@@ -31,5 +31,7 @@ runs:
     - id: post-build-log
       run: echo "::set-output name=log-file::$(echo $RANDOM)"
       shell: bash
+    - run: pwd
+      shell: bash
 
   
