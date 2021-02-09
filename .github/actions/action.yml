@@ -34,5 +34,11 @@ runs:
     - id: post-build
       run: echo "::set-output name=build-log::$(cat $RUNNER_WORKSPACE/UCVM/ucvm_setup_install.log)"
       shell: bash
+    - name: ucvm_query
+      run: (which ucvm_query; ucvm_query -H; which python; python -V)
+      shell: bash
+    - name: install and run ucvm_plotting
+      run: (cd $RUNNER_WORKSPACE/ucvm_plotting; ./unpack-dist)
+      shell: bash
 
   
