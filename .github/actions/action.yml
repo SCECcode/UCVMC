@@ -16,17 +16,19 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: which mkdir
+    - run: |
+      /bin/mkdir ucvmSpace 
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
-      shell: bash
-    - run: |
-         echo ${{ github.action_path }}
-         ls ${{ github.action_path }}/../..
       shell: bash
     - run: echo $RUNNER_WORKSPACE
       shell: bash
     - run: echo ${{ github.action_path }}
       shell: bash
-
+    - run: ls $RUNNER_WORKSPACE
+      shell: bash
+    - run: which ln
+      shell: bash
+    - run: which link
+      shell: bash
