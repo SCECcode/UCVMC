@@ -31,13 +31,10 @@ runs:
       shell: bash
     - run: ls $RUNNER_WORKSPACE/*/ucvmSpace
       shell: bash
-    - run: export UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM
+    - run: |
+        echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM" >> $GITHUB_ENV
+        echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/TARGET" >> $GITHUB_ENV
       shell: bash
-    - run: echo " UCVM_SRC_PATH =>" $UCVM_SRC_PATH
+    - run: env
       shell: bash
-    - run: export UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/TARGET
-      shell: bash
-    - run: echo " UCVM_INSTALL_PATH =>" $UCVM_SRC_PATH
-      shell: bash
-    - run: which export
-      shell: bash
+  
