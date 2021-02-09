@@ -32,7 +32,7 @@ runs:
       run: echo "::set-output name=log-file::$(echo $RANDOM)"
       shell: bash
     - name: ucvm_query
-      run: (which ucvm_query; ucvm_query -H)
+      run: which ucvm_query
       shell: bash
 
   
