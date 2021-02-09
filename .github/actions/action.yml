@@ -31,9 +31,11 @@ runs:
          echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
       shell: bash
     - run: |
-       export UCVM_SRC_PATH= ${{ github.action_path }}/../..
-       export UCVM_INSTALL_PATH= ${{ github.action_path }}/../../TARGET
-       env $UCVM_SRC_PATH
+         export MYPATH=${{ github.action_path }}
+         echo $MYPATH
+      shell: bash
+    - run: |
+       export UCVM_INSTALL_PATH=${{ github.action_path }}/../../TARGET
        env $UCVM_INSTALL_PATH
       shell: bash
     - run: env $GITHUB_ENV
