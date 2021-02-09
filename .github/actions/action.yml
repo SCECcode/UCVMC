@@ -16,8 +16,6 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: env
-      shell: bash
     - run: ls
       shell: bash
     - id: build
@@ -27,6 +25,13 @@ runs:
       shell: bash
     - run: ls ${{ github.action_path }}/../..
       shell: bash
-    - run: ${{ github.action_path }}/goodbye.sh
-      shell: bash
+    - name: set UCVM_SRC_PATH 
+      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
+    - name: set UCVM_INSTALL_PATH 
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
+    - run: env $GITHUB_ENV
+    - run: export UCVM_SRC_PATH= ${{ github.action_path }}/../..
+    - run: export UCVM_INSTALL_PATH= ${{ github.action_path }}/../../TARGET
+    - run: env $UCVM_SRC_PATH
+    - run: env $UCVM_INSTALL_PATH
 
