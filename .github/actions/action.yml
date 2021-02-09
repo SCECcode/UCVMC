@@ -12,7 +12,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: echo Hello from UCVM toPython3 action.yml ${{ inputs.target-models }}.
+    - run: echo Hello from UCVM/toPython3 action.yml ${{ inputs.target-models }}.
+      shell: bash
+    - run: pwd
+      shell: bash
+    - run: env
+      shell: bash
+    - run: ls
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
