@@ -25,7 +25,7 @@ runs:
       shell: bash
     - run: echo ${{ github.action_path }}
       shell: bash
-    - run: ls $RUNNER_WORKSPACE
+    - run: ls $RUNNER_WORKSPACE/*
       shell: bash
     - run: which ln
       shell: bash
