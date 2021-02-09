@@ -16,8 +16,7 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: |
-      /bin/mkdir ucvmSpace 
+    - run: /bin/mkdir ucvmSpace 
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
