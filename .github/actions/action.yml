@@ -26,9 +26,8 @@ runs:
              echo " github.action_path =>"${{ github.action_path }};
              ls $RUNNER_WORKSPACE/*/ucvmSpace )
       shell: bash
-    - run: |
-      echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM" >> $GITHUB_ENV
-      echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/TARGET" >> $GITHUB_ENV
+    - run: ( echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/UCVM" >> $GITHUB_ENV;
+             echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/ucvm_plotting/ucvmSpace/TARGET" >> $GITHUB_ENV)
       shell: bash
     - run: env
       shell: bash
