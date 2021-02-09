@@ -31,7 +31,12 @@ runs:
     - id: post-build-log
       run: echo "::set-output name=log-file::$(echo $RANDOM)"
       shell: bash
+    - name: build ucvm with cvmh
+      run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-test.sh)
+      shell: bash
     - run: pwd
+      shell: bash
+    - run: env
       shell: bash
 
   
