@@ -7,8 +7,8 @@ inputs:
     default: 'cvms'
 outputs:
   build-log:
-    description: "build log"
-    value: ${{ steps.post-build.outputs.build-log }}
+    description: "return log for ucvm_setup.py"
+    value: ${{ steps.post-build-log.outputs.log-file }}
 runs:
   using: "composite"
   steps:
@@ -28,8 +28,8 @@ runs:
     - name: build ucvm with cvmh
       run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-build-cvmh.sh)
       shell: bash
-    - id: post-build
-      run: echo "::set-output name=build-log::$(cat $RUNNER_WORKSPACE/UCVM/ucvm_setup_install.log)"
+    - id: post-build-log
+      run: echo "::set-output name=log-file::$(echo $RANDOM)"
       shell: bash
     - name: ucvm_query
       run: (which ucvm_query; ucvm_query -H)
