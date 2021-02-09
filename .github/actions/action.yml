@@ -22,12 +22,14 @@ runs:
              /bin/ln -s ${{ github.action_path }}/../.. $RUNNER_WORKSPACE/UCVM;
              ls $RUNNER_WORKSPACE)
       shell: bash
-    - id: build
-      run: echo "::set-output name=build-log::$(cat ucvm_setup_install.log)"
-      shell: bash
     - run: ( echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVM" >> $GITHUB_ENV;
              echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV)
       shell: bash
-    - run: env
+    - name: build ucvm with cvms and cvmh
+      run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-build-cvmh.sh)
       shell: bash
+    - id: build
+      run: echo "::set-output name=build-log::$(cat $UCVM_SRC_PATH/ucvm_setup_install.log)"
+      shell: bash
+
   
