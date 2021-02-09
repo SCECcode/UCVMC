@@ -16,11 +16,7 @@ runs:
       shell: bash
     - run: pwd
       shell: bash
-    - run: |
-      mkdir ucvmSPACE 
-      cd ucvmSPACE
-      ln -s ${{ github.action_path }}/../.. UCVMC
-      cd ..
+    - run: which mkdir
       shell: bash
     - id: build
       run: echo "::set-output name=build-log::$(echo $RANDOM)"
