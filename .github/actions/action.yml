@@ -1,14 +1,14 @@
-name: 'Hello World'
-description: 'Greet someone'
+name: 'Hello World from UCVM'
+description: 'invoked from ucvm_plotting'
 inputs:
   target-models:  
-    description: 'What to includ'
+    description: 'Which cvm to include'
     required: true
     default: 'cvms'
 outputs:
   build-log:
     description: "build log"
-    value: ${{ steps.random-number-generator.outputs.build-log }}
+    value: ${{ steps.post-build.outputs.build-log }}
 runs:
   using: "composite"
   steps:
@@ -25,10 +25,13 @@ runs:
     - run: ( echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVM" >> $GITHUB_ENV;
              echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV)
       shell: bash
-    - name: build ucvm with cvms and cvmh
+    - name: build ucvm with cvmh
       run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-build-cvmh.sh)
       shell: bash
-    - id: build
+    - name: run ucvm tests
+      run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-test.sh)
+      shell: bash
+    - id: post-build
       run: echo "::set-output name=build-log::$(cat $UCVM_SRC_PATH/ucvm_setup_install.log)"
       shell: bash
 
