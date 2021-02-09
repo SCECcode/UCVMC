@@ -32,7 +32,7 @@ runs:
       run: (cd $UCVM_SRC_PATH; ./.github/scripts/ucvm-test.sh)
       shell: bash
     - id: post-build
-      run: echo "::set-output name=build-log::$(cat $UCVM_SRC_PATH/ucvm_setup_install.log)"
+      run: echo "::set-output name=build-log::$(cat $RUNNER_WORKSPACE/UCVM/ucvm_setup_install.log)"
       shell: bash
 
   
