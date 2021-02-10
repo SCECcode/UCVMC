@@ -39,5 +39,5 @@ cd $UCVM_SRC_PATH
 $UCVM_INSTALL_PATH
 EOF
 
-more ucvm_setup_install.log
+#more ucvm_setup_install.log
 
