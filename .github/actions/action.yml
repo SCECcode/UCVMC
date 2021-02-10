@@ -1,4 +1,5 @@
-name: 'Hello World from UCVM'
+
+name: 'action to build UCVM from remote request'
 description: 'invoked from ucvm_plotting'
 inputs:
   target-models:  
