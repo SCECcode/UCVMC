@@ -19,8 +19,7 @@ runs:
              echo " RUNNER_WORKSPACE =>"$RUNNER_WORKSPACE;
              echo " github.action_path =>"${{ github.action_path }};)
       shell: bash
-    - run: ( /bin/mkdir $RUNNER_WORKSPACE/TARGET;
-             /bin/ln -s ${{ github.action_path }}/../.. $RUNNER_WORKSPACE/UCVM;
+    - run: ( /bin/ln -s ${{ github.action_path }}/../.. $RUNNER_WORKSPACE/UCVM;
              ls $RUNNER_WORKSPACE)
       shell: bash
     - run: ( echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVM" >> $GITHUB_ENV;
