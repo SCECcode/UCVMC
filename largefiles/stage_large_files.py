@@ -24,7 +24,9 @@ target_large_model_list = ["cvms5.tar.gz",
                     "cvms426.tar.gz",
                     "cvmh-15.1.1.tar.gz",
                     "cencal080.tar.gz",
-                    "albacore.tar.gz"]
+                    "albacore.tar.gz",
+                    "coachella.tar.gz",
+                    "imperial.tar.gz"]
 target_large_etree_list = ["ucvm.e"]
 target_large_ref_list = ["test-grid-lib-1d.ref"]
 

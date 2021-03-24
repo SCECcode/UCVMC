@@ -125,6 +125,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
             config_data["Path"] == "curl":
         strip_level = "1"
     
+    ## skip the models that alrady exists and go to the ones that did not get processed yet
     if(restart_flag) :
         test_path= workpath + "/" + config_data["Path"];
         if os.path.exists(test_path):
@@ -248,6 +249,12 @@ def _add2LIBRARYPATH_bash(modelsToInstall, librariesToInstall) :
     if "CVM-S4" in modelsToInstall:
         str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
         str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
+    if "IMPERIAL" in modelsToInstall:
+        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/imperial/lib\n"
+        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/imperial/lib\n"
+    if "COACHELLA" in modelsToInstall:
+        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/coachella/lib\n"
+        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/coachella/lib\n"
     if "ALBACORE" in modelsToInstall:
         str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
         str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
@@ -364,6 +371,12 @@ def _add2LIBRARYPATH_python(modelsToInstall, librariesToInstall) :
     if "CVM-S4" in modelsToInstall:
         str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvms/lib\")\n"
         str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvms/lib\")\n"
+    if "IMPERIAL" in modelsToInstall:
+        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/imperial/lib\")\n"
+        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/imperial/lib\")\n"
+    if "COACHELLA" in modelsToInstall:
+        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/coachella/lib\")\n"
+        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/coachella/lib\")\n"
     if "ALBACORE" in modelsToInstall:
         str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/albacore/lib\")\n"
         str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/albacore/lib\")\n"
@@ -764,6 +777,8 @@ callAndRecord(["make", "clean"])
 callAndRecord(["make"])
 
 if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag == True:
+    print("XXX HERE...")
+    print(modelsToInstall)
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     makePythonScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     linkPROJ_5(ucvmpath)

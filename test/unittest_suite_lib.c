@@ -415,6 +415,56 @@ int test_lib_add_model_cvms5()
 }
 
 
+int test_lib_add_model_imperial()
+{
+  printf("Test: UCVM lib add model IMPERIAL\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_IMPERIAL) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_IMPERIAL);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
+int test_lib_add_model_coachella()
+{
+  printf("Test: UCVM lib add model COACHELLA\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_COACHELLA) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_COACHELLA);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
 int test_lib_add_model_albacore()
 {
   printf("Test: UCVM lib add model ALBACORE\n");

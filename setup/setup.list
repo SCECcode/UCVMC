@@ -1,5 +1,26 @@
 {
 	"models": {
+		"IMPERIAL": {
+			"Version": "1.0",
+                        "Abbreviation": "imperial",
+                        "Size": "1M",
+			"Path": "imperial",
+			"URL": "http://hypocenter.usc.edu/research/ucvmc/V19_4/imperial.tar.gz",
+			"Flags": "--enable-model-imperial --with-imperial-lib-path=lib --with-imperial-include-path=include",
+			"Libraries": ["proj-5"],
+			"Ask": "yes",
+			"Order": "11"		
+		},
+		"COACHELLA": {
+			"Version": "1.0",
+                        "Abbreviation": "coachella",
+                        "Size": "1M",
+			"Path": "coachella",
+			"URL": "http://hypocenter.usc.edu/research/ucvmc/V19_4/coachella.tar.gz",
+			"Flags": "--enable-model-coachella --with-coachella-lib-path=lib --with-coachella-include-path=include",
+			"Ask": "yes",
+			"Order": "10"		
+		},
 		"ALBACORE": {
 			"Version": "1.0",
                         "Abbreviation": "albacore",

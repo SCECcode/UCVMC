@@ -9,6 +9,18 @@
 #endif
 
 #ifdef _UCVM_AM_STATIC
+#ifdef _UCVM_ENABLE_IMPERIAL
+	extern int imperial_init;
+	extern int imperial_query;
+	extern int imperial_finalize;
+	extern int imperial_version;
+#endif
+#ifdef _UCVM_ENABLE_COACHELLA
+	extern int coachella_init;
+	extern int coachella_query;
+	extern int coachella_finalize;
+	extern int coachella_version;
+#endif
 #ifdef _UCVM_ENABLE_ALBACORE
 	extern int albacore_init;
 	extern int albacore_query;

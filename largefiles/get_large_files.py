@@ -27,7 +27,9 @@ optional_large_model_list = [ "cvms5",
                     "cvms426",
                     "cencal080",
                     "cvmh-15.1.1",
-                    "albacore"]
+                    "albacore",
+                    "coachella",
+                    "imperial"]
 optional_large_model_size = { 'cvms5':'1.2G',
                               'cca':'9.2G',
                               'cs173':'72G',
@@ -36,7 +38,9 @@ optional_large_model_size = { 'cvms5':'1.2G',
                               'cvms426':'1.6G',
                               'cencal080':'21G',
                               'cvmh-15.1.1':'1.6G',
-                              'albacore':'2.3M'}
+                              'albacore':'2.3M',
+                              'coachella':'1M',
+                              'imperial':'1M'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]

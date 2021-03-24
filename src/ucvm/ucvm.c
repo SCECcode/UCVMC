@@ -1118,6 +1118,20 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
 #endif
 
 /*** for plugin ***/
+#ifdef _UCVM_ENABLE_IMPERIAL
+  if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
+                     UCVM_MODEL_IMPERIAL, "", res, numinst++, *len)
+      != UCVM_CODE_SUCCESS) {
+    return(UCVM_CODE_ERROR);
+  }
+#endif
+#ifdef _UCVM_ENABLE_COACHELLA
+  if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
+                     UCVM_MODEL_COACHELLA, "", res, numinst++, *len)
+      != UCVM_CODE_SUCCESS) {
+    return(UCVM_CODE_ERROR);
+  }
+#endif
 #ifdef _UCVM_ENABLE_ALBACORE
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
                      UCVM_MODEL_ALBACORE, "", res, numinst++, *len)
