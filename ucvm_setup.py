@@ -591,7 +591,10 @@ while enteredpath != "":
     # Check to see that that path exists and is writable.
     if not os.access(os.path.dirname(enteredpath.rstrip("/")), os.W_OK | os.X_OK):
         print("\n" + enteredpath + " does not exist or is not writable.")
-        enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
+        if sys.version_info.major >= (3) :
+          enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
+        else
+          enteredpath = raw_input("Exiting:Please enter a different path or blank to use the default path: ")
         sys.exit(0)
     else:
         break
@@ -621,7 +624,11 @@ for model in sorted(iter(config_data["models"].keys()), key=lambda k: config_dat
 
     if config_data["models"][model]["Ask"] != "no":
         print("\nWould you like to install " + model + "?")
-        dlinstmodel = input("Enter yes or no: ")
+        if sys.version_info.major >= (3) :
+          dlinstmodel = input("Enter yes or no: ")
+        else:
+          dlinstmodel = raw_input("Enter yes or no: ")
+
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
@@ -645,7 +652,10 @@ for library in config_data["libraries"]:
             print("will install correctly on your system if you install it with this library included.")
             
         print("\nWould you like to install support for " + library + "?")
-        dlinstlibrary = input("Enter yes or no: ")
+        if sys.version_info.major >= (3) :
+          dlinstlibrary = input("Enter yes or no: ")
+        else:
+          dlinstlibrary = raw_input("Enter yes or no: ")
                  
         if dlinstlibrary.strip() != "" and dlinstlibrary.strip().lower()[0] == "y":
             librariesToInstall.append(library)
