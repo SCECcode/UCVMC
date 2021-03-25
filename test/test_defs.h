@@ -10,8 +10,9 @@
 #define False 0
 
 #define MAX_POINTS 4000000
-#define MAX_TEST_NAME 64
-#define MAX_STRING_LEN 256
+#define MAX_TEST_NAME 256
+#define MAX_STRING_LEN 1024
+#define MAX_LINE_LEN 4096
 
 #define OUTPUT_FMT "%10.4lf %10.4lf %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf %10s %10.3lf %10.3lf %10.3lf\n"
 
