@@ -167,9 +167,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
     createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
-    if config_data["Path"] == "albacore":
-        configure_array.append("--with-etree-lib-path=" + ucvmpath + "/lib/euclid3/lib")
-        configure_array.append("--with-etree-include-path=" + ucvmpath + "/lib/euclid3/include")
+    if config_data["Path"] == "imperial":
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
         configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cvms5":
@@ -593,7 +591,7 @@ while enteredpath != "":
         print("\n" + enteredpath + " does not exist or is not writable.")
         if sys.version_info.major >= (3) :
           enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
-        else
+        else:
           enteredpath = raw_input("Exiting:Please enter a different path or blank to use the default path: ")
         sys.exit(0)
     else:
@@ -628,7 +626,6 @@ for model in sorted(iter(config_data["models"].keys()), key=lambda k: config_dat
           dlinstmodel = input("Enter yes or no: ")
         else:
           dlinstmodel = raw_input("Enter yes or no: ")
-
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
@@ -787,8 +784,6 @@ callAndRecord(["make", "clean"])
 callAndRecord(["make"])
 
 if platform.system() == "Darwin" or platform.system() == "Linux" or dynamic_flag == True:
-    print("XXX HERE...")
-    print(modelsToInstall)
     makeBashScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     makePythonScript(os.getcwd(), ucvmpath ,modelsToInstall, librariesToInstall)
     linkPROJ_5(ucvmpath)

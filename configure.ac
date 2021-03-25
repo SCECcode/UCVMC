@@ -291,8 +291,8 @@ AC_ARG_WITH([imperial-include-path],
   [IMPERIAL_INCL="/usr/include/imperial"])
 AC_ARG_WITH([imperial-lib-path],
   [AS_HELP_STRING([--with-imperial-lib-path], [location of the SCEC IMPERIAL libraries])],
-  [IMPERIAL_LIB="-L$withval -limperial -lproj -letree"],
-  [IMPERIAL_LIB="-limperial -lproj -letree"])
+  [IMPERIAL_LIB="-L$withval -limperial -lproj"],
+  [IMPERIAL_LIB="-limperial -lproj"])
 fi
 
 

@@ -676,6 +676,22 @@ int suite_lib(const char *xmldir)
   suite.num_tests++;
 #endif
 
+#ifdef _UCVM_ENABLE_IMPERIAL
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_imperial");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_imperial;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_COACHELLA
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_coachella");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_coachella;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
 #ifdef _UCVM_ENABLE_ALBACORE
   strcpy(suite.tests[suite.num_tests].test_name, 
   	 "test_lib_add_model_albacore");
