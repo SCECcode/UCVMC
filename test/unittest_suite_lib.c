@@ -588,6 +588,15 @@ int suite_lib(const char *xmldir)
 #ifdef _UCVM_ENABLE_CVMSI
   suite.num_tests++;
 #endif
+#ifdef _UCVM_ENABLE_IMPERIAL
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_COACHELLA
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_ALBACORE
+  suite.num_tests++;
+#endif
 #ifdef _UCVM_ENABLE_CVMS5
   suite.num_tests++;
 #endif
