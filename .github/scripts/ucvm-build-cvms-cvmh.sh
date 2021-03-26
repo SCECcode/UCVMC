@@ -16,6 +16,8 @@ n
 n
 y
 n
+n
+n
 EOF
 cd $UCVM_SRC_PATH/largefiles; ./check_largefiles_md5.py
 cd $UCVM_SRC_PATH/largefiles; ./stage_large_files.py

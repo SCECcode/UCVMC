@@ -24,6 +24,8 @@ n
 n
 y
 n
+n
+n
 EOF
 
 if [ $tmp != 'Darwin' ]; then
