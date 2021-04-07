@@ -133,6 +133,30 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 
 #ifdef _UCVM_AM_STATIC
+#ifdef _UCVM_ENABLE_COACHELLA
+        if (strcmp(conf->label, UCVM_MODEL_COACHELLA) == 0) {
+                pptr->model_init = &coachella_init;
+                pptr->model_query = &coachella_query;
+                pptr->model_finalize = &coachella_finalize;
+                pptr->model_version = &coachella_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
+                        fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
+                        return UCVM_CODE_ERROR;
+                }
+        }
+#endif
+#ifdef _UCVM_ENABLE_IMPERIAL
+        if (strcmp(conf->label, UCVM_MODEL_IMPERIAL) == 0) {
+                pptr->model_init = &imperial_init;
+                pptr->model_query = &imperial_query;
+                pptr->model_finalize = &imperial_finalize;
+                pptr->model_version = &imperial_version;
+                if ((*pptr->model_init)(conf->config, conf->label) != 0) {
+                        fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
+                        return UCVM_CODE_ERROR;
+                }
+        }
+#endif
 #ifdef _UCVM_ENABLE_ALBACORE
         if (strcmp(conf->label, UCVM_MODEL_ALBACORE) == 0) {
                 pptr->model_init = &albacore_init;
