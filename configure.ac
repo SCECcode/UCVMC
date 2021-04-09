@@ -288,12 +288,12 @@ if test "x$enable_model_ivlsu" = xyes; then
 AC_ARG_WITH([ivlsu-include-path],
   [AS_HELP_STRING([--with-ivlsu-include-path],
     [location of the SCEC IMPERIAL headers])],
-  [IMPERIAL_INCL="-I$withval"],
-  [IMPERIAL_INCL="/usr/include/ivlsu"])
+  [IVLSU_INCL="-I$withval"],
+  [IVLSU_INCL="/usr/include/ivlsu"])
 AC_ARG_WITH([ivlsu-lib-path],
   [AS_HELP_STRING([--with-ivlsu-lib-path], [location of the SCEC IMPERIAL libraries])],
-  [IMPERIAL_LIB="-L$withval -livlsu -lproj"],
-  [IMPERIAL_LIB="-livlsu -lproj"])
+  [IVLSU_LIB="-L$withval -livlsu -lproj"],
+  [IVLSU_LIB="-livlsu -lproj"])
 fi
 
 # Get SCEC COACHELLA library and include locations
@@ -303,7 +303,7 @@ AC_ARG_WITH([cvlsu-include-path],
     [location of the SCEC COACHELLA headers])],
   [CVLSU_INCL="-I$withval"],
   [CVLSU_INCL="/usr/include/cvlsu"])
-AC_ARG_WITH([albacore-lib-path],
+AC_ARG_WITH([cvlsu-lib-path],
   [AS_HELP_STRING([--with-cvlsu-lib-path], [location of the SCEC COACHELLA libraries])],
   [CVLSU_LIB="-L$withval -lcvlsu"],
   [CVLSU_LIB="-lcvlsu"])
@@ -597,17 +597,17 @@ fi
 if test "x$enable_static" = xyes; then
 if test "x$enable_model_ivlsu" = xyes; then
    # Setup compiler/linker flags
-   CFLAGS="$IMPERIAL_INCL $CFLAGS"
-   LDFLAGS="$IMPERIAL_LIB $LDFLAGS"
+   CFLAGS="$IVLSU_INCL $CFLAGS"
+   LDFLAGS="$IVLSU_LIB $LDFLAGS"
 
    echo "Checking for SCEC IMPERIAL"
-   AC_CHECK_LIB(albacore, ivlsu_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, true)], [AC_MSG_ERROR(["SCEC IMPERIAL library not found; use --with-ivlsu-lib-path"])],[-lproj -letree -lm])
+   AC_CHECK_LIB(albacore, ivlsu_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, true)], [AC_MSG_ERROR(["SCEC IMPERIAL library not found; use --with-ivlsu-lib-path"])],[-lproj -letree -lm])
    AC_CHECK_HEADER(ivlsu.h,[],[AC_MSG_ERROR(["SCEC IMPERIAL header not found; use --with-ivlsu-include-path"])],[AC_INCLUDES_DEFAULT])
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, false)
+   AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, [test x"$enable_model_ivlsu" = xyes])
+   AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, [test x"$enable_model_ivlsu" = xyes])
 fi
 
 # Check optional SCEC CVLSU installation
