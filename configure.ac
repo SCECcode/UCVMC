@@ -74,17 +74,17 @@ AC_ARG_ENABLE([model-cvms],
         [enable_model_cvms=yes],
         [enable_model_cvms=no])
 
-AC_ARG_ENABLE([model-imperial],
-        [AS_HELP_STRING([--enable-model-imperial],
+AC_ARG_ENABLE([model-ivlsu],
+        [AS_HELP_STRING([--enable-model-ivlsu],
         [enable model SCEC IMPERIAL])],
-        [enable_model_imperial=yes],
-        [enable_model_imperial=no])
+        [enable_model_ivlsu=yes],
+        [enable_model_ivlsu=no])
         
-AC_ARG_ENABLE([model-coachella],
-        [AS_HELP_STRING([--enable-model-coachella],
+AC_ARG_ENABLE([model-cvlsu],
+        [AS_HELP_STRING([--enable-model-cvlsu],
         [enable model SCEC COACHELLA])],
-        [enable_model_coachella=yes],
-        [enable_model_coachella=no])
+        [enable_model_cvlsu=yes],
+        [enable_model_cvlsu=no])
         
 AC_ARG_ENABLE([model-albacore],
         [AS_HELP_STRING([--enable-model-albacore],
@@ -283,30 +283,30 @@ AC_ARG_WITH([cvmsi-model-path],
   [CVMSI_MODEL="/usr/cvmsi/model"])
 fi
 
-if test "x$enable_model_imperial" = xyes; then
-AC_ARG_WITH([imperial-include-path],
-  [AS_HELP_STRING([--with-imperial-include-path],
+# Get SCEC IMPERIAL library and include locations
+if test "x$enable_model_ivlsu" = xyes; then
+AC_ARG_WITH([ivlsu-include-path],
+  [AS_HELP_STRING([--with-ivlsu-include-path],
     [location of the SCEC IMPERIAL headers])],
   [IMPERIAL_INCL="-I$withval"],
-  [IMPERIAL_INCL="/usr/include/imperial"])
-AC_ARG_WITH([imperial-lib-path],
-  [AS_HELP_STRING([--with-imperial-lib-path], [location of the SCEC IMPERIAL libraries])],
-  [IMPERIAL_LIB="-L$withval -limperial -lproj"],
-  [IMPERIAL_LIB="-limperial -lproj"])
+  [IMPERIAL_INCL="/usr/include/ivlsu"])
+AC_ARG_WITH([ivlsu-lib-path],
+  [AS_HELP_STRING([--with-ivlsu-lib-path], [location of the SCEC IMPERIAL libraries])],
+  [IMPERIAL_LIB="-L$withval -livlsu -lproj"],
+  [IMPERIAL_LIB="-livlsu -lproj"])
 fi
 
-
 # Get SCEC COACHELLA library and include locations
-if test "x$enable_model_coachella" = xyes; then
-AC_ARG_WITH([coachella-include-path],
+if test "x$enable_model_cvlsu" = xyes; then
+AC_ARG_WITH([cvlsu-include-path],
   [AS_HELP_STRING([--with-coachell-include-path],
     [location of the SCEC COACHELLA headers])],
-  [COACHELLA_INCL="-I$withval"],
-  [COACHELLA_INCL="/usr/include/coachella"])
+  [CVLSU_INCL="-I$withval"],
+  [CVLSU_INCL="/usr/include/cvlsu"])
 AC_ARG_WITH([albacore-lib-path],
-  [AS_HELP_STRING([--with-coachella-lib-path], [location of the SCEC COACHELLA libraries])],
-  [COACHELLA_LIB="-L$withval -lcoachella"],
-  [COACHELLA_LIB="-lcoachella"])
+  [AS_HELP_STRING([--with-cvlsu-lib-path], [location of the SCEC COACHELLA libraries])],
+  [CVLSU_LIB="-L$withval -lcvlsu"],
+  [CVLSU_LIB="-lcvlsu"])
 fi
 
 # Get SCEC ALBACORE library and include locations
@@ -595,36 +595,36 @@ fi
 
 # Check optional SCEC IMPERIAL installation
 if test "x$enable_static" = xyes; then
-if test "x$enable_model_imperial" = xyes; then
+if test "x$enable_model_ivlsu" = xyes; then
    # Setup compiler/linker flags
    CFLAGS="$IMPERIAL_INCL $CFLAGS"
    LDFLAGS="$IMPERIAL_LIB $LDFLAGS"
 
    echo "Checking for SCEC IMPERIAL"
-   AC_CHECK_LIB(albacore, imperial_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, true)], [AC_MSG_ERROR(["SCEC IMPERIAL library not found; use --with-imperial-lib-path"])],[-lproj -letree -lm])
-   AC_CHECK_HEADER(imperial.h,[],[AC_MSG_ERROR(["SCEC IMPERIAL header not found; use --with-imperial-include-path"])],[AC_INCLUDES_DEFAULT])
+   AC_CHECK_LIB(albacore, ivlsu_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, true)], [AC_MSG_ERROR(["SCEC IMPERIAL library not found; use --with-ivlsu-lib-path"])],[-lproj -letree -lm])
+   AC_CHECK_HEADER(ivlsu.h,[],[AC_MSG_ERROR(["SCEC IMPERIAL header not found; use --with-ivlsu-include-path"])],[AC_INCLUDES_DEFAULT])
 else
    AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, [test x"$enable_model_imperial" = xyes])
+   AM_CONDITIONAL(UCVM_AM_ENABLE_IMPERIAL, [test x"$enable_model_ivlsu" = xyes])
 fi
 
-# Check optional SCEC COACHELLA installation
+# Check optional SCEC CVLSU installation
 if test "x$enable_static" = xyes; then
-if test "x$enable_model_coachella" = xyes; then
+if test "x$enable_model_cvlsu" = xyes; then
    # Setup compiler/linker flags
-   CFLAGS="$COACHELLA_INCL $CFLAGS"
-   LDFLAGS="$COACHELLA_LIB $LDFLAGS"
+   CFLAGS="$CVLSU_INCL $CFLAGS"
+   LDFLAGS="$CVLSU_LIB $LDFLAGS"
 
-   echo "Checking for SCEC COACHELLA"
-   AC_CHECK_LIB(coachella, coachell_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_COACHELLA, true)], [AC_MSG_ERROR(["SCEC COACHELLA library not found; use --with-coachella-lib-path"])],[-lm])
-   AC_CHECK_HEADER(coachella.h,[],[AC_MSG_ERROR(["SCEC COACHELLA header not found; use --with-coachella-include-path"])],[AC_INCLUDES_DEFAULT])
+   echo "Checking for SCEC CVLSU"
+   AC_CHECK_LIB(cvlsu, coachell_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, true)], [AC_MSG_ERROR(["SCEC CVLSU library not found; use --with-cvlsu-lib-path"])],[-lm])
+   AC_CHECK_HEADER(cvlsu.h,[],[AC_MSG_ERROR(["SCEC CVLSU header not found; use --with-cvlsu-include-path"])],[AC_INCLUDES_DEFAULT])
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_COACHELLA, false)
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, false)
 fi
 else
-   AM_CONDITIONAL(UCVM_AM_ENABLE_COACHELLA, [test x"$enable_model_coachella" = xyes])
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, [test x"$enable_model_cvlsu" = xyes])
 fi
 
 # Check optional SCEC ALBACORE installation

@@ -167,7 +167,7 @@ def installConfigMakeInstall(tarname, ucvmpath, type, config_data):
     configure_array = ["./configure", "--prefix=" + ucvmpath + "/" + pathname + "/" + config_data["Path"]]
     createInstallTargetPath( ucvmpath + "/" + pathname + "/" + config_data["Path"])
     
-    if config_data["Path"] == "imperial":
+    if config_data["Path"] == "ivlsu":
         configure_array.append("--with-proj4-lib-path=" + ucvmpath + "/lib/proj-5/lib")
         configure_array.append("--with-proj4-include-path=" + ucvmpath + "/lib/proj-5/include")
     elif config_data["Path"] == "cvms5":
@@ -248,11 +248,11 @@ def _add2LIBRARYPATH_bash(modelsToInstall, librariesToInstall) :
         str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
         str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvms/lib\n"
     if "IMPERIAL" in modelsToInstall:
-        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/imperial/lib\n"
-        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/imperial/lib\n"
+        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/ivlsu/lib\n"
+        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/ivlsu/lib\n"
     if "COACHELLA" in modelsToInstall:
-        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/coachella/lib\n"
-        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/coachella/lib\n"
+        str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvlsu/lib\n"
+        str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/cvlsu/lib\n"
     if "ALBACORE" in modelsToInstall:
         str=str+"add2LD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
         str=str+"add2DYLD_LIBRARY_PATH ${UCVM_INSTALL_PATH}/model/albacore/lib\n"
@@ -370,11 +370,11 @@ def _add2LIBRARYPATH_python(modelsToInstall, librariesToInstall) :
         str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvms/lib\")\n"
         str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvms/lib\")\n"
     if "IMPERIAL" in modelsToInstall:
-        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/imperial/lib\")\n"
-        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/imperial/lib\")\n"
+        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/ivlsu/lib\")\n"
+        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/ivlsu/lib\")\n"
     if "COACHELLA" in modelsToInstall:
-        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/coachella/lib\")\n"
-        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/coachella/lib\")\n"
+        str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvlsu/lib\")\n"
+        str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/cvlsu/lib\")\n"
     if "ALBACORE" in modelsToInstall:
         str=str+"   add2LD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/albacore/lib\")\n"
         str=str+"   add2DYLD_LIBRARY_PATH(UCVM_INSTALL_PATH + \"model/albacore/lib\")\n"

@@ -152,7 +152,7 @@ int ucvm_init(const char *config)
   }
 
   /* Uncomment to dump config to screen */
-  //ucvm_dump_config(ucvm_cfg);
+  // ucvm_dump_config(ucvm_cfg);
 
   /* Check that UCVM interface and map path are defined */
   cfgentry = ucvm_find_name(ucvm_cfg, "ucvm_interface");
@@ -412,6 +412,7 @@ int ucvm_add_model(const char *label) {
   /* Lookup any plugin-based model. */
   if (retval != UCVM_CODE_SUCCESS && is_predef == 0) {
 	  snprintf(key, UCVM_CONFIG_MAX_STR, "ucvm_install_path");
+
 	  cfgentry = ucvm_find_name(ucvm_cfg, key);
 	  retval = ucvm_plugin_get_model(cfgentry->value, label, &m);
 
@@ -420,6 +421,7 @@ int ucvm_add_model(const char *label) {
 	  is_predef = 1;
 	  is_plugin = 1;
   }
+
 
   /* Lookup user-defined model */
   if ((retval != UCVM_CODE_SUCCESS) && 
@@ -1118,16 +1120,16 @@ int ucvm_get_resources(ucvm_resource_t *res, int *len)
 #endif
 
 /*** for plugin ***/
-#ifdef _UCVM_ENABLE_IMPERIAL
+#ifdef _UCVM_ENABLE_IVLSU
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
-                     UCVM_MODEL_IMPERIAL, "", res, numinst++, *len)
+                     UCVM_MODEL_IVLSU, "", res, numinst++, *len)
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }
 #endif
-#ifdef _UCVM_ENABLE_COACHELLA
+#ifdef _UCVM_ENABLE_CVLSU
   if (ucvm_save_resource(UCVM_RESOURCE_MODEL, UCVM_MODEL_CRUSTAL,
-                     UCVM_MODEL_COACHELLA, "", res, numinst++, *len)
+                     UCVM_MODEL_CVLSU, "", res, numinst++, *len)
       != UCVM_CODE_SUCCESS) {
     return(UCVM_CODE_ERROR);
   }

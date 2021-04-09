@@ -9,17 +9,17 @@
 #endif
 
 #ifdef _UCVM_AM_STATIC
-#ifdef _UCVM_ENABLE_IMPERIAL
-	extern int imperial_init;
-	extern int imperial_query;
-	extern int imperial_finalize;
-	extern int imperial_version;
+#ifdef _UCVM_ENABLE_IVLSU
+	extern int ivlsu_init;
+	extern int ivlsu_query;
+	extern int ivlsu_finalize;
+	extern int ivlsu_version;
 #endif
-#ifdef _UCVM_ENABLE_COACHELLA
-	extern int coachella_init;
-	extern int coachella_query;
-	extern int coachella_finalize;
-	extern int coachella_version;
+#ifdef _UCVM_ENABLE_CVLSU
+	extern int cvlsu_init;
+	extern int cvlsu_query;
+	extern int cvlsu_finalize;
+	extern int cvlsu_version;
 #endif
 #ifdef _UCVM_ENABLE_ALBACORE
 	extern int albacore_init;
@@ -133,24 +133,24 @@ int ucvm_plugin_model_init(int id, ucvm_modelconf_t *conf) {
 #endif
 
 #ifdef _UCVM_AM_STATIC
-#ifdef _UCVM_ENABLE_COACHELLA
-        if (strcmp(conf->label, UCVM_MODEL_COACHELLA) == 0) {
-                pptr->model_init = &coachella_init;
-                pptr->model_query = &coachella_query;
-                pptr->model_finalize = &coachella_finalize;
-                pptr->model_version = &coachella_version;
+#ifdef _UCVM_ENABLE_CVLSU
+        if (strcmp(conf->label, UCVM_MODEL_CVLSU) == 0) {
+                pptr->model_init = &cvlsu_init;
+                pptr->model_query = &cvlsu_query;
+                pptr->model_finalize = &cvlsu_finalize;
+                pptr->model_version = &cvlsu_version;
                 if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
                 }
         }
 #endif
-#ifdef _UCVM_ENABLE_IMPERIAL
-        if (strcmp(conf->label, UCVM_MODEL_IMPERIAL) == 0) {
-                pptr->model_init = &imperial_init;
-                pptr->model_query = &imperial_query;
-                pptr->model_finalize = &imperial_finalize;
-                pptr->model_version = &imperial_version;
+#ifdef _UCVM_ENABLE_IVLSU
+        if (strcmp(conf->label, UCVM_MODEL_IVLSU) == 0) {
+                pptr->model_init = &ivlsu_init;
+                pptr->model_query = &ivlsu_query;
+                pptr->model_finalize = &ivlsu_finalize;
+                pptr->model_version = &ivlsu_version;
                 if ((*pptr->model_init)(conf->config, conf->label) != 0) {
                         fprintf(stderr, "Failed to initialize model, %s.\n", conf->label);
                         return UCVM_CODE_ERROR;
@@ -413,6 +413,7 @@ int ucvm_plugin_get_model(const char *dir, const char *label, ucvm_model_t *m) {
 	FILE *fp;
 
 	snprintf(sofile, 1024, "%s/model/%s/lib/lib%s.so", dir, label, label);
+fprintf(stderr, "\nXXX trying to get here..%s\n",sofile);
 	if ((fp = fopen(sofile, "r"))) {
 		fclose(fp);
 		m->mtype = UCVM_MODEL_CRUSTAL;
