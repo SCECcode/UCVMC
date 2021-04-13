@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # 
 # Script for downloading UCVM largefiles from remote repository site
 # into the UCVMC/largefiles subdirectory.
@@ -6,7 +6,11 @@
 #
 import os
 import sys
-from urllib.request import urlopen 
+
+if sys.version_info.major >= (3) :
+  from urllib.request import urlopen 
+else:
+  from urllib2 import urlopen
 
 #
 UCVM_Version = "19.4"
@@ -23,7 +27,9 @@ optional_large_model_list = [ "cvms5",
                     "cvms426",
                     "cencal080",
                     "cvmh-15.1.1",
-                    "albacore"]
+                    "albacore",
+                    "cvlsu",
+                    "ivlsu"]
 optional_large_model_size = { 'cvms5':'1.2G',
                               'cca':'9.2G',
                               'cs173':'72G',
@@ -32,7 +38,9 @@ optional_large_model_size = { 'cvms5':'1.2G',
                               'cvms426':'1.6G',
                               'cencal080':'21G',
                               'cvmh-15.1.1':'1.6G',
-                              'albacore':'2.3M'}
+                              'albacore':'2.3M',
+                              'cvlsu':'1M',
+                              'ivlsu':'1M'}
 target_large_lib_list = ["proj-5.0.0.tar.gz",
                   "fftw-3.3.3.tar.gz",
                   "euclid3-1.3.tar.gz"]
@@ -78,7 +86,11 @@ else:
 #
 for m in optional_large_model_list:
    print("\nWould you like to download " + m + ", will need "+ optional_large_model_size[m] + "?") 
-   yesmodel = input("Enter yes or no: ")
+   if sys.version_info.major >= (3) :
+     yesmodel = input("Enter yes or no: ")
+   else:
+     yesmodel = raw_input("Enter yes or no: ")
+
    if yesmodel != "" and yesmodel.lower()[0] == "y":
      model = m + '.tar.gz'
      target_large_model_list.append(model)

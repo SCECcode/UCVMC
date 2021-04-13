@@ -1,5 +1,4 @@
-
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # This is the install script for the UCVM software framework.
 # This work in conjuction with scripts in the largefiles directory. The largefile scripts will download and distribute
@@ -388,7 +387,7 @@ try:
     json_string = f.read()
     f.close()
     system_data = json.loads(json_string)
-except (OSError, e):
+except OSError as e:
     eG(e, "Parsing list of supported systems.")
     
 try:
@@ -423,7 +422,7 @@ try:
                                 exec(k3 + " = " + v3["value"])
                             else:
                                 exec(k3 + " = " + v3)
-except (Exception, e):
+except Exception as e:
     eG(e, "Checking system conditions.")
 
 if error_out == True:
@@ -438,7 +437,7 @@ try:
     json_string = f.read()
     f.close()
     config_data = json.loads(json_string)
-except (OSError, e):
+except OSError as e:
     eG(e, "Parsing available model list.")
 
 print("\nPlease answer the following questions to install UCVM.\n")
@@ -459,7 +458,11 @@ ucvmpath = ucvmpath.rstrip("/") + "/ucvm-" + VERSION
 ##XXucvmpath = "/usr/local/opt/ucvm"
 
 print("(Default: " + ucvmpath + ")")
-enteredpath = input("Enter path or blank to use the default path: ")
+if sys.version_info.major >= (3) :
+    enteredpath = input("Enter path or blank to use the default path: ")
+else:
+    enteredpath = raw_input("Enter path or blank to use the default path: ")
+
 ##
 if enteredpath.strip() == "":
     enteredpath = ucvmpath
@@ -469,7 +472,10 @@ while enteredpath != "":
     # Check to see that that path exists and is writable.
     if not os.access(os.path.dirname(enteredpath.rstrip("/")), os.W_OK | os.X_OK):
         print("\n" + enteredpath + " does not exist or is not writable.")
-        enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
+        if sys.version_info.major >= (3) :
+          enteredpath = input("Exiting:Please enter a different path or blank to use the default path: ")
+        else:
+          enteredpath = raw_input("Exiting:Please enter a different path or blank to use the default path: ")
         sys.exit(0)
     else:
         break
@@ -499,7 +505,10 @@ for model in sorted(iter(config_data["models"].keys()), key=lambda k: config_dat
 
     if config_data["models"][model]["Ask"] != "no":
         print("\nWould you like to install " + model + "?")
-        dlinstmodel = input("Enter yes or no: ")
+        if sys.version_info.major >= (3) :
+          dlinstmodel = input("Enter yes or no: ")
+        else:
+          dlinstmodel = raw_input("Enter yes or no: ")
      
         if dlinstmodel != "" and dlinstmodel.lower()[0] == "y":
             modelsToInstall.append(model)
@@ -523,8 +532,11 @@ for library in config_data["libraries"]:
             print("will install correctly on your system if you install it with this library included.")
             
         print("\nWould you like to install support for " + library + "?")
-        dlinstlibrary = input("Enter yes or no: ")
-                 
+        if sys.version_info.major >= (3) :
+          dlinstmodel = input("Enter yes or no: ")
+        else:
+          dlinstmodel = raw_input("Enter yes or no: ")
+
         if dlinstlibrary.strip() != "" and dlinstlibrary.strip().lower()[0] == "y":
             librariesToInstall.append(library)
     elif the_library["Required"] == "yes":
@@ -543,7 +555,7 @@ try:
     if not os.path.exists("./work") or not os.access("./work", os.W_OK | os.X_OK):
         print("Could not create ./work directory.")
         sys.exit(1)
-except (OSError, e):
+except OSError as e:
     eG(e, "Could not create ./work directory.")
 
 print("\nNow setting up the required UCVM libraries...")
@@ -566,7 +578,7 @@ for library in config_data["libraries"]:
             tarname = the_library["URL"].split("/")[-1]
             print("Calling URL Install with tarname,ucvmpath,library:",tarname,ucvmpath)
             installConfigMakeInstall(tarname, ucvmpath, "library", the_library)
-        except (Exception, e):
+        except Exception as e:
             eG(e, "Error installing library " + library + ".")
 
 print("\nNow setting up CVM models...")
@@ -591,7 +603,7 @@ for model in config_data["models"]:
             else:
                 print("Model tar file found in work directory:",ltarname)
             installConfigMakeInstall(tarname, ucvmpath, "model", the_model)
-        except (Exception, e):
+        except Exception as e:
             eG(e, "Error installing model " + model + ".")
 
 # Now that the models are installed, we can finally install UCVM!
@@ -687,7 +699,7 @@ try:
     f = open('./setup_log.sh', 'w')
     f.write(shell_script)
     f.close()
-except (OSError, e):
+except OSError as e:
     eG(e, "Saving setup_log.sh.")
 
 # Write out a installation json file (expanded from setup.list)
@@ -695,7 +707,7 @@ try:
     f = open('./setup_install.list', 'w')
     f.write(json.dumps(config_data,indent=2,sort_keys=True))
     f.close()
-except (OSError, e):
+except OSError as e:
     eG(e, "Saving setup_install.list.")
 
 print("\nInstallation complete. Installation log file saved at ./setup_log.sh\n")
