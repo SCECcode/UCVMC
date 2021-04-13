@@ -415,6 +415,56 @@ int test_lib_add_model_cvms5()
 }
 
 
+int test_lib_add_model_ivlsu()
+{
+  printf("Test: UCVM lib add model IVLSU\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_IVLSU) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_IVLSU);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
+int test_lib_add_model_cvlsu()
+{
+  printf("Test: UCVM lib add model CVLSU\n");
+
+  /* Setup UCVM */
+  if (ucvm_init("../conf/ucvm.conf") != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to initialize UCVM API\n");
+    return(1);
+  }
+
+  /* Add model */
+  if (ucvm_add_model(UCVM_MODEL_CVLSU) != UCVM_CODE_SUCCESS) {
+    fprintf(stderr, "FAIL: Failed to enable model %s\n", 
+	    UCVM_MODEL_CVLSU);
+    ucvm_finalize();
+    return(1);
+  }
+
+  /* Finalize UCVM */
+  ucvm_finalize();
+
+  printf("PASS\n");
+  return(0);
+}
+
 int test_lib_add_model_albacore()
 {
   printf("Test: UCVM lib add model ALBACORE\n");
@@ -538,6 +588,15 @@ int suite_lib(const char *xmldir)
 #ifdef _UCVM_ENABLE_CVMSI
   suite.num_tests++;
 #endif
+#ifdef _UCVM_ENABLE_IVLSU
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_CVLSU
+  suite.num_tests++;
+#endif
+#ifdef _UCVM_ENABLE_ALBACORE
+  suite.num_tests++;
+#endif
 #ifdef _UCVM_ENABLE_CVMS5
   suite.num_tests++;
 #endif
@@ -622,6 +681,22 @@ int suite_lib(const char *xmldir)
   strcpy(suite.tests[suite.num_tests].test_name, 
   	 "test_lib_add_model_cvmsi");
   suite.tests[suite.num_tests].test_func = &test_lib_add_model_cvmsi;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_IVLSU
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_ivlsu");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_ivlsu;
+  suite.tests[suite.num_tests].elapsed_time = 0.0;
+  suite.num_tests++;
+#endif
+
+#ifdef _UCVM_ENABLE_CVLSU
+  strcpy(suite.tests[suite.num_tests].test_name, 
+  	 "test_lib_add_model_cvlsu");
+  suite.tests[suite.num_tests].test_func = &test_lib_add_model_cvlsu;
   suite.tests[suite.num_tests].elapsed_time = 0.0;
   suite.num_tests++;
 #endif

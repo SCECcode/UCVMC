@@ -27,7 +27,7 @@ int test_assert_int(int val1, int val2)
 /* Assert two floats are approximately equal */
 int test_assert_float(float val1, float val2)
 {
-  if (abs(val1 - val2) > 0.01) {
+  if (fabsf(val1 - val2) > 0.01) {
     fprintf(stderr, "FAIL: assertion %f != %f\n", val1, val2);
     return(1);
   }
@@ -38,7 +38,7 @@ int test_assert_float(float val1, float val2)
 /* Assert two doubles are approximately equal */
 int test_assert_double(double val1, double val2)
 {
-  if (abs(val1 - val2) > 0.01) {
+  if (fabs(val1 - val2) > 0.01) {
     fprintf(stderr, "FAIL: assertion %lf != %lf\n", val1, val2);
     return(1);
   }
@@ -61,7 +61,7 @@ int test_assert_string(const char* val1, const char * val2)
 int test_assert_file(const char *file1, const char *file2)
 {
   FILE *fp1, *fp2;
-  char line1[MAX_STRING_LEN], line2[MAX_STRING_LEN];
+  char line1[MAX_LINE_LEN], line2[MAX_LINE_LEN];
 
   fp1 = fopen(file1, "r");
   fp2 = fopen(file2, "r");
@@ -70,8 +70,8 @@ int test_assert_file(const char *file1, const char *file2)
     return(1);
   }
   while ((!feof(fp1)) && (!feof(fp2))) {
-    memset(line1, 0, MAX_STRING_LEN);
-    memset(line2, 0, MAX_STRING_LEN);
+    memset(line1, 0, MAX_LINE_LEN);
+    memset(line2, 0, MAX_LINE_LEN);
     fread(line1, 1, 127, fp1);
     fread(line2, 1, 127, fp2);
     if (test_assert_int(strcmp(line1, line2), 0) != 0) {
@@ -122,7 +122,7 @@ int test_run_suite(test_suite_t *suite)
 /* Initialize XML formatted logfiles */
 FILE *init_log(const char *logfile)
 {
-  char line[MAX_STRING_LEN];
+  char line[MAX_LINE_LEN];
   FILE *lf;
 
   lf = fopen(logfile, "w");
@@ -153,7 +153,7 @@ int write_log(FILE *lf, test_suite_t *suite)
 {
   char hostname[MAX_STRING_LEN];
   char datestr[MAX_STRING_LEN];
-  char line[MAX_STRING_LEN];
+  char line[MAX_LINE_LEN];
   int i;
   int num_fail = 0;
   double suite_elapsed = 0.0;

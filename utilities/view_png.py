@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 ##
 #  @file view_png.py
@@ -28,7 +28,7 @@ def get_user_opts(options):
     opts_opt = []
     ret_val = {}
     
-    for key, value in options.iteritems():
+    for key, value in options.items():
         short_opt_string = short_opt_string + key.split(",")[0] + ":"
         long_opts.append(key.split(",")[1])
         opts_left.append(key.split(",")[0])
@@ -40,7 +40,7 @@ def get_user_opts(options):
         exit(1)
     
     for o, a in opts:
-        for key, value in options.iteritems():
+        for key, value in options.items():
             if o == "-" + key.split(",")[0] or o == "--" + key.split(",")[1]:
                 opts_left.remove(key.split(",")[0])
                 if "," in value:
@@ -61,12 +61,12 @@ if ret_val == "bad":
     exit(1)
 elif len(ret_val) > 0:
     print("Using parameters:\n")
-    for key, value in ret_val.iteritems():
-        print(key , " = " , value)
+    for key, value in ret_val.items():
+        print(key +" = "+ value)
         try:
             float(value)
             exec("%s = float(%s)" % (key, value))
-        except StandardError, e:
+        except Exception:
             if value is None:
                 exec("%s = %s" % (key, value))
             else:

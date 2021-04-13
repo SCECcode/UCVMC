@@ -3,32 +3,46 @@ name: ucvm-ci
 on:
   push:
     branches: [ toPython3 ]
-  pull_request:
-    branches: [ toPython3 ]
 
 jobs:
-  build:
+  ucvm-build-cvmh:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: set UCVM_SRC_PATH 
+      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
+    - name: set UCVM_INSTALL_PATH 
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+      with: 
+        ref: toPython3
+    - name: build ucvm with cvmh
+      run: ./.github/scripts/ucvm-build-cvmh.sh 
+      shell: bash
+    - name: test ucvm with cvmh
+      run: ./.github/scripts/ucvm-test.sh
+      shell: bash
 
+  ucvm-build-cvms-cvmh:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
-
     steps:
     - name: set UCVM_SRC_PATH 
-      run: echo "::set-env name=UCVM_SRC_PATH::$RUNNER_WORKSPACE/UCVMC"
+      run: echo "UCVM_SRC_PATH=$RUNNER_WORKSPACE/UCVMC" >> $GITHUB_ENV
     - name: set UCVM_INSTALL_PATH 
-      run: echo "::set-env name=UCVM_INSTALL_PATH::$RUNNER_WORKSPACE/UCVMC_TARGET"
-    - name: set LD_LIBRARY_PATH 
-      run: echo "::set-env name=LD_LIBRARY_PATH::$UCVM_INSTALL_PATH/lib/euclid3/lib:$UCVM_INSTALL_PATH/lib/proj-5/lib:$UCVM_INSTALL_PATH/model/cvms/lib:$UCVM_INSTALL_PATH/model/cvms5/lib:$UCVM_INSTALL_PATH/model/cvmh1511/lib"
-    - uses: actions/checkout@v2
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/TARGET" >> $GITHUB_ENV
+    - name: checkout ucvm toPython3
+      uses: actions/checkout@v2
       with: 
         ref: toPython3
-    - name: build ucvm
-      run: ./ci/runner-build.sh
+    - name: build ucvm with cvms and cvmh
+      run: ./.github/scripts/ucvm-build-cvms-cvmh.sh
       shell: bash
-    - name: debug build
-      run: ./ci/runner-debug.sh
+    - name: test ucvm with cvms and cvmh
+      run: ./.github/scripts/ucvm-test.sh
       shell: bash
-    - name: make check
-      run: make check
+

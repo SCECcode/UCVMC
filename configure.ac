@@ -34,7 +34,7 @@ if test "x$ac_compiler_gnu" = "xno"; then
 AC_MSG_ERROR(["GNU C compiler or MPI wrapper based on GNU is required. Please check your programming environment."])
 fi
 
-# Set MPI flag
+# Set UCVM_HAVE_MPI flag
 AM_CONDITIONAL(UCVM_HAVE_MPI, [test x"$use_mpi" = xyes])
 
 # Parse command-line arguments
@@ -74,6 +74,18 @@ AC_ARG_ENABLE([model-cvms],
         [enable_model_cvms=yes],
         [enable_model_cvms=no])
 
+AC_ARG_ENABLE([model-ivlsu],
+        [AS_HELP_STRING([--enable-model-ivlsu],
+        [enable model SCEC IMPERIAL])],
+        [enable_model_ivlsu=yes],
+        [enable_model_ivlsu=no])
+        
+AC_ARG_ENABLE([model-cvlsu],
+        [AS_HELP_STRING([--enable-model-cvlsu],
+        [enable model SCEC COACHELLA])],
+        [enable_model_cvlsu=yes],
+        [enable_model_cvlsu=no])
+        
 AC_ARG_ENABLE([model-albacore],
         [AS_HELP_STRING([--enable-model-albacore],
         [enable model SCEC ALBACORE])],
@@ -269,6 +281,32 @@ AC_ARG_WITH([cvmsi-model-path],
   [AS_HELP_STRING([--with-cvmsi-model-path], [location of the SCEC CVM-SI model files])],
   [CVMSI_MODEL="$withval"],
   [CVMSI_MODEL="/usr/cvmsi/model"])
+fi
+
+# Get SCEC IMPERIAL library and include locations
+if test "x$enable_model_ivlsu" = xyes; then
+AC_ARG_WITH([ivlsu-include-path],
+  [AS_HELP_STRING([--with-ivlsu-include-path],
+    [location of the SCEC IMPERIAL headers])],
+  [IVLSU_INCL="-I$withval"],
+  [IVLSU_INCL="/usr/include/ivlsu"])
+AC_ARG_WITH([ivlsu-lib-path],
+  [AS_HELP_STRING([--with-ivlsu-lib-path], [location of the SCEC IMPERIAL libraries])],
+  [IVLSU_LIB="-L$withval -livlsu -lproj"],
+  [IVLSU_LIB="-livlsu -lproj"])
+fi
+
+# Get SCEC COACHELLA library and include locations
+if test "x$enable_model_cvlsu" = xyes; then
+AC_ARG_WITH([cvlsu-include-path],
+  [AS_HELP_STRING([--with-coachell-include-path],
+    [location of the SCEC COACHELLA headers])],
+  [CVLSU_INCL="-I$withval"],
+  [CVLSU_INCL="/usr/include/cvlsu"])
+AC_ARG_WITH([cvlsu-lib-path],
+  [AS_HELP_STRING([--with-cvlsu-lib-path], [location of the SCEC COACHELLA libraries])],
+  [CVLSU_LIB="-L$withval -lcvlsu"],
+  [CVLSU_LIB="-lcvlsu"])
 fi
 
 # Get SCEC ALBACORE library and include locations
@@ -552,6 +590,41 @@ if test "x$enable_model_cvmsi" = xyes; then
    AC_CHECK_FILE([$CVMSI_MODEL], [], [AC_MSG_ERROR(["SCEC CVM-SI model dir not found; use --with-cvmsi-model-path"])])
 else
    AM_CONDITIONAL(UCVM_AM_ENABLE_CVMSI, false)
+fi
+
+
+# Check optional SCEC IMPERIAL installation
+if test "x$enable_static" = xyes; then
+if test "x$enable_model_ivlsu" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$IVLSU_INCL $CFLAGS"
+   LDFLAGS="$IVLSU_LIB $LDFLAGS"
+
+   echo "Checking for SCEC IMPERIAL"
+   AC_CHECK_LIB(albacore, ivlsu_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, true)], [AC_MSG_ERROR(["SCEC IMPERIAL library not found; use --with-ivlsu-lib-path"])],[-lproj -letree -lm])
+   AC_CHECK_HEADER(ivlsu.h,[],[AC_MSG_ERROR(["SCEC IMPERIAL header not found; use --with-ivlsu-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_IVLSU, [test x"$enable_model_ivlsu" = xyes])
+fi
+
+# Check optional SCEC CVLSU installation
+if test "x$enable_static" = xyes; then
+if test "x$enable_model_cvlsu" = xyes; then
+   # Setup compiler/linker flags
+   CFLAGS="$CVLSU_INCL $CFLAGS"
+   LDFLAGS="$CVLSU_LIB $LDFLAGS"
+
+   echo "Checking for SCEC CVLSU"
+   AC_CHECK_LIB(cvlsu, coachell_init,[AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, true)], [AC_MSG_ERROR(["SCEC CVLSU library not found; use --with-cvlsu-lib-path"])],[-lm])
+   AC_CHECK_HEADER(cvlsu.h,[],[AC_MSG_ERROR(["SCEC CVLSU header not found; use --with-cvlsu-include-path"])],[AC_INCLUDES_DEFAULT])
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, false)
+fi
+else
+   AM_CONDITIONAL(UCVM_AM_ENABLE_CVLSU, [test x"$enable_model_cvlsu" = xyes])
 fi
 
 # Check optional SCEC ALBACORE installation

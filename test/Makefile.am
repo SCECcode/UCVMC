@@ -24,6 +24,21 @@ if UCVM_AM_ENABLE_CVMSI
 AM_CFLAGS += -D_UCVM_ENABLE_CVMSI
 endif
 
+# IVLSUIMPERIAL includes
+if UCVM_AM_ENABLE_IVLSU
+AM_CFLAGS += -D_UCVM_ENABLE_IVLSU
+endif
+
+# CVLSU/COACHELLA includes
+if UCVM_AM_ENABLE_CVLSU
+AM_CFLAGS += -D_UCVM_ENABLE_CVLSU
+endif
+
+# ALBACORE includes
+if UCVM_AM_ENABLE_ALBACORE
+AM_CFLAGS += -D_UCVM_ENABLE_ALBACORE
+endif
+
 # CVM-NCI includes
 if UCVM_AM_ENABLE_CVMNCI
 AM_CFLAGS += -D_UCVM_ENABLE_CVMNCI
@@ -93,16 +108,23 @@ accepttest: accepttest.o test_defs.o accepttest_suite_grid.o
 
 install:
 	mkdir -p ${prefix}/tests
-	cp -R inputs ${prefix}/tests
-	cp -R ref ${prefix}/tests
+	cp -R -L inputs ${prefix}/tests
+	cp -R -L ref ${prefix}/tests
 	cp $(bin_PROGRAMS) ${prefix}/tests
 	cp *.py ${prefix}/tests/.
+	echo "#!/bin/bash " > ${prefix}/tests/run-testing 
+	echo "source ../conf/ucvm_env.sh" >> ${prefix}/tests/run-testing 
+	echo "./unittest" >> ${prefix}/tests/run-testing 
+	echo "./accepttest" >> ${prefix}/tests/run-testing 
+	echo "./accept_test.py ." >> ${prefix}/tests/run-testing 
+	chmod +x ${prefix}/tests/run-testing
 
 check: unittest accepttest
-	cd ${prefix}/tests
-	./unittest
-	./accepttest
-	./accept_test.py ${prefix}/tests
+	@( cd ${prefix}/tests; source ../conf/ucvm_env.sh; \
+		./unittest;\
+		./accepttest;\
+		./accept_test.py ${prefix}/tests;\
+	)
 
 clean:
 	rm -rf *~ *.o unittest accepttest

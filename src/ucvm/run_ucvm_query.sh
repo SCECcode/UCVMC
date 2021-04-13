@@ -9,7 +9,7 @@ FLAGS=""
 CONF=""
 
 # Pass along any arguments to UCVM
-while getopts 'm:p:c:f:z:bl:I:O:' OPTION
+while getopts 'hHm:p:c:f:z:bl:I:O:' OPTION
 do
   if [ "$OPTION" == "O" ]; then
       OUT=$OPTARG
@@ -36,13 +36,21 @@ if [ "$UCVM_INSTALL_PATH" ] ; then
 fi
 
 ## 
-export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
+if [ "$LD_LIBRARY_PATH" ] ; then
+  export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib:$LD_LIBRARY_PATH
+  else
+    export LD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
+fi
 
-export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
+if [ "$DYLD_LIBRARY_PATH" ] ; then
+  export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib:$DYLD_LIBRARY_PATH
+  else
+    export DYLD_LIBRARY_PATH=${SCRIPT_DIR}/../lib/euclid3/lib:${SCRIPT_DIR}/../lib/proj-5/lib:${SCRIPT_DIR}/../model/cvms426/lib:${SCRIPT_DIR}/../model/cvms5/lib:${SCRIPT_DIR}/../model/cca/lib:${SCRIPT_DIR}/../model/cencal/lib:${SCRIPT_DIR}/../model/cs173/lib
+fi
 
 if [ "$CONF" == "" ]; then
-   if [ -f ./ucvm_conf  ]; then 
-      FLAGS="${FLAGS} -f ./ucvm_conf"
+   if [ -f ./ucvm.conf  ]; then 
+      FLAGS="${FLAGS} -f ./ucvm.conf"
    else
       if [ ! -z "${UCVM_INSTALL_PATH}" ]; then
           FLAGS="${FLAGS} -f ${UCVM_INSTALL_PATH}/conf/ucvm.conf"

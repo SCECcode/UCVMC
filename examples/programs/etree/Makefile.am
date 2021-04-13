@@ -15,11 +15,21 @@ all: $(bin_PROGRAMS)
 # Special build targets
 ############################################
 check: $(bin_PROGRAMS)
-	@for i in $(bin_PROGRAMS); do \
-	  ./$${i}; \
+	@( cd ${prefix}/tests/etree; \
+	for i in $(bin_PROGRAMS); do \
+		./$${i}; \
+	done \
+	)
+
+install: $(bin_PROGRAMS)
+	mkdir -p ${prefix}/tests/etree
+	cp *_template ${prefix}/tests/etree
+	for i in $(bin_PROGRAMS); do \
+		cp $${i} ${prefix}/tests/etree; \
+		echo "(cd etree; ./$${i})" >> ${prefix}/tests/run-testing; \
 	done
 
 clean: 
-	rm -f *.o *~ *.conf *.e *.conf
+	rm -f *.o *~ *.conf *.e *.conf *.out
 
 
