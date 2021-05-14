@@ -54,6 +54,7 @@
 #endif
 
 // Variables
+ucvm_plugin_model_t plugin_models[UCVM_MAX_MODELS];
 
 /** Have we initialized this model yet? */
 int plugin_model_initialized = 0;
