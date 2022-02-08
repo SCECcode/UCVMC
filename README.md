@@ -1,7 +1,12 @@
-# UCVMC
+# UCVM
 
-## Current UCVM Software Release
-The current UCVM software version is UCVM v19.4.0 which was released in June 2019. We recommend that new users work with this most recent version.
+The current UCVM software version is UCVM 21.10.0 which was released in October 2021. We recommend that new users work with this most recent version.
+https://github.com/sceccode/ucvm
+
+
+## Archived Version of UCVMC Software Release
+
+Th version of UCVM in this repository (UCVMC) is now archived. It is available for review, but we do not recommend researchers use this old version of the software. 
 
 UCVM is distributed as open-source scientific software. It can be installed compiled and run on most Linux-based computer systems if the system includes software development tools including Python, C, and Fortran compilers, and other software tools. The UCVM v19.4.0 source code is distributed using a github repository. On Github, users can find the source code, installation directions for Linux, and a wiki that provide examples and the expected results from UCVM.
 
